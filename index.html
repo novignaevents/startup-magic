@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Something Magical is Coming</title>
+    <title>Novigna — Something Magical Is Coming</title>
     <style>
         body {
             margin: 0;
@@ -16,6 +16,7 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            text-align: center;
         }
 
         /* Magic Text Effect */
@@ -37,6 +38,26 @@
             font-size: 1.5rem;
             color: #a8a8a8;
             z-index: 10;
+            margin: 5px 0;
+        }
+
+        /* Email Styling */
+        .email {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            z-index: 10;
+        }
+
+        .email a {
+            color: #c77dff;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .email a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(199, 125, 255, 0.8);
         }
 
         @keyframes shine {
@@ -56,9 +77,14 @@
 <body>
 
     <canvas id="magicDust"></canvas>
-    
+
     <h1>Coming Soon</h1>
     <p>We are brewing something magical.</p>
+
+    <div class="email">
+        <p>Contact us:</p>
+        <a href="mailto:info@novigna.com">info@novigna.com</a>
+    </div>
 
     <script>
         const canvas = document.getElementById('magicDust');
@@ -80,7 +106,7 @@
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
-                if (this.size > 0.2) this.size -= 0.01; 
+                if (this.size > 0.2) this.size -= 0.01;
                 if (this.size <= 0.2) {
                     this.x = Math.random() * canvas.width;
                     this.y = Math.random() * canvas.height;
@@ -103,10 +129,10 @@
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-            }
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
             requestAnimationFrame(animate);
         }
 
