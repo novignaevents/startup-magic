@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +20,6 @@
             text-align: center;
         }
 
-        /* Magic Text Effect */
         h1 {
             font-size: 4rem;
             text-transform: uppercase;
@@ -41,7 +41,6 @@
             margin: 5px 0;
         }
 
-        /* Email Styling */
         .email {
             margin-top: 20px;
             font-size: 1.1rem;
@@ -61,10 +60,36 @@
         }
 
         @keyframes shine {
-            to { background-position: 200% center; }
+            to {
+                background-position: 200% center;
+            }
         }
 
-        /* Floating Dust Particles */
+        /* Architecture Link Button */
+        .architecture-link {
+            margin-top: 35px;
+            z-index: 10;
+        }
+
+        .architecture-link a {
+            display: inline-block;
+            padding: 14px 35px;
+            background: linear-gradient(90deg, #ff00cc, #3333ff);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            font-weight: 500;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+        }
+
+        .architecture-link a:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(255, 0, 204, 0.5);
+        }
+
         canvas {
             position: absolute;
             top: 0;
@@ -72,8 +97,26 @@
             width: 100%;
             height: 100%;
         }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+
+            p {
+                font-size: 1.1rem;
+            }
+
+            .architecture-link a {
+                padding: 12px 25px;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <canvas id="magicDust"></canvas>
@@ -84,6 +127,10 @@
     <div class="email">
         <p>Contact us:</p>
         <a href="mailto:info@novigna.com">info@novigna.com</a>
+    </div>
+
+    <div class="architecture-link">
+        <a href="infrastructure-architecture.html">View Infrastructure Architecture →</a>
     </div>
 
     <script>
@@ -101,7 +148,7 @@
                 this.size = Math.random() * 2;
                 this.speedX = Math.random() * 1 - 0.5;
                 this.speedY = Math.random() * 1 - 0.5;
-                this.color = `rgba(${Math.random()*255}, ${Math.random()*255}, 255, ${Math.random()})`;
+                this.color = `rgba(${Math.random() * 255}, ${Math.random() * 255}, 255, ${Math.random()})`;
             }
             update() {
                 this.x += this.speedX;
@@ -145,4 +192,5 @@
         });
     </script>
 </body>
+
 </html>
