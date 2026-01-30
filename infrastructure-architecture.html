@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management Platform - Infrastructure Architecture</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Crimson+Pro:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #151937;
+            --bg-card: #1a1f3a;
+            --accent-primary: #00f5d4;
+            --accent-secondary: #f15bb5;
+            --accent-warning: #fee440;
+            --text-primary: #e0e7ff;
+            --text-secondary: #94a3b8;
+            --border: #2d3561;
+            --success: #00f5d4;
+            --error: #ff006e;
+        }
+
+        body {
+            font-family: 'Crimson Pro', serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0e27 0%, #151937 50%, #0a0e27 100%);
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 245, 212, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(241, 91, 181, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 60% 20%, rgba(254, 228, 64, 0.05) 0%, transparent 30%);
+            animation: float 25s ease-in-out infinite;
+        }
+
+        .bg-animation::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 10% 20%, rgba(0, 245, 212, 0.3) 0%, transparent 100%),
+                radial-gradient(2px 2px at 30% 60%, rgba(241, 91, 181, 0.3) 0%, transparent 100%),
+                radial-gradient(2px 2px at 50% 30%, rgba(254, 228, 64, 0.3) 0%, transparent 100%),
+                radial-gradient(2px 2px at 70% 80%, rgba(0, 245, 212, 0.3) 0%, transparent 100%),
+                radial-gradient(2px 2px at 90% 40%, rgba(241, 91, 181, 0.3) 0%, transparent 100%),
+                radial-gradient(3px 3px at 15% 85%, rgba(0, 245, 212, 0.2) 0%, transparent 100%),
+                radial-gradient(3px 3px at 85% 15%, rgba(241, 91, 181, 0.2) 0%, transparent 100%);
+            animation: twinkle 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(-30px, -30px) rotate(1deg);
+            }
+
+            66% {
+                transform: translate(20px, -20px) rotate(-1deg);
+            }
+        }
+
+        @keyframes twinkle {
+            0% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Header */
+        header {
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(180deg, rgba(26, 31, 58, 0.95) 0%, rgba(26, 31, 58, 0.85) 100%);
+            backdrop-filter: blur(15px);
+            position: relative;
+            z-index: 100;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), var(--accent-secondary), var(--accent-primary), transparent);
+        }
+
+        h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 0.8rem 1.5rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--accent-primary);
+            background: rgba(0, 245, 212, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 245, 212, 0.2);
+        }
+
+        .nav-btn.active {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            border-color: var(--accent-primary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Section */
+        section {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 31, 58, 0.8) 100%);
+            border: 2px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-warning));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 8px 40px rgba(0, 245, 212, 0.15), 0 0 60px rgba(0, 245, 212, 0.05);
+            transform: translateY(-4px);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h2 {
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .card h3 {
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-secondary);
+            margin: 1.5rem 0 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        /* Architecture Diagram */
+        .arch-diagram {
+            position: relative;
+            padding: 3rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .layer {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(26, 31, 58, 0.8);
+            border-left: 4px solid var(--accent-primary);
+            position: relative;
+        }
+
+        .layer-title {
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-primary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .components {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .component {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(45, 53, 97, 0.5) 100%);
+            border: 2px solid var(--border);
+            padding: 1.25rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .component::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, var(--accent-secondary) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .component:hover {
+            border-color: var(--accent-secondary);
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 10px 30px rgba(241, 91, 181, 0.25), 0 0 40px rgba(241, 91, 181, 0.1);
+        }
+
+        .component:hover::before {
+            opacity: 0.08;
+        }
+
+        .component-name {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--accent-primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .component-tech {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .component-cost {
+            font-size: 0.8rem;
+            color: var(--accent-warning);
+            margin-top: 0.5rem;
+            font-family: 'Space Mono', monospace;
+            position: relative;
+            z-index: 1;
+            padding: 0.25rem 0.5rem;
+            background: rgba(254, 228, 64, 0.1);
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Flow connections */
+        .flow-arrow {
+            text-align: center;
+            color: var(--accent-primary);
+            font-size: 2rem;
+            margin: 1rem 0;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+                transform: translateY(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateY(5px);
+            }
+        }
+
+        /* Cost Calculator */
+        .calculator {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .slider-container {
+            margin: 2rem 0;
+        }
+
+        .slider-label {
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-card);
+            outline: none;
+            border: 1px solid var(--border);
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-primary);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-primary);
+        }
+
+        .cost-result {
+            background: var(--bg-card);
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 2px solid var(--accent-primary);
+            text-align: center;
+        }
+
+        .cost-number {
+            font-family: 'Space Mono', monospace;
+            font-size: 3rem;
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+
+        .cost-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .cost-item {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-left: 3px solid var(--accent-secondary);
+        }
+
+        .cost-item-name {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .cost-item-value {
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 1rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 1.5rem 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .timeline-content {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            padding: 1.5rem;
+            position: relative;
+            border-radius: 10px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            grid-column: 2;
+        }
+
+        .timeline-phase {
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-primary);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-users {
+            color: var(--accent-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-cost {
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-warning);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 1rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 2px solid var(--accent-primary);
+            padding: 3rem;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            font-size: 2rem;
+            cursor: pointer;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .modal-close:hover {
+            color: var(--accent-secondary);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            border: 2px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--accent-primary) 0%, transparent 70%);
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 245, 212, 0.2);
+        }
+
+        .stat-card:hover::after {
+            opacity: 0.1;
+        }
+
+        .stat-number {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.5rem;
+            color: var(--accent-primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 30px rgba(0, 245, 212, 0.3);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--bg-secondary);
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-card);
+            color: var(--accent-primary);
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: rgba(0, 245, 212, 0.05);
+        }
+
+        /* Highlight boxes */
+        .highlight {
+            background: linear-gradient(135deg, rgba(0, 245, 212, 0.1) 0%, rgba(0, 245, 212, 0.05) 100%);
+            border-left: 4px solid var(--accent-primary);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 12px 12px 0;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 245, 212, 0.1);
+        }
+
+        .warning {
+            background: linear-gradient(135deg, rgba(254, 228, 64, 0.1) 0%, rgba(254, 228, 64, 0.05) 100%);
+            border-left: 4px solid var(--accent-warning);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 4px 20px rgba(254, 228, 64, 0.1);
+        }
+
+        .error {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.1) 0%, rgba(255, 0, 110, 0.05) 100%);
+            border-left: 4px solid var(--error);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 4px 20px rgba(255, 0, 110, 0.1);
+        }
+
+        /* Responsive - Tablet */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 2rem 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .components {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Responsive - Mobile */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                letter-spacing: -1px;
+                margin-bottom: 0.25rem;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+            }
+
+            nav {
+                gap: 0.5rem;
+                padding: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.7rem;
+                flex: 1 1 auto;
+                min-width: 100px;
+                text-align: center;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .card {
+                padding: 1.25rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .card h2 {
+                font-size: 1.4rem;
+            }
+
+            .card h3 {
+                font-size: 1.1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1.25rem;
+            }
+
+            .stat-number {
+                font-size: 1.8rem;
+            }
+
+            .stat-label {
+                font-size: 0.85rem;
+            }
+
+            .components {
+                grid-template-columns: 1fr;
+            }
+
+            .component {
+                padding: 1rem;
+            }
+
+            .arch-diagram {
+                padding: 1.5rem 1rem;
+            }
+
+            .layer {
+                padding: 1rem;
+                margin: 1rem 0;
+            }
+
+            .layer-title {
+                font-size: 0.9rem;
+            }
+
+            .timeline-item {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .timeline::before {
+                left: 10px;
+                width: 2px;
+            }
+
+            .timeline-item:nth-child(even) .timeline-content {
+                grid-column: 1;
+            }
+
+            .timeline-content {
+                padding: 1.25rem;
+                margin-left: 20px;
+            }
+
+            .timeline-phase {
+                font-size: 1.1rem;
+            }
+
+            .timeline-cost {
+                font-size: 1.2rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            th,
+            td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .cost-result {
+                padding: 1.5rem;
+            }
+
+            .cost-number {
+                font-size: 2rem;
+            }
+
+            .cost-breakdown {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem;
+            }
+
+            .cost-item {
+                padding: 0.75rem;
+            }
+
+            .cost-item-value {
+                font-size: 1rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+                margin: 1rem;
+                max-height: 90vh;
+            }
+
+            .highlight,
+            .warning,
+            .error {
+                padding: 1rem;
+                margin: 1rem 0;
+            }
+
+            .slider-container {
+                margin: 1.5rem 0;
+            }
+        }
+
+        /* Responsive - Small Mobile */
+        @media (max-width: 480px) {
+            header {
+                padding: 1.5rem 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+            }
+
+            nav {
+                gap: 0.4rem;
+                padding: 0.75rem;
+            }
+
+            .nav-btn {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.65rem;
+                min-width: 80px;
+                letter-spacing: 0;
+            }
+
+            .container {
+                padding: 1rem 0.75rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .card h2 {
+                font-size: 1.2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-number {
+                font-size: 1.6rem;
+            }
+
+            .cost-breakdown {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                display: none;
+            }
+
+            .timeline-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Floating Orbs */
+        .floating-orbs {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.4;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--accent-primary) 0%, transparent 70%);
+            top: 10%;
+            left: 10%;
+            animation: orbFloat1 20s ease-in-out infinite;
+        }
+
+        .orb-2 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, var(--accent-secondary) 0%, transparent 70%);
+            top: 60%;
+            right: 5%;
+            animation: orbFloat2 25s ease-in-out infinite;
+        }
+
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--accent-warning) 0%, transparent 70%);
+            bottom: 20%;
+            left: 30%;
+            animation: orbFloat3 22s ease-in-out infinite;
+        }
+
+        .orb-4 {
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, var(--accent-primary) 0%, transparent 70%);
+            top: 40%;
+            right: 30%;
+            animation: orbFloat1 18s ease-in-out infinite reverse;
+        }
+
+        .orb-5 {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, var(--accent-secondary) 0%, transparent 70%);
+            bottom: 10%;
+            right: 20%;
+            animation: orbFloat2 15s ease-in-out infinite reverse;
+        }
+
+        @keyframes orbFloat1 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            25% {
+                transform: translate(50px, -30px) scale(1.1);
+            }
+
+            50% {
+                transform: translate(100px, 20px) scale(0.9);
+            }
+
+            75% {
+                transform: translate(30px, 50px) scale(1.05);
+            }
+        }
+
+        @keyframes orbFloat2 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(-40px, 30px) rotate(120deg);
+            }
+
+            66% {
+                transform: translate(30px, -40px) rotate(240deg);
+            }
+        }
+
+        @keyframes orbFloat3 {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+                opacity: 0.4;
+            }
+
+            50% {
+                transform: translate(-60px, -30px);
+                opacity: 0.6;
+            }
+        }
+
+        /* Header Icon */
+        .header-icon {
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: iconPulse 3s ease-in-out infinite;
+        }
+
+        .header-icon svg {
+            filter: drop-shadow(0 0 20px rgba(0, 245, 212, 0.4));
+        }
+
+        @keyframes iconPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .orb {
+                opacity: 0.15;
+            }
+
+            .orb-1,
+            .orb-2 {
+                width: 100px;
+                height: 100px;
+            }
+
+            .orb-3,
+            .orb-4,
+            .orb-5 {
+                display: none;
+            }
+
+            .header-icon {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Floating Orbs -->
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+        <div class="orb orb-5"></div>
+    </div>
+
+    <header>
+        <div class="header-icon">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="30" r="28" stroke="url(#grad1)" stroke-width="2" fill="none" />
+                <path d="M20 30L28 38L40 22" stroke="url(#grad1)" stroke-width="3" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <defs>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00f5d4;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#f15bb5;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        <h1>Infrastructure Architecture</h1>
+        <p class="subtitle">Event Management Platform · Production-Ready · Scalable to Millions</p>
+    </header>
+
+    <nav>
+        <button class="nav-btn active" onclick="showSection('overview')">Overview</button>
+        <button class="nav-btn" onclick="showSection('architecture')">Architecture</button>
+        <button class="nav-btn" onclick="showSection('components')">Components</button>
+        <button class="nav-btn" onclick="showSection('cost')">Cost Calculator</button>
+        <button class="nav-btn" onclick="showSection('scaling')">Scaling Phases</button>
+        <button class="nav-btn" onclick="showSection('security')">Security</button>
+    </nav>
+
+    <div class="container">
+        <!-- OVERVIEW SECTION -->
+        <section id="overview" class="active">
+            <div class="card">
+                <h2>🎯 Infrastructure Overview</h2>
+                <p style="font-size: 1.2rem; margin: 1rem 0;">Built on <strong
+                        style="color: var(--accent-primary);">Google Cloud Platform</strong> for cost-effectiveness,
+                    scalability, and AI/ML capabilities.</p>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">₹60K</div>
+                        <div class="stat-label">Monthly Cost (MVP)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">₹2.4L</div>
+                        <div class="stat-label">Monthly Cost (100K users)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">₹12.4L</div>
+                        <div class="stat-label">Monthly Cost (1M+ users)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">90%</div>
+                        <div class="stat-label">Managed Services</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>✨ Key Features</h2>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                    <div class="highlight">
+                        <h3 style="color: var(--accent-primary); margin-top: 0;">🚀 Serverless-First</h3>
+                        <p>Cloud Run for zero maintenance and automatic scaling from 0 to 1000+ instances.</p>
+                    </div>
+                    <div class="highlight">
+                        <h3 style="color: var(--accent-primary); margin-top: 0;">💰 Cost-Optimized</h3>
+                        <p>Pay-per-use model with budget alerts and per-service spend caps to prevent surprises.</p>
+                    </div>
+                    <div class="highlight">
+                        <h3 style="color: var(--accent-primary); margin-top: 0;">🧠 AI-Ready</h3>
+                        <p>Vertex AI integration with managed services for recommendations and analytics.</p>
+                    </div>
+                    <div class="highlight">
+                        <h3 style="color: var(--accent-primary); margin-top: 0;">🇮🇳 India-Optimized</h3>
+                        <p>Mumbai region for low latency, RBI/DPDPA compliance, and Razorpay integration.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎨 Technology Stack</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Layer</th>
+                            <th>Technology</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Frontend</strong></td>
+                            <td>React.js (Next.js) + TypeScript</td>
+                            <td>Web application with SEO optimization</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mobile</strong></td>
+                            <td>React Native / Flutter</td>
+                            <td>Cross-platform mobile apps</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Backend</strong></td>
+                            <td>Node.js (TypeScript) / Python (FastAPI)</td>
+                            <td>API services and business logic</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database (SQL)</strong></td>
+                            <td>PostgreSQL (Cloud SQL)</td>
+                            <td>Transactional data, bookings</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database (NoSQL)</strong></td>
+                            <td>Firestore</td>
+                            <td>Real-time updates, chat</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cache</strong></td>
+                            <td>Redis (Memorystore)</td>
+                            <td>Session storage, hot data</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Storage</strong></td>
+                            <td>Cloud Storage</td>
+                            <td>Media files, backups</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CDN</strong></td>
+                            <td>Cloud CDN</td>
+                            <td>Global content delivery</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Search</strong></td>
+                            <td>Algolia → Elasticsearch</td>
+                            <td>Event/venue search</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AI/ML</strong></td>
+                            <td>Vertex AI + Cloud Run</td>
+                            <td>Recommendations, analytics</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ARCHITECTURE SECTION -->
+        <section id="architecture">
+            <div class="card">
+                <h2>🏗️ System Architecture</h2>
+                <p style="margin-bottom: 2rem;">Interactive architecture diagram showing data flow from users to backend
+                    services.</p>
+
+                <div class="arch-diagram">
+                    <!-- User Layer -->
+                    <div class="layer">
+                        <div class="layer-title">👥 User Layer</div>
+                        <div class="components">
+                            <div class="component" onclick="showComponentDetails('web')">
+                                <div class="component-name">Web App</div>
+                                <div class="component-tech">React.js + Next.js</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('mobile')">
+                                <div class="component-name">Mobile Apps</div>
+                                <div class="component-tech">React Native</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-arrow">↓</div>
+
+                    <!-- CDN Layer -->
+                    <div class="layer">
+                        <div class="layer-title">🌐 Content Delivery</div>
+                        <div class="components">
+                            <div class="component" onclick="showComponentDetails('cdn')">
+                                <div class="component-name">Cloud CDN</div>
+                                <div class="component-tech">Global Edge Locations</div>
+                                <div class="component-cost">₹3K - ₹1.2L/mo</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('lb')">
+                                <div class="component-name">Load Balancer</div>
+                                <div class="component-tech">Cloud Load Balancing</div>
+                                <div class="component-cost">₹2.5K - ₹60K/mo</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-arrow">↓</div>
+
+                    <!-- Security Layer -->
+                    <div class="layer">
+                        <div class="layer-title">🛡️ Security Layer</div>
+                        <div class="components">
+                            <div class="component" onclick="showComponentDetails('armor')">
+                                <div class="component-name">Cloud Armor</div>
+                                <div class="component-tech">DDoS Protection + WAF</div>
+                                <div class="component-cost">₹3K - ₹10K/mo</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('api-gateway')">
+                                <div class="component-name">API Gateway</div>
+                                <div class="component-tech">Cloud Endpoints</div>
+                                <div class="component-cost">₹1.5K - ₹40K/mo</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-arrow">↓</div>
+
+                    <!-- Application Layer -->
+                    <div class="layer">
+                        <div class="layer-title">⚙️ Application Services</div>
+                        <div class="components">
+                            <div class="component" onclick="showComponentDetails('auth')">
+                                <div class="component-name">Auth Service</div>
+                                <div class="component-tech">Cloud Run</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('events')">
+                                <div class="component-name">Event Service</div>
+                                <div class="component-tech">Cloud Run</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('booking')">
+                                <div class="component-name">Booking Service</div>
+                                <div class="component-tech">Cloud Run</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('user')">
+                                <div class="component-name">User Service</div>
+                                <div class="component-tech">Cloud Run</div>
+                            </div>
+                        </div>
+                        <div
+                            style="text-align: center; color: var(--accent-warning); margin-top: 1rem; font-family: 'Space Mono', monospace;">
+                            Total Compute: ₹8K - ₹3L/mo
+                        </div>
+                    </div>
+
+                    <div class="flow-arrow">↓</div>
+
+                    <!-- Data Layer -->
+                    <div class="layer">
+                        <div class="layer-title">💾 Data & Cache Layer</div>
+                        <div class="components">
+                            <div class="component" onclick="showComponentDetails('postgres')">
+                                <div class="component-name">PostgreSQL</div>
+                                <div class="component-tech">Cloud SQL</div>
+                                <div class="component-cost">₹12K - ₹2L/mo</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('firestore')">
+                                <div class="component-name">Firestore</div>
+                                <div class="component-tech">NoSQL Real-time</div>
+                                <div class="component-cost">₹5K - ₹1.5L/mo</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('redis')">
+                                <div class="component-name">Redis</div>
+                                <div class="component-tech">Memorystore</div>
+                                <div class="component-cost">₹5K - ₹80K/mo</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('storage')">
+                                <div class="component-name">Cloud Storage</div>
+                                <div class="component-tech">Object Storage</div>
+                                <div class="component-cost">₹2K - ₹80K/mo</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-arrow">↓</div>
+
+                    <!-- Processing Layer -->
+                    <div class="layer">
+                        <div class="layer-title">🔄 Background Processing</div>
+                        <div class="components">
+                            <div class="component" onclick="showComponentDetails('pubsub')">
+                                <div class="component-name">Pub/Sub</div>
+                                <div class="component-tech">Message Queue</div>
+                                <div class="component-cost">₹1K - ₹50K/mo</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('functions')">
+                                <div class="component-name">Cloud Functions</div>
+                                <div class="component-tech">Serverless Jobs</div>
+                                <div class="component-cost">₹1K - ₹25K/mo</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('ai')">
+                                <div class="component-name">AI/ML Models</div>
+                                <div class="component-tech">Vertex AI</div>
+                                <div class="component-cost">₹10K - ₹2.5L/mo</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-arrow">↓</div>
+
+                    <!-- Analytics Layer -->
+                    <div class="layer">
+                        <div class="layer-title">📊 Analytics & Monitoring</div>
+                        <div class="components">
+                            <div class="component" onclick="showComponentDetails('bigquery')">
+                                <div class="component-name">BigQuery</div>
+                                <div class="component-tech">Data Warehouse</div>
+                            </div>
+                            <div class="component" onclick="showComponentDetails('monitoring')">
+                                <div class="component-name">Monitoring</div>
+                                <div class="component-tech">Cloud Monitoring</div>
+                                <div class="component-cost">₹2.5K - ₹50K/mo</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPONENTS SECTION -->
+        <section id="components">
+            <div class="card">
+                <h2>🔧 Infrastructure Components</h2>
+                <p style="margin-bottom: 2rem;">Click on any component in the Architecture section for detailed
+                    specifications.</p>
+
+                <div class="warning">
+                    <strong style="color: var(--accent-warning);">⚠️ CRITICAL GUARDRAILS</strong>
+                    <ul style="margin-top: 1rem; padding-left: 2rem;">
+                        <li>Budget alerts at 50%, 75%, 90% of monthly spend</li>
+                        <li>Per-service spend caps to prevent runaway costs</li>
+                        <li>Separate billing for prod/staging/dev environments</li>
+                        <li>Weekly cost review (15 minutes every Monday)</li>
+                    </ul>
+                </div>
+
+                <h3>Database Strategy</h3>
+                <div class="highlight">
+                    <strong>SQL vs NoSQL Decision Tree:</strong>
+                    <ul style="margin-top: 1rem; padding-left: 2rem;">
+                        <li><strong>Transactional data</strong> (bookings, payments) → Cloud SQL (PostgreSQL)</li>
+                        <li><strong>Real-time data</strong> (event updates, chat) → Firestore</li>
+                        <li><strong>Analytics</strong> → BigQuery</li>
+                        <li><strong>Cached data</strong> → Redis (Memorystore)</li>
+                    </ul>
+                </div>
+
+                <h3>Booking Flow (Zero Tolerance for Errors)</h3>
+                <div class="error">
+                    <strong style="color: var(--error);">🎯 CRITICAL PATH:</strong>
+                    <ol style="margin-top: 1rem; padding-left: 2rem;">
+                        <li>API Gateway (rate limit: 1 req/sec per user)</li>
+                        <li>Booking Service validates request</li>
+                        <li>PostgreSQL enforces capacity with DB-level constraints</li>
+                        <li>Payment processed with idempotency key</li>
+                        <li>Success → Queue background jobs (email, analytics)</li>
+                        <li>Fail → Immediate error (no side effects)</li>
+                    </ol>
+                    <p style="margin-top: 1rem;"><strong>Rule:</strong> Database constraints prevent overbooking, even
+                        if app has bugs.</p>
+                </div>
+
+                <h3>AI/ML Cost Control</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Strategy</th>
+                            <th>Implementation</th>
+                            <th>Cost Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Feature Flags</td>
+                            <td>Gradual rollout (5-20% of users)</td>
+                            <td>-80% initial cost</td>
+                        </tr>
+                        <tr>
+                            <td>User Quotas</td>
+                            <td>Free: 10 AI calls/day, Paid: 100/day</td>
+                            <td>Prevents spam</td>
+                        </tr>
+                        <tr>
+                            <td>Async Processing</td>
+                            <td>Pre-compute recommendations nightly</td>
+                            <td>-80-90% vs real-time</td>
+                        </tr>
+                        <tr>
+                            <td>Aggressive Caching</td>
+                            <td>Cache AI outputs for 7 days</td>
+                            <td>Free for repeat queries</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- COST CALCULATOR SECTION -->
+        <section id="cost">
+            <div class="card">
+                <h2>💰 Cost Calculator</h2>
+                <p style="margin-bottom: 2rem;">Estimate monthly infrastructure costs based on your scale.</p>
+
+                <div class="calculator">
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Active Users</span>
+                            <span id="userCount">50,000</span>
+                        </div>
+                        <input type="range" id="users" min="1000" max="2000000" value="50000" step="1000"
+                            oninput="calculateCost()">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>AI Features Usage</span>
+                            <span id="aiUsage">Medium</span>
+                        </div>
+                        <input type="range" id="ai" min="1" max="3" value="2" step="1" oninput="calculateCost()">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Storage (TB)</span>
+                            <span id="storageSize">5 TB</span>
+                        </div>
+                        <input type="range" id="storage" min="1" max="100" value="5" step="1" oninput="calculateCost()">
+                    </div>
+
+                    <div class="cost-result">
+                        <div style="color: var(--text-secondary); margin-bottom: 0.5rem;">Estimated Monthly Cost</div>
+                        <div class="cost-number">₹<span id="totalCost">1,80,000</span></div>
+                        <div style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1.1rem;">
+                            ≈ $<span id="totalCostUSD">2,150</span> USD
+                        </div>
+                    </div>
+
+                    <div class="cost-breakdown" id="costBreakdown">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <div class="warning" style="margin-top: 2rem;">
+                    <strong style="color: var(--accent-warning);">💡 Cost Optimization Tips:</strong>
+                    <ul style="margin-top: 1rem; padding-left: 2rem;">
+                        <li><strong>Committed Use Discounts:</strong> 25% off (1-year) or 52% off (3-year)</li>
+                        <li><strong>Preemptible Instances:</strong> 70-80% cheaper for ML training</li>
+                        <li><strong>Storage Lifecycle:</strong> Auto-move old data to Coldline (80% cheaper)</li>
+                        <li><strong>CDN Caching:</strong> Aggressive caching reduces bandwidth by 60%</li>
+                        <li><strong>Serverless First:</strong> Cloud Run scales to zero (no idle costs)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCALING SECTION -->
+        <section id="scaling">
+            <div class="card">
+                <h2>📈 Scaling Phases</h2>
+                <p style="margin-bottom: 1rem;">Infrastructure evolution from MVP to enterprise scale.</p>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-phase">Phase 1: MVP</div>
+                            <div class="timeline-users">0 - 10,000 Users</div>
+                            <p><strong>Timeline:</strong> Months 0-6</p>
+                            <ul style="margin: 1rem 0; padding-left: 2rem;">
+                                <li>Cloud Run (2-4 services, min: 0 instances)</li>
+                                <li>Cloud SQL (db-n1-standard-1, no replicas)</li>
+                                <li>Memorystore Basic (1GB)</li>
+                                <li>Single region (Mumbai)</li>
+                                <li>Managed AI APIs only</li>
+                            </ul>
+                            <p><strong>Team:</strong> 1-2 developers</p>
+                            <div class="timeline-cost">₹40K - ₹60K/month</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-phase">Phase 2: Growth</div>
+                            <div class="timeline-users">10K - 200K Users</div>
+                            <p><strong>Timeline:</strong> Months 6-18</p>
+                            <ul style="margin: 1rem 0; padding-left: 2rem;">
+                                <li>Cloud Run (8-10 services, min: 1-2 instances)</li>
+                                <li>Cloud SQL (db-n1-standard-2 + 1 read replica)</li>
+                                <li>Memorystore Standard HA (5GB)</li>
+                                <li>Multi-regional CDN</li>
+                                <li>Mix of managed AI + custom models</li>
+                                <li>Staging environment added</li>
+                            </ul>
+                            <p><strong>Team:</strong> 3-4 engineers + 1 DevOps (part-time)</p>
+                            <div class="timeline-cost">₹1.2L - ₹2L/month</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-phase">Phase 3: Scale</div>
+                            <div class="timeline-users">200K - 1M+ Users</div>
+                            <p><strong>Timeline:</strong> Months 18+</p>
+                            <ul style="margin: 1rem 0; padding-left: 2rem;">
+                                <li>Cloud Run (15-20 services) OR GKE Autopilot</li>
+                                <li>Cloud SQL (db-n1-standard-4/8, HA + 2-3 replicas)</li>
+                                <li>Memorystore Standard HA (20-50GB + replicas)</li>
+                                <li>Multi-region deployment (Mumbai + Delhi)</li>
+                                <li>Custom ML models + GPU instances</li>
+                                <li>Elasticsearch on GKE (self-managed)</li>
+                                <li>Advanced monitoring (distributed tracing)</li>
+                            </ul>
+                            <p><strong>Team:</strong> 8-12 engineers + 2-3 dedicated DevOps/SRE</p>
+                            <div class="timeline-cost">₹4.5L - ₹8L/month</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight" style="margin-top: 3rem;">
+                    <h3 style="margin-top: 0; color: var(--accent-primary);">🚨 Traffic Spike Handling</h3>
+                    <p><strong>During Large Events (10-100x normal traffic):</strong></p>
+                    <ul style="margin-top: 1rem; padding-left: 2rem;">
+                        <li><strong>Auto-scaling:</strong> Cloud Run scales to 1000+ instances automatically</li>
+                        <li><strong>Database:</strong> Read replicas absorb read load</li>
+                        <li><strong>Cache:</strong> Pre-warm before event (99% cache hit rate)</li>
+                        <li><strong>CDN:</strong> Handles all static assets globally</li>
+                        <li><strong>Preparation:</strong> Increase min instances 24h before, load test 10x traffic</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Cost Impact:</strong> +50-200% during event days (acceptable
+                        for revenue-generating events)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECURITY SECTION -->
+        <section id="security">
+            <div class="card">
+                <h2>🔒 Security & Compliance</h2>
+
+                <div class="error">
+                    <strong style="color: var(--error);">🛡️ NON-NEGOTIABLE SECURITY RULES</strong>
+                    <ol style="margin-top: 1rem; padding-left: 2rem;">
+                        <li>No production access without MFA + VPN</li>
+                        <li>All secrets in Secret Manager (never in code)</li>
+                        <li>Quarterly access audits (remove unused access)</li>
+                        <li>Database uses private IP only (not public)</li>
+                        <li>Cloud Armor enabled (DDoS protection)</li>
+                        <li>Rate limiting on all public APIs</li>
+                        <li>Audit logging enabled on all critical services</li>
+                    </ol>
+                </div>
+
+                <h3>India Data Compliance</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Regulation</th>
+                            <th>Requirement</th>
+                            <th>Implementation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>RBI Payment Rules</strong></td>
+                            <td>Payment data in India</td>
+                            <td>Use Razorpay/Paytm (handles compliance)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DPDPA 2023</strong></td>
+                            <td>User consent, right to deletion</td>
+                            <td>Privacy policy + user data export/delete APIs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IT Act 2000</strong></td>
+                            <td>Cybersecurity measures</td>
+                            <td>Encryption, access control, incident response</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Disaster Recovery Strategy</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">&lt;1hr</div>
+                        <div class="stat-label">Recovery Time (RTO)</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Phase 3: Scale
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">&lt;5min</div>
+                        <div class="stat-label">Data Loss (RPO)</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Real-time
+                            replication</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">7 days</div>
+                        <div class="stat-label">Database Backups</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Automated
+                            daily</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2 regions</div>
+                        <div class="stat-label">Geographic Redundancy</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Mumbai + Delhi
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Security Checklist</h3>
+                <div class="highlight">
+                    <strong>Before Launch:</strong>
+                    <ul style="margin-top: 1rem; padding-left: 2rem;">
+                        <li>✅ MFA enabled for all team members</li>
+                        <li>✅ VPN configured for production access</li>
+                        <li>✅ Secrets moved to Secret Manager</li>
+                        <li>✅ Cloud Armor enabled (DDoS protection)</li>
+                        <li>✅ Rate limiting on all APIs</li>
+                        <li>✅ SSL/TLS on all connections</li>
+                        <li>✅ Audit logging enabled</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <strong>Ongoing (After Launch):</strong>
+                    <ul style="margin-top: 1rem; padding-left: 2rem;">
+                        <li>Weekly security alerts review</li>
+                        <li>Quarterly access audits</li>
+                        <li>Monthly dependency updates (security patches)</li>
+                        <li>Annual penetration testing</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal for component details -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Component details data
+        const componentData = {
+            web: {
+                name: 'Web Application',
+                tech: 'React.js + Next.js + TypeScript',
+                purpose: 'Primary web interface for desktop and mobile browsers',
+                features: ['SEO-optimized pages', 'Server-side rendering', 'Progressive Web App', 'Responsive design'],
+                hosting: 'Firebase Hosting + Cloud CDN',
+                cost: 'Included in CDN costs'
+            },
+            mobile: {
+                name: 'Mobile Applications',
+                tech: 'React Native / Flutter',
+                purpose: 'Native iOS and Android applications',
+                features: ['Cross-platform code sharing', 'Native performance', 'Offline support', 'Push notifications'],
+                hosting: 'App Store + Google Play',
+                cost: 'Development cost only (no hosting fees)'
+            },
+            cdn: {
+                name: 'Cloud CDN',
+                tech: 'Google Cloud CDN',
+                purpose: 'Global content delivery network for static assets',
+                features: ['Global edge locations', 'Automatic caching', 'SSL included', 'Cache invalidation'],
+                cost: 'MVP: ₹3K/mo | 100K users: ₹15K/mo | 1M+ users: ₹1.2L/mo',
+                optimization: 'Aggressive caching (24h+), WebP images, lazy loading'
+            },
+            lb: {
+                name: 'Cloud Load Balancer',
+                tech: 'Cloud Load Balancing (Global HTTPS)',
+                purpose: 'Distribute traffic across services, SSL termination',
+                features: ['Auto-scaling', 'Health checks', 'Failover', 'DDoS mitigation'],
+                cost: 'MVP: ₹2.5K/mo | 100K users: ₹10K/mo | 1M+ users: ₹60K/mo'
+            },
+            armor: {
+                name: 'Cloud Armor',
+                tech: 'Google Cloud Armor',
+                purpose: 'DDoS protection and Web Application Firewall',
+                features: ['Rate limiting', 'IP whitelisting/blacklisting', 'Bot detection', 'SQL injection prevention'],
+                cost: '₹3K - ₹10K/month'
+            },
+            'api-gateway': {
+                name: 'API Gateway',
+                tech: 'Cloud Endpoints',
+                purpose: 'API management, authentication, rate limiting',
+                features: ['API analytics', 'Rate limiting', 'API key management', 'OpenAPI support'],
+                cost: 'MVP: ₹1.5K/mo | 100K users: ₹6K/mo | 1M+ users: ₹40K/mo'
+            },
+            auth: {
+                name: 'Authentication Service',
+                tech: 'Cloud Run + Firebase Auth',
+                purpose: 'User authentication and authorization',
+                features: ['OAuth 2.0', 'Social login', 'JWT tokens', 'Role-based access'],
+                cost: 'Included in Cloud Run compute costs'
+            },
+            events: {
+                name: 'Event Service',
+                tech: 'Cloud Run (Node.js/Python)',
+                purpose: 'Event management and discovery',
+                features: ['CRUD operations', 'Search integration', 'Image processing', 'Calendar sync'],
+                cost: 'Included in Cloud Run compute costs'
+            },
+            booking: {
+                name: 'Booking Service',
+                tech: 'Cloud Run (Node.js/Python)',
+                purpose: 'Ticket booking and payment processing',
+                features: ['Capacity management', 'Payment integration', 'Idempotency', 'Database constraints'],
+                cost: 'Included in Cloud Run compute costs',
+                critical: '🎯 ZERO tolerance for errors - DB-level constraints prevent overbooking'
+            },
+            user: {
+                name: 'User Service',
+                tech: 'Cloud Run (Node.js/Python)',
+                purpose: 'User profile and preferences management',
+                features: ['Profile CRUD', 'Preferences', 'History', 'Recommendations'],
+                cost: 'Included in Cloud Run compute costs'
+            },
+            postgres: {
+                name: 'PostgreSQL Database',
+                tech: 'Cloud SQL (PostgreSQL)',
+                purpose: 'Primary transactional database',
+                data: 'Users, events, bookings, payments, transactions',
+                features: ['ACID compliance', 'Automated backups', 'Point-in-time recovery', 'Read replicas'],
+                cost: 'MVP: ₹12K/mo | 100K users: ₹35K/mo | 1M+ users: ₹2L/mo',
+                scaling: 'Vertical scaling + read replicas → sharding at 5M+ users'
+            },
+            firestore: {
+                name: 'Firestore',
+                tech: 'Google Firestore (NoSQL)',
+                purpose: 'Real-time data storage',
+                data: 'Event updates, chat, notifications, presence, sessions',
+                features: ['Real-time listeners', 'Offline support', 'Auto-scaling', 'Mobile SDK'],
+                cost: 'MVP: ₹5K/mo | 100K users: ₹18K/mo | 1M+ users: ₹1.5L/mo',
+                rules: '⚠️ No unbounded queries, TTL for ephemeral data, max 100KB/doc'
+            },
+            redis: {
+                name: 'Redis Cache',
+                tech: 'Memorystore (Managed Redis)',
+                purpose: 'Session storage and hot data caching',
+                data: 'Sessions, rate limiting, API responses, frequently accessed data',
+                features: ['Sub-millisecond latency', 'High availability', 'Automatic failover'],
+                cost: 'MVP: ₹5K/mo | 100K users: ₹15K/mo | 1M+ users: ₹80K/mo',
+                target: 'Cache hit ratio >70%'
+            },
+            storage: {
+                name: 'Cloud Storage',
+                tech: 'Google Cloud Storage',
+                purpose: 'Object storage for media and backups',
+                data: 'Event images, videos, documents, user uploads, database backups',
+                features: ['11 nines durability', 'Lifecycle policies', 'CDN integration', 'Versioning'],
+                cost: 'MVP: ₹2K/mo | 100K users: ₹10K/mo | 1M+ users: ₹80K/mo',
+                optimization: 'Auto-move old data to Nearline (30d) or Coldline (90d) - 80% savings'
+            },
+            pubsub: {
+                name: 'Cloud Pub/Sub',
+                tech: 'Google Cloud Pub/Sub',
+                purpose: 'Asynchronous message queue',
+                use_cases: 'Email/SMS notifications, payment processing, analytics events, webhooks',
+                features: ['At-least-once delivery', 'Global by default', 'Auto-scaling', 'Replay messages'],
+                cost: 'MVP: ₹1K/mo | 100K users: ₹6K/mo | 1M+ users: ₹50K/mo'
+            },
+            functions: {
+                name: 'Cloud Functions',
+                tech: 'Google Cloud Functions',
+                purpose: 'Serverless background jobs and cron tasks',
+                use_cases: 'Event reminders, DB cleanup, report generation, daily aggregations',
+                features: ['Pay per execution', 'Built-in retry', 'Event-driven', 'Automatic scaling'],
+                cost: 'MVP: ₹1K/mo | 100K users: ₹4K/mo | 1M+ users: ₹25K/mo'
+            },
+            ai: {
+                name: 'AI/ML Services',
+                tech: 'Vertex AI + Cloud Run',
+                purpose: 'Machine learning models for recommendations and analytics',
+                models: 'Event recommendations, user preferences, chatbot, image analysis',
+                features: ['Managed ML lifecycle', 'Auto-scaling predictions', 'A/B testing', 'Model monitoring'],
+                cost: 'MVP: ₹10K/mo (CPU) | 100K users: ₹40K/mo | 1M+ users: ₹2.5L/mo (GPU)',
+                strategy: 'Managed APIs → Custom CPU models → GPU (only when needed)'
+            },
+            bigquery: {
+                name: 'BigQuery',
+                tech: 'Google BigQuery',
+                purpose: 'Data warehouse for analytics',
+                data: 'Event analytics, user behavior, business intelligence, reporting',
+                features: ['Serverless', 'Petabyte-scale', 'SQL queries', 'ML integration'],
+                cost: 'Pay per query (storage + compute)'
+            },
+            monitoring: {
+                name: 'Cloud Monitoring',
+                tech: 'Google Cloud Monitoring + Logging',
+                purpose: 'System observability and alerting',
+                metrics: 'P95 latency, error rates, DB connections, cache hit ratio, cost per 1K users',
+                features: ['Custom dashboards', 'Log-based alerts', 'Distributed tracing', 'Error reporting'],
+                cost: 'MVP: ₹2.5K/mo | 100K users: ₹10K/mo | 1M+ users: ₹50K/mo'
+            }
+        };
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Component details modal
+        function showComponentDetails(componentId) {
+            const data = componentData[componentId];
+            if (!data) return;
+
+            let html = `
+                <h2 style="color: var(--accent-primary); font-family: 'Space Mono', monospace; margin-bottom: 1rem;">
+                    ${data.name}
+                </h2>
+                <div style="background: var(--bg-secondary); padding: 1rem; margin: 1rem 0; border-left: 4px solid var(--accent-primary);">
+                    <strong>Technology:</strong> ${data.tech}
+                </div>
+                <p style="margin: 1rem 0;"><strong>Purpose:</strong> ${data.purpose}</p>
+            `;
+
+            if (data.features) {
+                html += '<h3 style="color: var(--accent-secondary); margin-top: 1.5rem;">Key Features</h3><ul style="padding-left: 2rem;">';
+                data.features.forEach(f => html += `<li>${f}</li>`);
+                html += '</ul>';
+            }
+
+            if (data.data) {
+                html += `<p style="margin: 1rem 0;"><strong>Data Stored:</strong> ${data.data}</p>`;
+            }
+
+            if (data.use_cases) {
+                html += `<p style="margin: 1rem 0;"><strong>Use Cases:</strong> ${data.use_cases}</p>`;
+            }
+
+            if (data.models) {
+                html += `<p style="margin: 1rem 0;"><strong>Models:</strong> ${data.models}</p>`;
+            }
+
+            if (data.metrics) {
+                html += `<p style="margin: 1rem 0;"><strong>Key Metrics:</strong> ${data.metrics}</p>`;
+            }
+
+            if (data.cost) {
+                html += `
+                    <div style="background: var(--bg-secondary); padding: 1rem; margin: 1rem 0; border-left: 4px solid var(--accent-warning);">
+                        <strong style="color: var(--accent-warning);">Cost:</strong> ${data.cost}
+                    </div>
+                `;
+            }
+
+            if (data.hosting) {
+                html += `<p style="margin: 1rem 0;"><strong>Hosting:</strong> ${data.hosting}</p>`;
+            }
+
+            if (data.scaling) {
+                html += `<p style="margin: 1rem 0;"><strong>Scaling Strategy:</strong> ${data.scaling}</p>`;
+            }
+
+            if (data.optimization) {
+                html += `<p style="margin: 1rem 0;"><strong>Optimization:</strong> ${data.optimization}</p>`;
+            }
+
+            if (data.strategy) {
+                html += `<p style="margin: 1rem 0;"><strong>Strategy:</strong> ${data.strategy}</p>`;
+            }
+
+            if (data.target) {
+                html += `<p style="margin: 1rem 0;"><strong>Target:</strong> ${data.target}</p>`;
+            }
+
+            if (data.rules) {
+                html += `
+                    <div style="background: rgba(254, 228, 64, 0.1); padding: 1rem; margin: 1rem 0; border-left: 4px solid var(--accent-warning);">
+                        <strong>Important Rules:</strong> ${data.rules}
+                    </div>
+                `;
+            }
+
+            if (data.critical) {
+                html += `
+                    <div style="background: rgba(255, 0, 110, 0.1); padding: 1rem; margin: 1rem 0; border-left: 4px solid var(--error);">
+                        <strong style="color: var(--error);">Critical:</strong> ${data.critical}
+                    </div>
+                `;
+            }
+
+            document.getElementById('modalContent').innerHTML = html;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        document.getElementById('modal').addEventListener('click', function (e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Cost calculator
+        function calculateCost() {
+            const users = parseInt(document.getElementById('users').value);
+            const aiLevel = parseInt(document.getElementById('ai').value);
+            const storage = parseInt(document.getElementById('storage').value);
+
+            // Update displays
+            document.getElementById('userCount').textContent = users.toLocaleString();
+            document.getElementById('aiUsage').textContent = ['Low', 'Medium', 'High'][aiLevel - 1];
+            document.getElementById('storageSize').textContent = storage + ' TB';
+
+            // Calculate costs (simplified model)
+            let compute, database, cache, cdn, ai, storageCost, search, queue, monitoring;
+
+            if (users <= 10000) {
+                // MVP stage
+                compute = 8000;
+                database = 12000 + 3000;
+                cache = 5000;
+                cdn = 3000;
+                ai = [5000, 10000, 15000][aiLevel - 1];
+                storageCost = 2000 + (storage * 200);
+                search = 5000;
+                queue = 1000;
+                monitoring = 2500;
+            } else if (users <= 200000) {
+                // Growth stage
+                compute = 8000 + ((users - 10000) / 190000) * 32000;
+                database = 15000 + ((users - 10000) / 190000) * 20000;
+                cache = 5000 + ((users - 10000) / 190000) * 10000;
+                cdn = 3000 + ((users - 10000) / 190000) * 12000;
+                ai = [15000, 25000, 40000][aiLevel - 1] + ((users - 10000) / 190000) * [10000, 15000, 25000][aiLevel - 1];
+                storageCost = 2000 + (storage * 400);
+                search = 5000 + ((users - 10000) / 190000) * 15000;
+                queue = 1000 + ((users - 10000) / 190000) * 5000;
+                monitoring = 2500 + ((users - 10000) / 190000) * 7500;
+            } else {
+                // Scale stage
+                const scaleFactor = Math.min((users - 200000) / 800000, 1);
+                compute = 40000 + (scaleFactor * 160000);
+                database = 35000 + (scaleFactor * 115000);
+                cache = 15000 + (scaleFactor * 55000);
+                cdn = 15000 + (scaleFactor * 85000);
+                ai = [40000, 100000, 180000][aiLevel - 1] + (scaleFactor * [40000, 100000, 150000][aiLevel - 1]);
+                storageCost = 10000 + (storage * 800);
+                search = 20000 + (scaleFactor * 30000);
+                queue = 6000 + (scaleFactor * 34000);
+                monitoring = 10000 + (scaleFactor * 20000);
+            }
+
+            const total = Math.round(compute + database + cache + cdn + ai + storageCost + search + queue + monitoring);
+            const totalUSD = Math.round(total / 84); // Approximate conversion
+
+            document.getElementById('totalCost').textContent = total.toLocaleString();
+            document.getElementById('totalCostUSD').textContent = totalUSD.toLocaleString();
+
+            // Update breakdown
+            const breakdown = document.getElementById('costBreakdown');
+            breakdown.innerHTML = `
+                <div class="cost-item">
+                    <div class="cost-item-name">Compute</div>
+                    <div class="cost-item-value">₹${Math.round(compute).toLocaleString()}</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-item-name">Database</div>
+                    <div class="cost-item-value">₹${Math.round(database).toLocaleString()}</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-item-name">Cache</div>
+                    <div class="cost-item-value">₹${Math.round(cache).toLocaleString()}</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-item-name">CDN</div>
+                    <div class="cost-item-value">₹${Math.round(cdn).toLocaleString()}</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-item-name">AI/ML</div>
+                    <div class="cost-item-value">₹${Math.round(ai).toLocaleString()}</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-item-name">Storage</div>
+                    <div class="cost-item-value">₹${Math.round(storageCost).toLocaleString()}</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-item-name">Search</div>
+                    <div class="cost-item-value">₹${Math.round(search).toLocaleString()}</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-item-name">Queue</div>
+                    <div class="cost-item-value">₹${Math.round(queue).toLocaleString()}</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-item-name">Monitoring</div>
+                    <div class="cost-item-value">₹${Math.round(monitoring).toLocaleString()}</div>
+                </div>
+            `;
+        }
+
+        // Initialize
+        calculateCost();
+    </script>
+</body>
+
+</html>
