@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>NoVigna — Events Without Friction</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ╔══════════════════════════════════════╗
+   ║  DESIGN TOKENS                       ║
+   ╚══════════════════════════════════════╝ */
+:root{
+  --night:#08070A;
+  --deep:#12101A;
+  --card:#1A1826;
+  --panel:#221F30;
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.14);
+  --gold:#E8B84B;
+  --gold2:#F5D07A;
+  --gold-dim:rgba(232,184,75,0.12);
+  --gold-glow:rgba(232,184,75,0.3);
+  --rose:#E05C7A;
+  --rose-dim:rgba(224,92,122,0.12);
+  --sage:#52C896;
+  --sage-dim:rgba(82,200,150,0.12);
+  --sky:#5B9CF6;
+  --sky-dim:rgba(91,156,246,0.12);
+  --amber:#F4874B;
+  --text:#F0EEF8;
+  --text2:rgba(240,238,248,0.6);
+  --text3:rgba(240,238,248,0.35);
+  --radius:14px;
+  --nav:64px;
+  --cta:72px;
+  --transition:cubic-bezier(0.22,1,0.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;background:var(--night);}
+body{font-family:'Outfit',sans-serif;background:var(--night);color:var(--text);overflow-x:hidden;min-height:100vh;}
+
+/* ╔══════════════════════════════════════╗
+   ║  NOISE TEXTURE OVERLAY               ║
+   ╚══════════════════════════════════════╝ */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.4;
+}
+
+/* ╔══════════════════════════════════════╗
+   ║  SCREEN SYSTEM                       ║
+   ╚══════════════════════════════════════╝ */
+.screen{display:none;flex-direction:column;min-height:100vh;position:relative;z-index:1;}
+.screen.active{display:flex;animation:screenIn 0.5s var(--transition) both;}
+@keyframes screenIn{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+/* ╔══════════════════════════════════════╗
+   ║  GLOBAL NAV                          ║
+   ╚══════════════════════════════════════╝ */
+.topnav{
+  height:var(--nav);display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;background:rgba(8,7,10,0.85);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;flex-shrink:0;
+}
+@media(min-width:768px){.topnav{padding:0 36px;}}
+.nav-logo{font-family:'Playfair Display',serif;font-size:clamp(20px,4vw,26px);font-weight:600;letter-spacing:-0.5px;cursor:pointer;}
+.nav-logo span{color:var(--gold);font-style:italic;}
+.nav-steps{display:flex;gap:5px;align-items:center;}
+.nstep{width:6px;height:6px;border-radius:50%;background:var(--border2);transition:all 0.4s var(--transition);}
+.nstep.done{background:var(--gold);opacity:0.5;}
+.nstep.now{background:var(--gold);width:20px;border-radius:3px;box-shadow:0 0 8px var(--gold-glow);}
+.nav-back{background:none;border:1px solid var(--border2);color:var(--text2);padding:7px 14px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;border-radius:6px;transition:all 0.2s;letter-spacing:0.5px;}
+.nav-back:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ╔══════════════════════════════════════╗
+   ║  PAGE BODY                           ║
+   ╚══════════════════════════════════════╝ */
+.pbd{flex:1;padding:28px 20px calc(var(--cta) + 28px);max-width:1000px;margin:0 auto;width:100%;}
+@media(min-width:768px){.pbd{padding:40px 36px calc(var(--cta) + 40px);}}
+
+.eyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;opacity:0.8;}
+.big-title{font-family:'Playfair Display',serif;font-size:clamp(28px,6vw,44px);font-weight:600;line-height:1.05;margin-bottom:10px;}
+.big-sub{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:32px;}
+
+/* ╔══════════════════════════════════════╗
+   ║  STICKY CTA BAR                      ║
+   ╚══════════════════════════════════════╝ */
+.ctabar{
+  position:fixed;bottom:0;left:0;right:0;z-index:90;
+  height:var(--cta);display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;background:rgba(8,7,10,0.95);backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);gap:12px;
+}
+@media(min-width:768px){.ctabar{padding:0 36px;}}
+.cta-left{flex:1;min-width:0;}
+.cta-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);margin-bottom:3px;}
+.cta-val{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.btn-primary{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--night);border:none;padding:13px 28px;
+  font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;
+  letter-spacing:0.5px;cursor:pointer;border-radius:10px;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;flex-shrink:0;
+  transition:all 0.25s;box-shadow:0 4px 20px var(--gold-glow);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px var(--gold-glow);}
+.btn-primary:active{transform:scale(0.97);}
+.btn-primary svg{transition:transform 0.2s;}
+.btn-primary:hover svg{transform:translateX(3px);}
+
+/* ╔══════════════════════════════════════╗
+   ║  TOAST                               ║
+   ╚══════════════════════════════════════╝ */
+#toast{
+  position:fixed;bottom:calc(var(--cta) + 12px);left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--panel);border:1px solid var(--border2);
+  color:var(--text);padding:11px 20px;font-size:13px;
+  border-radius:10px;z-index:999;opacity:0;
+  transition:all 0.35s var(--transition);white-space:nowrap;
+  max-width:90vw;display:flex;align-items:center;gap:8px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast-icon{color:var(--gold);font-size:15px;}
+
+/* ╔══════════════════════════════════════╗
+   ║  MODAL SYSTEM                        ║
+   ╚══════════════════════════════════════╝ */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);
+  z-index:500;opacity:0;pointer-events:none;transition:opacity 0.3s;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+@media(min-width:600px){.modal-bg{align-items:center;}}
+.modal-bg.open{opacity:1;pointer-events:all;}
+.modal-box{
+  background:var(--deep);border:1px solid var(--border2);
+  width:100%;max-width:560px;max-height:85vh;overflow-y:auto;
+  border-radius:20px 20px 0 0;
+  transform:translateY(40px);transition:transform 0.4s var(--transition);
+}
+@media(min-width:600px){.modal-box{border-radius:16px;margin:20px;}}
+.modal-bg.open .modal-box{transform:translateY(0);}
+.modal-drag{width:44px;height:4px;background:var(--border2);border-radius:2px;margin:14px auto 0;}
+@media(min-width:600px){.modal-drag{display:none;}}
+.modal-hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 24px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--deep);z-index:1;}
+.modal-title{font-family:'Playfair Display',serif;font-size:22px;}
+.modal-x{background:none;border:1px solid var(--border2);color:var(--text2);width:32px;height:32px;cursor:pointer;border-radius:8px;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.modal-x:hover{border-color:var(--rose);color:var(--rose);}
+.modal-body{padding:20px 24px 32px;}
+
+/* ╔══════════════════════════════════════╗
+   ║  RIPPLE                              ║
+   ╚══════════════════════════════════════╝ */
+.rip{position:relative;overflow:hidden;}
+.rip-wave{position:absolute;border-radius:50%;background:rgba(232,184,75,0.2);transform:scale(0);animation:rwave 0.6s linear;pointer-events:none;}
+@keyframes rwave{to{transform:scale(4);opacity:0;}}
+
+/* ╔══════════════════════════════════════╗
+   ║  CARDS / SHARED                      ║
+   ╚══════════════════════════════════════╝ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);transition:all 0.3s var(--transition);}
+.card:hover{border-color:var(--border2);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+
+/* ─── SEPARATOR ─── */
+.sep{height:1px;background:var(--border);margin:28px 0;}
+
+/* ─── SECTION LABEL ─── */
+.slabel{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;opacity:0.8;}
+
+/* ─── CHIP ─── */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--border2);color:var(--text2);cursor:pointer;transition:all 0.2s;}
+.chip.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+
+/* ─── GRADIENT TEXT ─── */
+.gtext{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* ╔══════════════════════════════════════╗
+   ║  S0 — SPLASH                         ║
+   ╚══════════════════════════════════════╝ */
+#s0{
+  background:var(--night);align-items:center;justify-content:center;
+  text-align:center;min-height:100vh;padding:24px;position:relative;overflow:hidden;
+}
+.s0-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.particle{position:absolute;border-radius:50%;animation:pfloat linear infinite;}
+@keyframes pfloat{0%{transform:translateY(100vh) scale(0);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateY(-100px) scale(1);opacity:0;}}
+.s0-glow1{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(232,184,75,0.08) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-50%);animation:breathe 5s ease-in-out infinite;}
+.s0-glow2{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(91,156,246,0.05) 0%,transparent 65%);top:20%;right:-100px;animation:breathe 7s ease-in-out infinite reverse;}
+@keyframes breathe{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.15);}}
+.s0-inner{position:relative;z-index:2;max-width:480px;}
+.s0-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--gold-dim);border:1px solid rgba(232,184,75,0.3);
+  padding:7px 16px;border-radius:20px;margin-bottom:28px;
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--gold);
+  animation:fadeInDown 0.8s 0.1s both;
+}
+.s0-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);box-shadow:0 0 8px var(--sage);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.s0-logo{font-family:'Playfair Display',serif;font-size:clamp(64px,16vw,96px);font-weight:700;line-height:1;margin-bottom:8px;animation:fadeInDown 0.8s 0.2s both;}
+.s0-logo span{color:var(--gold);font-style:italic;}
+.s0-tagline{font-size:clamp(13px,3vw,16px);color:var(--text2);letter-spacing:2px;margin-bottom:48px;animation:fadeInDown 0.8s 0.3s both;}
+.s0-btns{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:56px;animation:fadeInUp 0.8s 0.4s both;}
+.s0-cta{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--night);border:none;padding:16px 48px;font-family:'Outfit',sans-serif;
+  font-size:14px;font-weight:700;cursor:pointer;border-radius:12px;
+  width:100%;max-width:300px;letter-spacing:0.5px;
+  transition:all 0.3s;box-shadow:0 4px 32px var(--gold-glow);
+}
+.s0-cta:hover{transform:translateY(-3px);box-shadow:0 12px 48px var(--gold-glow);}
+.s0-vendor{
+  background:none;border:1px solid var(--border2);color:var(--text2);
+  padding:14px 48px;font-size:14px;cursor:pointer;border-radius:12px;
+  width:100%;max-width:300px;transition:all 0.2s;
+}
+.s0-vendor:hover{border-color:var(--sky);color:var(--sky);}
+.s0-stats{
+  display:flex;gap:clamp(20px,5vw,48px);justify-content:center;
+  padding:20px;border-top:1px solid var(--border);
+  position:absolute;bottom:0;left:0;right:0;z-index:2;
+  animation:fadeInUp 0.8s 0.6s both;
+}
+.stat-num{font-family:'Playfair Display',serif;font-size:clamp(20px,4vw,28px);font-weight:600;color:var(--gold);}
+.stat-label{font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ╔══════════════════════════════════════╗
+   ║  S1 — TOP EVENTS (CLONE)             ║
+   ╚══════════════════════════════════════╝ */
+.events-scroll{display:flex;gap:16px;overflow-x:auto;padding-bottom:8px;margin-bottom:24px;scrollbar-width:none;}
+.events-scroll::-webkit-scrollbar{display:none;}
+.event-card{
+  flex:0 0 clamp(260px,70vw,300px);background:var(--card);
+  border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;cursor:pointer;position:relative;
+  transition:all 0.35s var(--transition);
+}
+.event-card:hover{transform:translateY(-6px) scale(1.01);border-color:var(--gold);box-shadow:0 20px 60px rgba(0,0,0,0.4);}
+.event-card:active{transform:scale(0.97);}
+.event-card.featured{border-color:var(--gold);}
+.ec-img{height:180px;display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;overflow:hidden;}
+.ec-img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.5));}
+.ec-badge{position:absolute;top:12px;left:12px;z-index:1;}
+.ec-badge-pill{
+  padding:4px 12px;border-radius:20px;font-family:'Space Mono',monospace;
+  font-size:8px;letter-spacing:2px;text-transform:uppercase;font-weight:700;
+}
+.pill-gold{background:var(--gold);color:var(--night);}
+.pill-rose{background:var(--rose);color:white;}
+.pill-sage{background:var(--sage);color:var(--night);}
+.pill-sky{background:var(--sky);color:white;}
+.ec-body{padding:16px;}
+.ec-type{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.ec-name{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:10px;}
+.ec-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.ec-tag{font-size:10px;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,0.06);color:var(--text2);}
+.ec-rating{display:flex;align-items:center;gap:6px;}
+.ec-stars{color:var(--gold);font-size:12px;}
+.ec-rcount{font-size:11px;color:var(--text3);}
+.ec-clone-btn{
+  width:100%;margin-top:12px;background:var(--gold-dim);border:1px solid rgba(232,184,75,0.3);
+  color:var(--gold);padding:10px;border-radius:8px;font-size:12px;font-weight:600;
+  cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;
+}
+.ec-clone-btn:hover{background:var(--gold);color:var(--night);}
+
+/* ╔══════════════════════════════════════╗
+   ║  S2 — EVENT INPUTS                   ║
+   ╚══════════════════════════════════════╝ */
+.et-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;}
+@media(min-width:600px){.et-grid{grid-template-columns:repeat(5,1fr);}}
+.et-btn{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.25s var(--transition);
+}
+.et-btn:active{transform:scale(0.95);}
+.et-emoji{font-size:clamp(22px,5vw,28px);display:block;margin-bottom:6px;}
+.et-lbl{font-size:10px;color:var(--text2);font-weight:500;}
+.et-btn.sel{background:var(--gold-dim);border-color:var(--gold);}
+.et-btn.sel .et-lbl{color:var(--gold);}
+
+.form-row{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:20px;}
+@media(min-width:600px){.form-row{grid-template-columns:1fr 1fr;}}
+.fgroup{display:flex;flex-direction:column;gap:6px;}
+.flabel{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);}
+.finput{
+  background:var(--card);border:1px solid var(--border);color:var(--text);
+  padding:13px 16px;font-family:'Outfit',sans-serif;font-size:14px;
+  border-radius:10px;outline:none;transition:all 0.2s;width:100%;
+}
+.finput:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);}
+.finput:hover{border-color:var(--border2);}
+select.finput{cursor:pointer;-webkit-appearance:none;}
+
+/* DATE RANGE */
+.date-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:20px;}
+.date-sep{color:var(--text3);font-size:12px;text-align:center;padding-top:20px;}
+.same-date-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:20px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;}
+.toggle-track{width:36px;height:20px;border-radius:10px;background:var(--border2);position:relative;transition:background 0.3s;flex-shrink:0;}
+.toggle-thumb{width:16px;height:16px;border-radius:50%;background:var(--text2);position:absolute;left:2px;top:2px;transition:all 0.3s;}
+.toggle-track.on{background:var(--gold);}
+.toggle-track.on .toggle-thumb{left:18px;background:var(--night);}
+.toggle-label{font-size:13px;color:var(--text2);}
+
+/* BUDGET */
+.budget-display{text-align:center;margin-bottom:20px;}
+.budget-big{font-family:'Playfair Display',serif;font-size:clamp(40px,9vw,60px);font-weight:700;color:var(--gold);line-height:1;}
+.budget-hint{font-size:11px;color:var(--text3);margin-top:4px;}
+.slider-wrap{position:relative;margin-bottom:28px;}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:5px;
+  border-radius:3px;outline:none;cursor:pointer;background:var(--border2);
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  box-shadow:0 2px 12px var(--gold-glow);cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:24px;height:24px;border-radius:50%;border:none;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));cursor:pointer;
+}
+
+.venue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:420px){.venue-grid{grid-template-columns:1fr;}}
+.venue-opt{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:14px;cursor:pointer;transition:all 0.25s;
+}
+.venue-opt:active{transform:scale(0.97);}
+.vt-tier{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:3px;color:var(--gold);margin-bottom:5px;}
+.vt-name{font-family:'Playfair Display',serif;font-size:clamp(15px,3vw,19px);}
+.vt-price{font-size:10px;color:var(--text3);margin-top:3px;}
+.venue-opt.sel{border-color:var(--gold);background:var(--gold-dim);}
+
+/* GUEST SELECTOR */
+.guest-selector{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 16px;}
+.gs-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border2);background:none;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+.gs-btn:hover{border-color:var(--gold);color:var(--gold);}
+.gs-count{flex:1;text-align:center;font-family:'Playfair Display',serif;font-size:28px;font-weight:600;color:var(--gold);}
+.gs-unit{font-size:11px;color:var(--text3);}
+
+/* ╔══════════════════════════════════════╗
+   ║  S3 — AI VENDOR LOADING              ║
+   ╚══════════════════════════════════════╝ */
+#s3{align-items:center;justify-content:center;padding:24px;}
+.ai-loader{text-align:center;max-width:400px;}
+.ai-rings{position:relative;width:100px;height:100px;margin:0 auto 28px;}
+.ai-ring{
+  position:absolute;inset:0;border-radius:50%;border:2px solid transparent;
+  animation:spin 1.5s linear infinite;
+}
+.ai-ring:nth-child(1){border-top-color:var(--gold);animation-duration:1.4s;}
+.ai-ring:nth-child(2){inset:10px;border-right-color:rgba(232,184,75,0.4);animation-duration:2.1s;animation-direction:reverse;}
+.ai-ring:nth-child(3){inset:20px;border-bottom-color:var(--sky);animation-duration:1.8s;}
+.ai-ring:nth-child(4){inset:30px;border-left-color:var(--rose);animation-duration:1.2s;animation-direction:reverse;}
+.ai-ring-center{position:absolute;inset:38px;background:var(--gold-dim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ai-load-title{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:10px;}
+.ai-load-msg{font-size:13px;color:var(--text2);margin-bottom:28px;min-height:20px;transition:opacity 0.3s;}
+.ai-progress-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.ai-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--rose),var(--sky));width:0%;transition:width 0.4s ease;border-radius:2px;}
+.ai-agents{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.agent-chip{
+  padding:6px 14px;border-radius:20px;font-size:10px;font-family:'Space Mono',monospace;
+  letter-spacing:1px;border:1px solid var(--border2);color:var(--text3);
+  transition:all 0.3s;
+}
+.agent-chip.active{border-color:var(--sage);color:var(--sage);background:var(--sage-dim);}
+
+/* ╔══════════════════════════════════════╗
+   ║  S4 — AI VENDOR RESULTS              ║
+   ╚══════════════════════════════════════╝ */
+.ai-hdr-bar{
+  background:linear-gradient(135deg,var(--deep),var(--panel));
+  border-bottom:1px solid var(--border);padding:16px 20px;flex-shrink:0;
+}
+@media(min-width:768px){.ai-hdr-bar{padding:16px 36px;}}
+.ai-hdr-inner{max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+.ai-hdr-left{display:flex;align-items:center;gap:10px;}
+.ai-live{display:flex;align-items:center;gap:6px;background:var(--sage-dim);border:1px solid rgba(82,200,150,0.3);padding:5px 12px;border-radius:20px;}
+.ai-live-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);box-shadow:0 0 8px var(--sage);animation:pulse 2s infinite;}
+.ai-live-text{font-family:'Space Mono',monospace;font-size:9px;color:var(--sage);letter-spacing:2px;}
+.ai-event-chip{font-size:13px;font-weight:600;color:var(--text);}
+.ai-event-sub{font-size:11px;color:var(--text3);}
+.ai-budget-strip{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:24px;}
+.abs-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.abs-title{font-size:13px;font-weight:600;}
+.abs-remaining{font-family:'Playfair Display',serif;font-size:22px;color:var(--sage);}
+.abs-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;}
+.abs-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--sage),var(--gold),var(--amber));width:0%;transition:width 1s var(--transition);}
+.abs-cats{display:flex;gap:12px;flex-wrap:wrap;}
+.abs-cat{font-size:11px;color:var(--text3);}
+.abs-cat strong{color:var(--text2);}
+
+/* VENDOR SECTIONS */
+.vsection{margin-bottom:28px;}
+.vsec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.vsec-title{font-family:'Playfair Display',serif;font-size:20px;}
+.vsec-manual{background:none;border:1px solid var(--border2);color:var(--text2);padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;}
+.vsec-manual:hover{border-color:var(--sky);color:var(--sky);}
+.vcards{display:grid;grid-template-columns:1fr;gap:10px;}
+@media(min-width:480px){.vcards{grid-template-columns:repeat(3,1fr);}}
+.vcard{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:14px;position:relative;transition:all 0.3s var(--transition);cursor:pointer;
+  overflow:hidden;
+}
+.vcard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(232,184,75,0.03));opacity:0;transition:opacity 0.3s;}
+.vcard:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.3);}
+.vcard:hover::before{opacity:1;}
+.vcard.vc-sel{border-color:var(--gold);background:linear-gradient(135deg,var(--card),var(--gold-dim));}
+.vcard.vc-shadow{border-style:dashed;border-color:var(--sage);}
+.vcard.vc-booked{opacity:0.5;}
+.vc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.vc-name{font-weight:600;font-size:13px;line-height:1.3;}
+.vc-rating{font-size:10px;color:var(--gold);display:flex;align-items:center;gap:3px;}
+.vc-price{font-family:'Playfair Display',serif;font-size:clamp(17px,3vw,21px);color:var(--amber);margin-bottom:4px;}
+.vc-avail{font-size:10px;color:var(--sage);font-weight:500;}
+.vc-unavail{font-size:10px;color:var(--rose);font-weight:500;}
+.vc-shadow-lbl{font-family:'Space Mono',monospace;font-size:8px;color:var(--sage);letter-spacing:2px;text-transform:uppercase;margin-top:6px;}
+.vc-sel-badge{
+  position:absolute;top:10px;right:10px;background:var(--gold);color:var(--night);
+  width:20px;height:20px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:10px;font-weight:700;
+}
+.vc-booked-layer{
+  position:absolute;inset:0;background:rgba(8,7,10,0.75);backdrop-filter:blur(2px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;border-radius:12px;
+}
+.vc-booked-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;}
+.neg-btn{
+  background:var(--rose-dim);border:1px solid var(--rose);color:var(--rose);
+  padding:6px 14px;border-radius:8px;font-size:10px;cursor:pointer;font-weight:600;
+  transition:all 0.2s;
+}
+.neg-btn:hover{background:var(--rose);color:white;}
+
+/* ╔══════════════════════════════════════╗
+   ║  S5 — MANUAL SELECTION               ║
+   ╚══════════════════════════════════════╝ */
+.filter-bar{
+  display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:20px;
+  scrollbar-width:none;flex-wrap:nowrap;
+}
+.filter-bar::-webkit-scrollbar{display:none;}
+.manual-vcards{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:500px){.manual-vcards{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:800px){.manual-vcards{grid-template-columns:repeat(3,1fr);}}
+.mcard{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  overflow:hidden;cursor:pointer;transition:all 0.3s var(--transition);position:relative;
+}
+.mcard:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,0.4);}
+.mcard.msel{border-color:var(--gold);background:linear-gradient(135deg,var(--card),var(--gold-dim));}
+.mcard.mbooked{opacity:0.45;pointer-events:none;}
+.mc-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:42px;position:relative;overflow:hidden;}
+.mc-body{padding:14px;}
+.mc-cat{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:3px;color:var(--text3);text-transform:uppercase;margin-bottom:4px;}
+.mc-name{font-weight:600;font-size:14px;margin-bottom:6px;}
+.mc-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.mc-price{font-family:'Playfair Display',serif;font-size:18px;color:var(--amber);}
+.mc-rating{font-size:11px;color:var(--gold);}
+.mc-avail{font-size:10px;}
+.mc-avail.ok{color:var(--sage);}
+.mc-avail.full{color:var(--rose);}
+.mc-booked-overlay{
+  position:absolute;inset:0;background:rgba(8,7,10,0.8);backdrop-filter:blur(3px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+}
+.mc-sel-check{
+  position:absolute;top:10px;right:10px;background:var(--gold);color:var(--night);
+  width:24px;height:24px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-weight:700;font-size:12px;
+  animation:popIn 0.3s var(--transition);
+}
+@keyframes popIn{from{transform:scale(0);}to{transform:scale(1);}}
+.sort-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.sort-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--border2);background:none;color:var(--text2);font-size:11px;cursor:pointer;transition:all 0.2s;}
+.sort-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+
+/* ╔══════════════════════════════════════╗
+   ║  S6 — ITINERARY                      ║
+   ╚══════════════════════════════════════╝ */
+.day-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:24px;scrollbar-width:none;}
+.day-tabs::-webkit-scrollbar{display:none;}
+.dtab{
+  flex:0 0 auto;padding:10px 20px;border-radius:10px;border:1px solid var(--border);
+  background:var(--card);font-size:13px;font-weight:500;cursor:pointer;
+  transition:all 0.2s;white-space:nowrap;
+}
+.dtab:hover{border-color:var(--gold);}
+.dtab.on{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+.timeline{padding-left:28px;position:relative;}
+.timeline::before{content:'';position:absolute;left:8px;top:16px;bottom:16px;width:2px;background:linear-gradient(to bottom,var(--gold),rgba(232,184,75,0.1));}
+.ti{display:flex;gap:14px;margin-bottom:18px;position:relative;animation:tlIn 0.4s ease both;}
+.ti::before{content:'';position:absolute;left:-24px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid var(--night);box-shadow:0 0 8px var(--gold-glow);}
+@keyframes tlIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
+.ti-time{font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);min-width:68px;padding-top:6px;flex-shrink:0;}
+.ti-card{
+  flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:14px;transition:all 0.2s;cursor:pointer;
+}
+.ti-card:hover{border-color:var(--gold);box-shadow:0 4px 20px rgba(0,0,0,0.3);}
+.ti-title{font-weight:600;font-size:14px;margin-bottom:3px;}
+.ti-vendor{font-size:12px;color:var(--text3);margin-bottom:8px;}
+.ti-dur{display:inline-block;font-size:10px;background:rgba(255,255,255,0.05);border-radius:6px;padding:2px 8px;color:var(--text3);}
+.ti-swap{
+  background:none;border:none;color:var(--gold);font-size:11px;cursor:pointer;
+  margin-top:8px;padding:0;display:flex;align-items:center;gap:4px;font-weight:600;
+  transition:color 0.2s;
+}
+.ti-swap:hover{color:var(--gold2);}
+
+/* ╔══════════════════════════════════════╗
+   ║  S7 — GROUP POPUP                    ║
+   ╚══════════════════════════════════════╝ */
+.group-splash{
+  position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.85);
+  backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;
+  padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+.group-splash.show{opacity:1;pointer-events:all;}
+.group-box{
+  background:var(--deep);border:1px solid var(--border2);border-radius:20px;
+  width:100%;max-width:480px;padding:32px 28px;text-align:center;
+  transform:scale(0.9) translateY(20px);
+  transition:all 0.4s var(--transition);
+}
+.group-splash.show .group-box{transform:scale(1) translateY(0);}
+.group-title{font-family:'Playfair Display',serif;font-size:28px;margin-bottom:8px;}
+.group-sub{font-size:14px;color:var(--text2);margin-bottom:28px;line-height:1.6;}
+.group-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.go{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:20px 12px;cursor:pointer;transition:all 0.3s var(--transition);
+}
+.go:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,0.4);}
+.go.sel{border-color:var(--gold);background:var(--gold-dim);}
+.go-emoji{font-size:32px;display:block;margin-bottom:8px;}
+.go-label{font-size:13px;font-weight:600;margin-bottom:4px;}
+.go-desc{font-size:11px;color:var(--text3);line-height:1.5;}
+.group-skip{background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;text-decoration:underline;transition:color 0.2s;padding:4px 0;}
+.group-skip:hover{color:var(--text2);}
+.group-cta{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--night);
+  border:none;width:100%;padding:14px;border-radius:12px;font-size:14px;font-weight:700;
+  cursor:pointer;margin-bottom:12px;transition:all 0.2s;
+}
+.group-cta:hover{box-shadow:0 8px 24px var(--gold-glow);}
+
+/* ╔══════════════════════════════════════╗
+   ║  S8 — INVOICE                        ║
+   ╚══════════════════════════════════════╝ */
+.invoice{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.inv-hdr{
+  background:linear-gradient(135deg,var(--deep),var(--panel));
+  padding:24px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+}
+.inv-logo{font-family:'Playfair Display',serif;font-size:clamp(24px,5vw,32px);font-weight:700;}
+.inv-logo span{color:var(--gold);font-style:italic;}
+.inv-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);text-align:right;}
+.inv-date{font-size:11px;color:var(--text3);text-align:right;margin-top:4px;}
+.inv-body{padding:20px;}
+@media(min-width:600px){.inv-body{padding:28px;}}
+.inv-event-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.inv-ename{font-family:'Playfair Display',serif;font-size:clamp(20px,4vw,28px);}
+.inv-emeta{font-size:12px;color:var(--text3);margin-top:4px;}
+.status-confirmed{background:var(--sage-dim);border:1px solid var(--sage);color:var(--sage);padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;}
+.status-pending{background:var(--gold-dim);border:1px solid rgba(232,184,75,0.4);color:var(--gold);padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;}
+.inv-line{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);gap:12px;}
+.il-left{flex:1;}
+.il-name{font-size:14px;font-weight:600;}
+.il-vendor{font-size:11px;color:var(--text3);margin-top:2px;}
+.il-amount{font-family:'Playfair Display',serif;font-size:clamp(17px,3vw,21px);white-space:nowrap;flex-shrink:0;}
+.inv-total{background:linear-gradient(135deg,var(--gold-dim),rgba(232,184,75,0.05));padding:18px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+@media(min-width:600px){.inv-total{padding:20px 28px;}}
+.inv-total-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);}
+.inv-total-amt{font-family:'Playfair Display',serif;font-size:clamp(36px,7vw,48px);color:var(--gold);}
+.inv-savings{font-size:12px;color:var(--sage);font-weight:600;margin-top:4px;}
+
+/* ╔══════════════════════════════════════╗
+   ║  S9 — SHOPPING / COMPLETE            ║
+   ╚══════════════════════════════════════╝ */
+.success-banner{
+  background:linear-gradient(135deg,var(--deep),rgba(82,200,150,0.08));
+  border:1px solid rgba(82,200,150,0.3);border-radius:16px;
+  padding:28px;text-align:center;margin-bottom:28px;
+}
+.success-icon{font-size:56px;display:block;margin-bottom:14px;animation:bounceIn 0.8s var(--transition);}
+@keyframes bounceIn{0%{transform:scale(0) rotate(-20deg);}70%{transform:scale(1.2) rotate(5deg);}100%{transform:scale(1) rotate(0);}}
+.success-title{font-family:'Playfair Display',serif;font-size:28px;margin-bottom:6px;}
+.success-sub{font-size:14px;color:var(--text2);}
+.shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:28px;}
+@media(min-width:600px){.shop-grid{grid-template-columns:repeat(4,1fr);}}
+.scard{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:20px 12px;text-align:center;cursor:pointer;
+  transition:all 0.3s var(--transition);
+}
+.scard:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,0.4);}
+.scard:active{transform:scale(0.96);}
+.sc-icon{font-size:32px;display:block;margin-bottom:10px;}
+.sc-name{font-size:13px;font-weight:600;margin-bottom:4px;}
+.sc-disc{font-size:11px;color:var(--sage);font-weight:600;}
+.group-members-row{display:flex;gap:-6px;align-items:center;justify-content:center;margin-bottom:28px;}
+.gm-av{
+  width:40px;height:40px;border-radius:50%;border:2px solid var(--deep);
+  display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;
+}
+.gm-av:nth-child(2){margin-left:-10px;}
+.gm-av:nth-child(3){margin-left:-10px;}
+
+/* ╔══════════════════════════════════════╗
+   ║  FILTER MODAL                        ║
+   ╚══════════════════════════════════════╝ */
+.fsection{margin-bottom:20px;}
+.fchips{display:flex;gap:8px;flex-wrap:wrap;}
+.fc{
+  padding:7px 14px;border-radius:20px;border:1px solid var(--border2);
+  color:var(--text2);font-size:12px;cursor:pointer;transition:all 0.2s;
+  background:var(--card);
+}
+.fc.on{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+.frange-row{display:flex;align-items:center;gap:12px;}
+.frange-row span{font-size:11px;color:var(--text3);white-space:nowrap;}
+.filter-apply{
+  width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--night);
+  border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:700;
+  cursor:pointer;margin-top:20px;transition:all 0.2s;
+}
+.filter-apply:hover{box-shadow:0 6px 24px var(--gold-glow);}
+
+/* ╔══════════════════════════════════════╗
+   ║  SWAP MODAL                          ║
+   ╚══════════════════════════════════════╝ */
+.swap-opts{display:flex;flex-direction:column;gap:10px;}
+.swap-opt{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:14px 16px;cursor:pointer;transition:all 0.2s;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.swap-opt:hover{border-color:var(--gold);background:var(--gold-dim);}
+.sot{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--gold);}
+.sol{font-size:13px;font-weight:600;}
+.soa{font-size:11px;color:var(--sage);margin-top:2px;}
+.soc{font-size:20px;color:var(--gold);}
+
+/* ╔══════════════════════════════════════╗
+   ║  NEG MODAL                           ║
+   ╚══════════════════════════════════════╝ */
+.neg-vendor-nm{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:6px;}
+.neg-info{font-size:12px;color:var(--text3);margin-bottom:20px;}
+.neg-bid-row{display:flex;gap:10px;margin-bottom:14px;}
+.neg-inp{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px;border-radius:10px;font-size:14px;outline:none;}
+.neg-inp:focus{border-color:var(--gold);}
+.neg-note{font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:20px;}
+.neg-send{width:100%;background:var(--gold);color:var(--night);border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.neg-send:hover{background:var(--gold2);}
+
+/* ╔══════════════════════════════════════╗
+   ║  CONFETTI                            ║
+   ╚══════════════════════════════════════╝ */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:1000;}
+.cfp{position:absolute;top:-20px;animation:cffall linear both;}
+@keyframes cffall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+
+/* ╔══════════════════════════════════════╗
+   ║  FLOW NAV DOTS (desktop)             ║
+   ╚══════════════════════════════════════╝ */
+#fnav{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:none;flex-direction:column;gap:8px;z-index:200;}
+@media(min-width:1100px){#fnav{display:flex;}}
+.fnd{width:8px;height:8px;border-radius:50%;background:var(--border2);cursor:pointer;border:none;transition:all 0.3s;}
+.fnd.on{background:var(--gold);box-shadow:0 0 10px var(--gold-glow);transform:scale(1.4);}
+.fnd.done{background:var(--gold);opacity:0.4;}
+
+/* ╔══════════════════════════════════════╗
+   ║  RESPONSIVE TWEAKS                   ║
+   ╚══════════════════════════════════════╝ */
+@media(max-width:380px){
+  .s0-logo{font-size:56px;}
+  .group-opts{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- CONFETTI -->
+<div id="confetti"></div>
+
+<!-- FLOW NAV -->
+<div id="fnav">
+  <button class="fnd" onclick="goTo(0)" title="Home"></button>
+  <button class="fnd" onclick="goTo(1)" title="Events"></button>
+  <button class="fnd" onclick="goTo(2)" title="Details"></button>
+  <button class="fnd" onclick="goTo(4)" title="Vendors"></button>
+  <button class="fnd" onclick="goTo(5)" title="Manual"></button>
+  <button class="fnd" onclick="goTo(6)" title="Itinerary"></button>
+  <button class="fnd" onclick="goTo(8)" title="Invoice"></button>
+  <button class="fnd" onclick="goTo(9)" title="Shopping"></button>
+</div>
+
+<!-- TOAST -->
+<div id="toast"><span class="toast-icon">✦</span><span id="tmsg"></span></div>
+
+<!-- ╔══════════════════════════════════════╗
+     ║  GROUP POPUP OVERLAY                 ║
+     ╚══════════════════════════════════════╝ -->
+<div class="group-splash" id="groupPopup">
+  <div class="group-box">
+    <div style="font-size:44px;margin-bottom:16px;">🎊</div>
+    <div class="group-title">Plan with your people</div>
+    <div class="group-sub">Invite family or friends to collaborate — compare vendors, vote on venues, and finalise together.</div>
+    <div class="group-opts">
+      <div class="go rip" id="go-fam" onclick="pickGroup('family')">
+        <span class="go-emoji">👨‍👩‍👧‍👦</span>
+        <div class="go-label">Family</div>
+        <div class="go-desc">Parents, siblings, close relatives</div>
+      </div>
+      <div class="go rip" id="go-fri" onclick="pickGroup('friends')">
+        <span class="go-emoji">🎉</span>
+        <div class="go-label">Friends</div>
+        <div class="go-desc">Besties, squad, co-planners</div>
+      </div>
+    </div>
+    <button class="group-cta" id="groupCTA" onclick="confirmGroup()" style="display:none;">Create Group & Continue →</button>
+    <button class="group-skip" onclick="skipGroup()">Skip for now — go solo</button>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════╗
+     ║  MODALS                              ║
+     ╚══════════════════════════════════════╝ -->
+
+<!-- FILTER MODAL -->
+<div class="modal-bg" id="filterModal">
+  <div class="modal-box">
+    <div class="modal-drag"></div>
+    <div class="modal-hdr"><div class="modal-title">Filter Vendors</div><button class="modal-x" onclick="closeM('filterModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="fsection"><div class="slabel" style="margin-bottom:10px;">Minimum Rating</div><div class="fchips"><div class="fc on" onclick="toggleFC(this)">⭐ 4.8+</div><div class="fc" onclick="toggleFC(this)">⭐ 4.5+</div><div class="fc" onclick="toggleFC(this)">⭐ 4.0+</div><div class="fc" onclick="toggleFC(this)">Any</div></div></div>
+      <div class="fsection"><div class="slabel" style="margin-bottom:10px;">Availability</div><div class="fchips"><div class="fc on" onclick="toggleFC(this)">Available Only</div><div class="fc" onclick="toggleFC(this)">Show All</div></div></div>
+      <div class="fsection"><div class="slabel" style="margin-bottom:10px;">Budget Cap</div><div class="frange-row"><span>₹50K</span><input type="range" min="50000" max="1500000" value="700000" style="flex:1;"><span>₹15L</span></div></div>
+      <div class="fsection"><div class="slabel" style="margin-bottom:10px;">Category</div><div class="fchips"><div class="fc on" onclick="toggleFC(this)">All</div><div class="fc" onclick="toggleFC(this)">Venue</div><div class="fc" onclick="toggleFC(this)">Photography</div><div class="fc" onclick="toggleFC(this)">Catering</div><div class="fc" onclick="toggleFC(this)">Decor</div><div class="fc" onclick="toggleFC(this)">Music</div></div></div>
+      <button class="filter-apply" onclick="applyFilter()">Apply Filters</button>
+    </div>
+  </div>
+</div>
+
+<!-- SWAP MODAL -->
+<div class="modal-bg" id="swapModal">
+  <div class="modal-box">
+    <div class="modal-drag"></div>
+    <div class="modal-hdr"><div class="modal-title">Swap Time Slot</div><button class="modal-x" onclick="closeM('swapModal')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:18px;">Select a new time. Vendor availability confirmed on all slots.</p>
+      <div class="swap-opts">
+        <div class="swap-opt rip" onclick="swapSlot('08:00 AM')"><div><div class="sot">08:00 AM</div><div class="sol">Morning Session</div><div class="soa">✓ Vendor confirmed</div></div><div class="soc">→</div></div>
+        <div class="swap-opt rip" onclick="swapSlot('02:00 PM')"><div><div class="sot">02:00 PM</div><div class="sol">Afternoon Session</div><div class="soa">✓ Vendor confirmed</div></div><div class="soc">→</div></div>
+        <div class="swap-opt rip" onclick="swapSlot('05:30 PM')"><div><div class="sot">05:30 PM</div><div class="sol">Golden Hour Session</div><div class="soa">✓ Vendor confirmed</div></div><div class="soc">→</div></div>
+        <div class="swap-opt rip" onclick="swapSlot('08:00 PM')"><div><div class="sot">08:00 PM</div><div class="sol">Evening Session</div><div class="soa">✓ Vendor confirmed</div></div><div class="soc">→</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEG MODAL -->
+<div class="modal-bg" id="negModal">
+  <div class="modal-box">
+    <div class="modal-drag"></div>
+    <div class="modal-hdr"><div class="modal-title">Negotiate Vendor</div><button class="modal-x" onclick="closeM('negModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="neg-vendor-nm" id="negVendorName">Samode Haveli</div>
+      <div class="neg-info">Currently booked · Sending a negotiation request</div>
+      <div class="slabel" style="margin-bottom:8px;">Your Offer</div>
+      <div class="neg-bid-row"><input class="neg-inp" type="text" placeholder="₹ Your offer" value="₹6,00,000" id="negBid"></div>
+      <div class="neg-note">NoVigna will forward your offer to the vendor. If they have a cancellation or can prioritise your event, they will respond within 4 hours. Your current booking stays active meanwhile.</div>
+      <button class="neg-send rip" onclick="sendNeg()">Send Offer Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     S0 — SPLASH
+════════════════════════════════════════════ -->
+<div class="screen active" id="s0">
+  <div class="s0-particles" id="particles"></div>
+  <div class="s0-glow1"></div>
+  <div class="s0-glow2"></div>
+  <div class="s0-inner">
+    <div class="s0-badge"><span class="s0-badge-dot"></span>Live · Jan 2026 · 48 Cities</div>
+    <div class="s0-logo">No<span>Vigna</span></div>
+    <div class="s0-tagline">Events · Without Friction</div>
+    <div class="s0-btns">
+      <button class="s0-cta rip" onclick="startFlow()">Plan My Event →</button>
+      <button class="s0-vendor rip" onclick="toast('Vendor portal coming soon!')">Join as Vendor</button>
+    </div>
+  </div>
+  <div class="s0-stats">
+    <div class="text-center"><div class="stat-num" data-target="2400">0</div><div class="stat-label">Verified Vendors</div></div>
+    <div class="text-center"><div class="stat-num" data-target="48">0</div><div class="stat-label">Cities</div></div>
+    <div class="text-center"><div class="stat-num">100%</div><div class="stat-label">Shadow Guarantee</div></div>
+    <div class="text-center"><div class="stat-num" data-target="12000">0</div><div class="stat-label">Events Planned</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     S1 — TOP EVENTS
+════════════════════════════════════════════ -->
+<div class="screen" id="s1">
+  <div class="topnav">
+    <div class="nav-logo" onclick="goTo(0)">No<span>Vigna</span></div>
+    <div class="nav-steps" id="ns1"><div class="nstep now"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div></div>
+    <button class="nav-back" onclick="goTo(0)">← Back</button>
+  </div>
+  <div class="pbd">
+    <div class="eyebrow">Step 01 · Quick Start</div>
+    <div class="big-title">Top-rated event<br>blueprints</div>
+    <div class="big-sub">Clone any event to prefill your details — or start fresh.</div>
+
+    <div class="events-scroll" id="eventsCarousel"></div>
+
+    <div style="text-align:center;margin-top:8px;">
+      <button onclick="goTo(2)" style="background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;text-decoration:underline;padding:8px;">Start from scratch →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     S2 — EVENT DETAILS
+════════════════════════════════════════════ -->
+<div class="screen" id="s2">
+  <div class="topnav">
+    <div class="nav-logo" onclick="goTo(0)">No<span>Vigna</span></div>
+    <div class="nav-steps" id="ns2"><div class="nstep done"></div><div class="nstep now"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div></div>
+    <button class="nav-back" onclick="goTo(1)">← Back</button>
+  </div>
+  <div class="pbd">
+    <div class="eyebrow">Step 02 · Event Details</div>
+    <div class="big-title">Tell us about<br>your event</div>
+    <div class="big-sub">Fill in the details and our AI will build your perfect event plan.</div>
+
+    <div class="slabel">Event Type</div>
+    <div class="et-grid" id="etGrid">
+      <div class="et-btn sel rip" onclick="pickET(this,'wedding')"><span class="et-emoji">💍</span><span class="et-lbl">Wedding</span></div>
+      <div class="et-btn rip" onclick="pickET(this,'birthday')"><span class="et-emoji">🎂</span><span class="et-lbl">Birthday</span></div>
+      <div class="et-btn rip" onclick="pickET(this,'corporate')"><span class="et-emoji">🏢</span><span class="et-lbl">Corporate</span></div>
+      <div class="et-btn rip" onclick="pickET(this,'engagement')"><span class="et-emoji">💎</span><span class="et-lbl">Engage</span></div>
+      <div class="et-btn rip" onclick="pickET(this,'anniversary')"><span class="et-emoji">🌹</span><span class="et-lbl">Anniversary</span></div>
+      <div class="et-btn rip" onclick="pickET(this,'concert')"><span class="et-emoji">🎸</span><span class="et-lbl">Concert</span></div>
+      <div class="et-btn rip" onclick="pickET(this,'conference')"><span class="et-emoji">🎤</span><span class="et-lbl">Conference</span></div>
+      <div class="et-btn rip" onclick="pickET(this,'puja')"><span class="et-emoji">🪔</span><span class="et-lbl">Puja</span></div>
+      <div class="et-btn rip" onclick="pickET(this,'other')"><span class="et-emoji">✨</span><span class="et-lbl">Other</span></div>
+    </div>
+
+    <div class="form-row">
+      <div class="fgroup"><label class="flabel">Event City</label><input class="finput" id="cityIn" placeholder="e.g. Jaipur, Mumbai, Goa" value="Jaipur" oninput="updateBar()"></div>
+      <div class="fgroup"><label class="flabel">Number of Guests</label>
+        <div class="guest-selector" style="padding:4px 12px;">
+          <button class="gs-btn" onclick="changeGuests(-10)">−</button>
+          <div><div class="gs-count" id="guestCount">280</div><div class="gs-unit">guests</div></div>
+          <button class="gs-btn" onclick="changeGuests(10)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATE RANGE -->
+    <div class="slabel">Event Date</div>
+    <div class="same-date-toggle" onclick="toggleSameDate()" id="sameDateToggle">
+      <div class="toggle-track" id="sdTrack"><div class="toggle-thumb"></div></div>
+      <span class="toggle-label">Single day event</span>
+    </div>
+    <div class="date-row" id="dateRange">
+      <div class="fgroup"><label class="flabel">Start Date</label><input class="finput" type="date" id="dateStart" value="2025-11-14" oninput="updateBar()"></div>
+      <div class="date-sep">→</div>
+      <div class="fgroup" id="endDateWrap"><label class="flabel">End Date</label><input class="finput" type="date" id="dateEnd" value="2025-11-16" oninput="updateBar()"></div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- BUDGET -->
+    <div class="slabel">Total Budget</div>
+    <div class="budget-display">
+      <div class="budget-big" id="budgetBig">₹18,00,000</div>
+      <div class="budget-hint">Drag to set budget</div>
+    </div>
+    <div class="slider-wrap">
+      <input type="range" id="budgetSlider" min="100000" max="10000000" value="1800000" step="50000" oninput="updateBudget(this.value)">
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- VENUE TYPE -->
+    <div class="slabel">Venue Category</div>
+    <div class="venue-grid" id="venueGrid">
+      <div class="venue-opt rip" onclick="pickVenue(this)"><div class="vt-tier">Standard</div><div class="vt-name">Classic</div><div class="vt-price">Up to ₹5L</div></div>
+      <div class="venue-opt sel rip" onclick="pickVenue(this)"><div class="vt-tier">Premium</div><div class="vt-name">Luxury</div><div class="vt-price">₹5L–₹20L</div></div>
+      <div class="venue-opt rip" onclick="pickVenue(this)"><div class="vt-tier">Ultra</div><div class="vt-name">Royal</div><div class="vt-price">₹20L+</div></div>
+    </div>
+  </div>
+  <div class="ctabar">
+    <div class="cta-left"><div class="cta-label">Your Event</div><div class="cta-val" id="ctaVal">Wedding · Jaipur · 280 guests · ₹18L</div></div>
+    <button class="btn-primary rip" onclick="runAI()">Find Best Vendors <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     S3 — AI LOADING
+════════════════════════════════════════════ -->
+<div class="screen" id="s3">
+  <div class="ai-loader">
+    <div class="ai-rings">
+      <div class="ai-ring"></div>
+      <div class="ai-ring"></div>
+      <div class="ai-ring"></div>
+      <div class="ai-ring"></div>
+      <div class="ai-ring-center">✦</div>
+    </div>
+    <div class="ai-load-title">AI is working…</div>
+    <div class="ai-load-msg" id="aiMsg">Initialising multi-agent system</div>
+    <div class="ai-progress-bar"><div class="ai-progress-fill" id="aiProg"></div></div>
+    <div class="ai-agents" id="aiAgents">
+      <div class="agent-chip" id="ag1">Budget Allocator</div>
+      <div class="agent-chip" id="ag2">Vendor Matcher</div>
+      <div class="agent-chip" id="ag3">Shadow Assigner</div>
+      <div class="agent-chip" id="ag4">Itinerary Builder</div>
+      <div class="agent-chip" id="ag5">Price Negotiator</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     S4 — AI VENDOR RESULTS
+════════════════════════════════════════════ -->
+<div class="screen" id="s4">
+  <div class="ai-hdr-bar">
+    <div class="ai-hdr-inner">
+      <div class="ai-hdr-left">
+        <div class="ai-live"><div class="ai-live-dot"></div><div class="ai-live-text">AI · 5 Agents</div></div>
+        <div><div class="ai-event-chip" id="aiEventChip">Wedding — Jaipur</div><div class="ai-event-sub" id="aiEventSub">Nov 14–16 · 280 guests · ₹18L</div></div>
+      </div>
+      <button onclick="goTo(5)" style="background:var(--sky-dim);border:1px solid var(--sky);color:var(--sky);padding:8px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600;">Switch to Manual →</button>
+    </div>
+  </div>
+  <div class="topnav" style="position:relative;top:auto;">
+    <div class="nav-logo">No<span>Vigna</span></div>
+    <div class="nav-steps"><div class="nstep done"></div><div class="nstep done"></div><div class="nstep now"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div></div>
+    <button class="nav-back" onclick="goTo(2)">← Edit</button>
+  </div>
+  <div class="pbd">
+    <div class="eyebrow">Step 03 · AI Recommendation</div>
+    <div class="big-title">Your curated<br>vendor lineup</div>
+    <div class="big-sub">Matched by availability, rating & budget. Shadow vendor auto-assigned to every booking.</div>
+
+    <div class="abs-track" style="margin-bottom:6px;"><div class="abs-fill" id="absFill"></div></div>
+    <div class="abs-cats" style="margin-bottom:28px;" id="absCats">
+      <div class="abs-cat">Venue <strong>₹6.5L</strong></div>
+      <div class="abs-cat">Catering <strong>₹4.2L</strong></div>
+      <div class="abs-cat">Photography <strong>₹2.1L</strong></div>
+      <div class="abs-cat">Decor <strong>₹1.9L</strong></div>
+      <div class="abs-cat">Music <strong>₹1.1L</strong></div>
+      <div class="abs-cat" style="color:var(--sage);">Remaining <strong style="color:var(--sage);">₹2.2L</strong></div>
+    </div>
+
+    <div id="vendorSections"></div>
+  </div>
+  <div class="ctabar">
+    <div class="cta-left"><div class="cta-label">Selected</div><div class="cta-val" id="vendorSelCount">6 vendors · Shadow assigned to all</div></div>
+    <button class="btn-primary rip" onclick="goTo(6)">Build Itinerary <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     S5 — MANUAL SELECTION
+════════════════════════════════════════════ -->
+<div class="screen" id="s5">
+  <div class="topnav">
+    <div class="nav-logo">No<span>Vigna</span></div>
+    <div class="nav-steps"><div class="nstep done"></div><div class="nstep done"></div><div class="nstep now"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div></div>
+    <button class="nav-back" onclick="goTo(4)">← AI View</button>
+  </div>
+  <div class="pbd">
+    <div class="eyebrow">Manual Selection</div>
+    <div class="big-title">Choose your<br>own vendors</div>
+    <div class="big-sub">Filter, compare, and select. Booked vendors are greyed out — tap to negotiate.</div>
+
+    <div class="filter-bar">
+      <div class="chip active" onclick="toggleChip(this,'all')">All</div>
+      <div class="chip" onclick="toggleChip(this,'venue')">🏛 Venue</div>
+      <div class="chip" onclick="toggleChip(this,'photo')">📸 Photo</div>
+      <div class="chip" onclick="toggleChip(this,'catering')">🍽 Catering</div>
+      <div class="chip" onclick="toggleChip(this,'decor')">🌸 Decor</div>
+      <div class="chip" onclick="toggleChip(this,'music')">🎵 Music</div>
+      <div class="chip" onclick="toggleChip(this,'makeup')">💄 Makeup</div>
+    </div>
+    <div class="sort-row">
+      <button class="sort-btn active" onclick="sortVendors(this,'recommended')">Recommended</button>
+      <button class="sort-btn" onclick="sortVendors(this,'price-asc')">Price ↑</button>
+      <button class="sort-btn" onclick="sortVendors(this,'price-desc')">Price ↓</button>
+      <button class="sort-btn" onclick="sortVendors(this,'rating')">Top Rated</button>
+      <button onclick="openM('filterModal')" style="background:var(--gold-dim);border:1px solid rgba(232,184,75,0.3);color:var(--gold);padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer;font-weight:600;margin-left:auto;">⚙ Filters</button>
+    </div>
+
+    <div class="manual-vcards" id="manualCards"></div>
+  </div>
+  <div class="ctabar">
+    <div class="cta-left"><div class="cta-label">Selected</div><div class="cta-val" id="manualSelCount">0 vendors selected</div></div>
+    <button class="btn-primary rip" onclick="goTo(6)">Confirm & Build Itinerary <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     S6 — ITINERARY
+════════════════════════════════════════════ -->
+<div class="screen" id="s6">
+  <div class="topnav">
+    <div class="nav-logo">No<span>Vigna</span></div>
+    <div class="nav-steps"><div class="nstep done"></div><div class="nstep done"></div><div class="nstep done"></div><div class="nstep now"></div><div class="nstep"></div><div class="nstep"></div><div class="nstep"></div></div>
+    <button class="nav-back" onclick="goTo(4)">← Vendors</button>
+  </div>
+  <div class="pbd">
+    <div class="eyebrow">Step 04 · Itinerary</div>
+    <div class="big-title">Your AI-crafted<br>event plan</div>
+    <div class="big-sub">Each vendor is time-blocked. Tap any slot to swap the time.</div>
+
+    <div class="day-tabs" id="dayTabs"></div>
+    <div id="timelineWrap"></div>
+  </div>
+  <div class="ctabar">
+    <div class="cta-left"><div class="cta-label">Plan</div><div class="cta-val" id="itiSummary">3-day itinerary · 12 slots locked</div></div>
+    <button class="btn-primary rip" onclick="showGroupPopup()">Confirm Plan <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     S8 — INVOICE
+════════════════════════════════════════════ -->
+<div class="screen" id="s8">
+  <div class="topnav">
+    <div class="nav-logo">No<span>Vigna</span></div>
+    <div class="nav-steps"><div class="nstep done"></div><div class="nstep done"></div><div class="nstep done"></div><div class="nstep done"></div><div class="nstep now"></div><div class="nstep"></div><div class="nstep"></div></div>
+    <button class="nav-back" onclick="goTo(6)">← Itinerary</button>
+  </div>
+  <div class="pbd">
+    <div class="eyebrow">Step 05 · Invoice</div>
+    <div class="big-title">Final invoice</div>
+    <div class="big-sub">Review and confirm. Booking requests will be sent to all vendors immediately.</div>
+
+    <div class="invoice">
+      <div class="inv-hdr">
+        <div><div class="inv-logo">No<span>Vigna</span></div><div style="font-size:10px;color:var(--text3);letter-spacing:2px;margin-top:6px;">EVENTS WITHOUT FRICTION</div></div>
+        <div><div class="inv-num">NV-2025-JA-4821</div><div class="inv-date">Nov 10, 2025</div></div>
+      </div>
+      <div class="inv-body">
+        <div class="inv-event-row">
+          <div><div class="inv-ename" id="invTitle">Royal Rajasthani Wedding</div><div class="inv-emeta" id="invMeta">Jaipur · Nov 14–16, 2025 · 280 Guests</div></div>
+          <div class="status-pending" id="invStatus">Pending</div>
+        </div>
+        <div id="invoiceLines"></div>
+        <div class="inv-total">
+          <div><div class="inv-total-lbl">Total Investment</div><div class="inv-savings">You save ₹1,80,000 vs market rate</div></div>
+          <div class="inv-total-amt" id="invTotal">₹16,20,000</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ctabar">
+    <div class="cta-left"><div class="cta-label">Vendors confirm within</div><div class="cta-val">2 hours · Shadow backup active</div></div>
+    <button class="btn-primary rip" id="confirmBtn" onclick="confirmBooking()">Confirm Booking <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     S9 — SHOPPING
+════════════════════════════════════════════ -->
+<div class="screen" id="s9">
+  <div class="topnav">
+    <div class="nav-logo">No<span>Vigna</span></div>
+    <div class="nav-steps"><div class="nstep done"></div><div class="nstep done"></div><div class="nstep done"></div><div class="nstep done"></div><div class="nstep done"></div><div class="nstep done"></div><div class="nstep now"></div></div>
+    <button class="nav-back" onclick="goTo(8)">← Invoice</button>
+  </div>
+  <div class="pbd">
+    <div class="success-banner">
+      <span class="success-icon">🎊</span>
+      <div class="success-title">Your event is confirmed!</div>
+      <div class="success-sub" id="successSub">Royal Rajasthani Wedding · Jaipur · All vendors notified</div>
+    </div>
+    <div class="eyebrow" style="margin-bottom:12px;">Post-Booking Shopping</div>
+    <div class="big-sub" style="margin-bottom:20px;margin-top:-8px;">Complete the experience at exclusive partner rates. Your group shops together.</div>
+    <div class="group-members-row" id="groupMembersRow">
+      <div class="gm-av" style="background:var(--gold-dim);color:var(--gold);">R</div>
+      <div class="gm-av" style="background:var(--rose-dim);color:var(--rose);">P</div>
+      <div class="gm-av" style="background:var(--sky-dim);color:var(--sky);">A</div>
+    </div>
+    <div class="shop-grid">
+      <div class="scard rip" onclick="toast('Opening bridal fashion…')"><span class="sc-icon">👗</span><div class="sc-name">Bridal Wear</div><div class="sc-disc">Up to 20% off</div></div>
+      <div class="scard rip" onclick="toast('Opening jewellery partners…')"><span class="sc-icon">💎</span><div class="sc-name">Jewellery</div><div class="sc-disc">Exclusive rates</div></div>
+      <div class="scard rip" onclick="toast('Best hotels in Jaipur…')"><span class="sc-icon">🏨</span><div class="sc-name">Hotel Stays</div><div class="sc-disc">Group discount</div></div>
+      <div class="scard rip" onclick="toast('Flights & transfers…')"><span class="sc-icon">✈️</span><div class="sc-name">Travel</div><div class="sc-disc">Bundle savings</div></div>
+      <div class="scard rip" onclick="toast('Opening mehendi artists…')"><span class="sc-icon">🌿</span><div class="sc-name">Mehendi</div><div class="sc-disc">5 artists near you</div></div>
+      <div class="scard rip" onclick="toast('Opening makeup artists…')"><span class="sc-icon">💄</span><div class="sc-name">Makeup</div><div class="sc-disc">Bridal packages</div></div>
+      <div class="scard rip" onclick="toast('Invitation printing…')"><span class="sc-icon">💌</span><div class="sc-name">Invites</div><div class="sc-disc">Print + digital</div></div>
+      <div class="scard rip" onclick="toast('Gift boxes & hampers…')"><span class="sc-icon">🎁</span><div class="sc-name">Gifting</div><div class="sc-disc">Curated hampers</div></div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;">
+      <div class="eyebrow" style="text-align:center;margin-bottom:8px;">Share</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px;" id="shareTitle">Royal Rajasthani Wedding</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:18px;" id="shareMeta">Jaipur · All confirmed</div>
+      <button class="btn-primary rip" style="width:100%;justify-content:center;" onclick="toast('Event link copied! ✓')">Share Event with Group</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+const S = {
+  screen: 0,
+  eventType: 'wedding',
+  city: 'Jaipur',
+  guests: 280,
+  dateStart: '2025-11-14',
+  dateEnd: '2025-11-16',
+  budget: 1800000,
+  venueType: 'luxury',
+  singleDay: false,
+  groupType: null,
+  selectedVendors: new Set(),
+  manualSelected: new Set(),
+  currentDay: 0,
+};
+
+/* ═══════════════════════════════════════
+   DATA
+═══════════════════════════════════════ */
+const TOP_EVENTS = [
+  {type:'wedding',emoji:'💍',name:'Royal Rajasthan Wedding',tags:['₹24L','350 Guests','3 Days'],rating:'4.9',reviews:'2.1K',badge:'pill-gold',badgeText:'Top Pick',grad:'linear-gradient(135deg,#3a2800,#8b6000)'},
+  {type:'birthday',emoji:'🎂',name:'Luxury 40th Celebration',tags:['₹6L','80 Guests','1 Day'],rating:'4.8',reviews:'890',badge:'pill-rose',badgeText:'Trending',grad:'linear-gradient(135deg,#3a0015,#8b0030)'},
+  {type:'corporate',emoji:'🏢',name:'Annual Townhall 2025',tags:['₹12L','200 Guests','2 Days'],rating:'4.9',reviews:'1.4K',badge:'pill-sky',badgeText:'Popular',grad:'linear-gradient(135deg,#001a3a,#003480)'},
+  {type:'engagement',emoji:'💎',name:'Intimate Engagement',tags:['₹4L','60 Guests','1 Day'],rating:'4.8',reviews:'560',badge:'pill-sage',badgeText:'Romantic',grad:'linear-gradient(135deg,#0a2a1a,#1a6040)'},
+  {type:'concert',emoji:'🎸',name:'Rooftop Music Night',tags:['₹8L','300 Guests','1 Night'],rating:'4.7',reviews:'730',badge:'pill-rose',badgeText:'Vibrant',grad:'linear-gradient(135deg,#1a0030,#5c0080)'},
+  {type:'wedding',emoji:'🌺',name:'Garden Wedding Goa',tags:['₹18L','180 Guests','2 Days'],rating:'5.0',reviews:'440',badge:'pill-gold',badgeText:'Premium',grad:'linear-gradient(135deg,#1a2800,#3a6000)'},
+];
+
+const VENDORS = {
+  venue:[
+    {name:'Jai Mahal Palace',price:650000,rating:4.9,rev:'2.1K',avail:true,shadow:false,emoji:'🏯',city:'Jaipur',cat:'venue',booked:false,grad:'linear-gradient(135deg,#2a1800,#6a4000)'},
+    {name:'Rambagh Palace',price:720000,rating:4.8,rev:'1.8K',avail:true,shadow:true,emoji:'🏰',city:'Jaipur',cat:'venue',booked:false,grad:'linear-gradient(135deg,#1a0a2a,#4a1870)'},
+    {name:'Samode Haveli',price:580000,rating:4.7,rev:'960',avail:false,shadow:false,emoji:'🏛',city:'Jaipur',cat:'venue',booked:true,grad:'linear-gradient(135deg,#1e1200,#5a3800)'},
+    {name:'Diggi Palace',price:490000,rating:4.6,rev:'720',avail:true,shadow:false,emoji:'🏠',city:'Jaipur',cat:'venue',booked:false,grad:'linear-gradient(135deg,#0a1a2a,#1a4060)'},
+    {name:'Alsisar Mahal',price:820000,rating:4.9,rev:'380',avail:true,shadow:false,emoji:'🌟',city:'Shekhawati',cat:'venue',booked:false,grad:'linear-gradient(135deg,#2a1800,#804020)'},
+  ],
+  photo:[
+    {name:'Pixels & Poetry',price:210000,rating:4.8,rev:'1.2K',avail:true,shadow:false,emoji:'📸',city:'Jaipur',cat:'photo',booked:false,grad:'linear-gradient(135deg,#001a2a,#003060)'},
+    {name:'Shutter Stories',price:190000,rating:4.7,rev:'880',avail:true,shadow:true,emoji:'🎥',city:'Jaipur',cat:'photo',booked:false,grad:'linear-gradient(135deg,#1a000a,#600030)'},
+    {name:'Golden Lens Studio',price:240000,rating:4.6,rev:'540',avail:true,shadow:false,emoji:'🌅',city:'Jaipur',cat:'photo',booked:false,grad:'linear-gradient(135deg,#2a1a00,#6a4800)'},
+    {name:'Frame Craft Films',price:280000,rating:4.8,rev:'320',avail:false,shadow:false,emoji:'🎬',city:'Delhi',cat:'photo',booked:true,grad:'linear-gradient(135deg,#0a1a0a,#1a4020)'},
+  ],
+  catering:[
+    {name:'Spice Route Catering',price:420000,rating:4.9,rev:'1.8K',avail:true,shadow:false,emoji:'🍽',city:'Jaipur',cat:'catering',booked:false,grad:'linear-gradient(135deg,#2a0a00,#803010)'},
+    {name:'Rajdhani Caterers',price:380000,rating:4.6,rev:'1.1K',avail:true,shadow:true,emoji:'🥘',city:'Jaipur',cat:'catering',booked:false,grad:'linear-gradient(135deg,#1a0a00,#502800)'},
+    {name:'Heritage Flavours',price:450000,rating:4.5,rev:'640',avail:true,shadow:false,emoji:'🍛',city:'Jaipur',cat:'catering',booked:false,grad:'linear-gradient(135deg,#0a1a00,#285000)'},
+    {name:'Royal Feast Co.',price:510000,rating:4.8,rev:'420',avail:false,shadow:false,emoji:'🫕',city:'Jaipur',cat:'catering',booked:true,grad:'linear-gradient(135deg,#1a1000,#484000)'},
+  ],
+  decor:[
+    {name:'Royal Blooms Decor',price:190000,rating:4.8,rev:'940',avail:true,shadow:false,emoji:'🌸',city:'Jaipur',cat:'decor',booked:false,grad:'linear-gradient(135deg,#1a0030,#480080)'},
+    {name:'Petal Palace',price:160000,rating:4.6,rev:'720',avail:true,shadow:true,emoji:'🌺',city:'Jaipur',cat:'decor',booked:false,grad:'linear-gradient(135deg,#2a0010,#700030)'},
+    {name:'Dream Drapes Studio',price:220000,rating:4.7,rev:'580',avail:true,shadow:false,emoji:'🎋',city:'Jaipur',cat:'decor',booked:false,grad:'linear-gradient(135deg,#0a1a00,#204800)'},
+    {name:'Luxe Mandap Works',price:280000,rating:4.9,rev:'310',avail:false,shadow:false,emoji:'⛩',city:'Jaipur',cat:'decor',booked:true,grad:'linear-gradient(135deg,#2a0a00,#6a2810)'},
+  ],
+  music:[
+    {name:'Raaga Music Band',price:110000,rating:4.7,rev:'680',avail:true,shadow:false,emoji:'🎵',city:'Jaipur',cat:'music',booked:false,grad:'linear-gradient(135deg,#001a2a,#004060)'},
+    {name:'DJ Aakash',price:75000,rating:4.5,rev:'1.1K',avail:true,shadow:true,emoji:'🎧',city:'Jaipur',cat:'music',booked:false,grad:'linear-gradient(135deg,#1a0030,#50008a)'},
+    {name:'Dhol Masters',price:45000,rating:4.8,rev:'1.5K',avail:true,shadow:false,emoji:'🥁',city:'Jaipur',cat:'music',booked:false,grad:'linear-gradient(135deg,#2a1000,#6a3000)'},
+    {name:'Shehnai Ensemble',price:65000,rating:4.9,rev:'290',avail:false,shadow:false,emoji:'🎺',city:'Jaipur',cat:'music',booked:true,grad:'linear-gradient(135deg,#0a1a0a,#1a5020)'},
+  ],
+  makeup:[
+    {name:'Bridal Glow Studio',price:85000,rating:4.9,rev:'720',avail:true,shadow:false,emoji:'💄',city:'Jaipur',cat:'makeup',booked:false,grad:'linear-gradient(135deg,#2a0010,#800030)'},
+    {name:'Glam Canvas',price:65000,rating:4.7,rev:'540',avail:true,shadow:false,emoji:'🪞',city:'Jaipur',cat:'makeup',booked:false,grad:'linear-gradient(135deg,#1a0a1a,#50105a)'},
+  ],
+};
+
+const AI_SELECTIONS = {venue:0,photo:0,catering:0,decor:0,music:0};
+
+const ITINERARY = [
+  {day:0,label:'Day 1 · Nov 14',slots:[
+    {time:'09:00 AM',title:'Venue Setup & Decoration',vendor:'Royal Blooms Decor · Jai Mahal Palace',dur:'3 hrs'},
+    {time:'04:00 PM',title:'Mehendi Ceremony',vendor:'Rajasthani Arts · Garden Lawn',dur:'3 hrs'},
+    {time:'07:30 PM',title:'Sangeet Night',vendor:'Raaga Music Band · Main Ballroom',dur:'3 hrs'},
+    {time:'09:30 PM',title:'Gala Dinner',vendor:'Spice Route Catering · Pool Terrace',dur:'2 hrs'},
+  ]},
+  {day:1,label:'Day 2 · Nov 15',slots:[
+    {time:'07:00 AM',title:'Baraat Procession',vendor:'Dhol Masters · Main Entrance',dur:'2 hrs'},
+    {time:'11:00 AM',title:'Wedding Ceremony',vendor:'Pixels & Poetry · Main Mandap',dur:'4 hrs'},
+    {time:'03:00 PM',title:'Wedding Lunch',vendor:'Spice Route Catering · Dining Hall',dur:'2 hrs'},
+    {time:'07:00 PM',title:'Reception & Cocktails',vendor:'Jai Mahal Palace · Grand Terrace',dur:'4 hrs'},
+  ]},
+  {day:2,label:'Day 3 · Nov 16',slots:[
+    {time:'10:00 AM',title:'Farewell Brunch',vendor:'Spice Route Catering · Garden Lawn',dur:'2 hrs'},
+    {time:'12:00 PM',title:'Photo & Video Delivery',vendor:'Pixels & Poetry · Digital Handoff',dur:'1 hr'},
+    {time:'02:00 PM',title:'Guest Checkout & Gifts',vendor:'Venue Team · Lobby',dur:'2 hrs'},
+  ]},
+];
+
+const INVOICE_LINES = [
+  {name:'Venue · 3 Days',vendor:'Jai Mahal Palace · Shadow: Rambagh Palace',amount:650000},
+  {name:'Catering · Full Service',vendor:'Spice Route Catering · Shadow: Rajdhani',amount:420000},
+  {name:'Photography & Video',vendor:'Pixels & Poetry · Shadow: Shutter Stories',amount:210000},
+  {name:'Floral Decoration',vendor:'Royal Blooms · Shadow: Petal Palace',amount:190000},
+  {name:'Music & Entertainment',vendor:'Raaga Music Band · DJ Aakash (Shadow)',amount:110000},
+  {name:'Bridal Makeup',vendor:'Bridal Glow Studio',amount:85000},
+  {name:'NoVigna Platform Fee',vendor:'Shadow guarantee + AI planning included',amount:40000},
+];
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+function goTo(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('s'+n);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  requestAnimationFrame(() => { el.style.animation = ''; el.classList.add('active'); });
+  S.screen = n;
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateFlowNav();
+}
+function updateFlowNav() {
+  const map = {0:0,1:1,2:2,4:3,5:4,6:5,8:6,9:7};
+  const idx = map[S.screen] ?? -1;
+  document.querySelectorAll('.fnd').forEach((d,i) => {
+    d.classList.remove('on','done');
+    if(i===idx) d.classList.add('on');
+    else if(i<idx) d.classList.add('done');
+  });
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+let toastT;
+function toast(msg) {
+  clearTimeout(toastT);
+  const el = document.getElementById('toast');
+  document.getElementById('tmsg').textContent = msg;
+  el.classList.add('show');
+  toastT = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+function openM(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeM(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+document.querySelectorAll('.modal-bg').forEach(m => {
+  m.addEventListener('click', e => { if(e.target===m) closeM(m.id); });
+});
+
+/* ═══════════════════════════════════════
+   RIPPLE
+═══════════════════════════════════════ */
+document.addEventListener('click', e => {
+  const el = e.target.closest('.rip');
+  if(!el) return;
+  const w = document.createElement('span');
+  w.className='rip-wave';
+  const r = el.getBoundingClientRect();
+  const s = Math.max(r.width,r.height);
+  w.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px;`;
+  el.appendChild(w);
+  setTimeout(()=>w.remove(),700);
+});
+
+/* ═══════════════════════════════════════
+   COUNTER ANIMATION
+═══════════════════════════════════════ */
+function animCounters() {
+  document.querySelectorAll('[data-target]').forEach(el => {
+    const t = parseInt(el.dataset.target);
+    let cur = 0;
+    const step = t / 70;
+    const iv = setInterval(() => {
+      cur = Math.min(cur+step, t);
+      el.textContent = Math.floor(cur).toLocaleString('en-IN') + '+';
+      if(cur >= t) clearInterval(iv);
+    }, 18);
+  });
+}
+setTimeout(animCounters, 600);
+
+/* ═══════════════════════════════════════
+   PARTICLES
+═══════════════════════════════════════ */
+(function() {
+  const c = document.getElementById('particles');
+  for(let i=0;i<25;i++) {
+    const p = document.createElement('div');
+    p.className='particle';
+    const sz = Math.random()*4+2;
+    const colors = ['rgba(232,184,75,0.6)','rgba(91,156,246,0.5)','rgba(224,92,122,0.5)','rgba(82,200,150,0.5)'];
+    const col = colors[Math.floor(Math.random()*colors.length)];
+    p.style.cssText=`width:${sz}px;height:${sz}px;background:${col};border-radius:50%;left:${Math.random()*100}%;animation-duration:${Math.random()*8+6}s;animation-delay:${Math.random()*6}s;`;
+    c.appendChild(p);
+  }
+})();
+
+/* ═══════════════════════════════════════
+   S0 START
+═══════════════════════════════════════ */
+function startFlow() {
+  buildEventCards();
+  goTo(1);
+}
+
+/* ═══════════════════════════════════════
+   S1 — BUILD EVENT CARDS
+═══════════════════════════════════════ */
+function buildEventCards() {
+  const wrap = document.getElementById('eventsCarousel');
+  wrap.innerHTML = TOP_EVENTS.map((e,i) => `
+    <div class="event-card${i===0?' featured':''} rip" onclick="cloneEvent(${i})">
+      <div class="ec-img" style="background:${e.grad};">${e.emoji}<div class="ec-img-overlay"></div></div>
+      <div class="ec-badge"><span class="ec-badge-pill ${e.badge}">${e.badgeText}</span></div>
+      <div class="ec-body">
+        <div class="ec-type">${e.type}</div>
+        <div class="ec-name">${e.name}</div>
+        <div class="ec-tags">${e.tags.map(t=>`<span class="ec-tag">${t}</span>`).join('')}</div>
+        <div class="ec-rating"><span class="ec-stars">★★★★★</span><span style="font-size:12px;font-weight:700;color:var(--gold);">${e.rating}</span><span class="ec-rcount">(${e.reviews} reviews)</span></div>
+        <button class="ec-clone-btn">Clone this event →</button>
+      </div>
+    </div>`).join('');
+}
+
+function cloneEvent(i) {
+  const e = TOP_EVENTS[i];
+  S.eventType = e.type;
+  toast(`"${e.name}" cloned! Prefilling your details…`);
+  setTimeout(() => {
+    document.querySelectorAll('.et-btn').forEach(b => b.classList.remove('sel'));
+    const match = document.querySelector(`.et-btn[onclick*="${e.type}"]`);
+    if(match) match.classList.add('sel');
+    goTo(2);
+  }, 500);
+}
+
+/* ═══════════════════════════════════════
+   S2 — FORM
+═══════════════════════════════════════ */
+function pickET(el, type) {
+  document.querySelectorAll('.et-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  S.eventType = type;
+  updateBar();
+}
+function changeGuests(delta) {
+  S.guests = Math.max(10, Math.min(5000, S.guests + delta));
+  document.getElementById('guestCount').textContent = S.guests;
+  updateBar();
+}
+let singleDay = false;
+function toggleSameDate() {
+  singleDay = !singleDay;
+  document.getElementById('sdTrack').classList.toggle('on', singleDay);
+  document.getElementById('endDateWrap').style.opacity = singleDay ? '0.3' : '1';
+  document.getElementById('endDateWrap').style.pointerEvents = singleDay ? 'none' : 'all';
+  updateBar();
+}
+function pickVenue(el) {
+  document.querySelectorAll('.venue-opt').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function updateBudget(v) {
+  S.budget = parseInt(v);
+  document.getElementById('budgetBig').textContent = '₹' + S.budget.toLocaleString('en-IN');
+  const min=100000,max=10000000,pct=((S.budget-min)/(max-min))*100;
+  document.getElementById('budgetSlider').style.background = `linear-gradient(to right,var(--gold) ${pct}%,rgba(255,255,255,0.08) ${pct}%)`;
+  updateBar();
+}
+function updateBar() {
+  const city = document.getElementById('cityIn')?.value || 'Jaipur';
+  const etEl = document.querySelector('.et-btn.sel .et-lbl');
+  const et = etEl ? etEl.textContent : S.eventType;
+  const b = (S.budget/100000).toFixed(1).replace('.0','');
+  document.getElementById('ctaVal').textContent = `${et} · ${city} · ${S.guests} guests · ₹${b}L`;
+  document.getElementById('aiEventChip').textContent = `${et} — ${city}`;
+  const ds = document.getElementById('dateStart')?.value || '2025-11-14';
+  const de = singleDay ? ds : (document.getElementById('dateEnd')?.value || '2025-11-16');
+  document.getElementById('aiEventSub').textContent = `${ds} to ${de} · ${S.guests} guests · ₹${b}L`;
+  // init slider fill
+  const sl = document.getElementById('budgetSlider');
+  if(sl&&!sl._init){ sl._init=true; const pct=((S.budget-100000)/(10000000-100000))*100; sl.style.background=`linear-gradient(to right,var(--gold) ${pct}%,rgba(255,255,255,0.08) ${pct}%)`; }
+}
+
+/* ═══════════════════════════════════════
+   AI LOADING
+═══════════════════════════════════════ */
+const AI_MSGS = [
+  'Initialising multi-agent system…',
+  'Budget Allocator distributing ₹18L…',
+  'Vendor Matcher scanning 2,400+ vendors…',
+  'Checking availability for your dates…',
+  'Shadow Assigner picking backups…',
+  'Itinerary Builder creating your plan…',
+  'Finalising best-value combinations…',
+];
+function runAI() {
+  goTo(3);
+  let prog = 0, agIdx = 0;
+  const agents = ['ag1','ag2','ag3','ag4','ag5'];
+  const iv = setInterval(() => {
+    prog = Math.min(prog + 100/AI_MSGS.length, 100);
+    const msgIdx = Math.min(Math.floor(prog / (100/AI_MSGS.length)), AI_MSGS.length-1);
+    document.getElementById('aiMsg').textContent = AI_MSGS[msgIdx];
+    document.getElementById('aiProg').style.width = prog + '%';
+    if(agIdx < agents.length) { document.getElementById(agents[agIdx]).classList.add('active'); agIdx++; }
+    if(prog >= 100) { clearInterval(iv); setTimeout(() => { buildVendorSections(); goTo(4); setTimeout(()=>{document.getElementById('absFill').style.width='82%';},400); }, 400); }
+  }, 320);
+}
+
+/* ═══════════════════════════════════════
+   S4 — AI VENDOR SECTIONS
+═══════════════════════════════════════ */
+const SECTION_LABELS = {venue:'🏛 Venue',photo:'📸 Photography',catering:'🍽 Catering',decor:'🌸 Floral Decor',music:'🎵 Music'};
+
+function buildVendorSections() {
+  const cats = ['venue','photo','catering','decor','music'];
+  const wrap = document.getElementById('vendorSections');
+  wrap.innerHTML = cats.map(cat => {
+    const vlist = VENDORS[cat];
+    const cards = vlist.map((v,vi) => {
+      const isSel = vi === AI_SELECTIONS[cat];
+      return `<div class="vcard${isSel?' vc-sel':''}${v.shadow?' vc-shadow':''}${v.booked?' vc-booked':''} rip" onclick="toggleAIVendor('${cat}',${vi},this)">
+        ${isSel?'<div class="vc-sel-badge">✓</div>':''}
+        <div class="vc-top"><div class="vc-name">${v.name}</div><div class="vc-rating">★ ${v.rating}</div></div>
+        <div class="vc-price">₹${v.price.toLocaleString('en-IN')}</div>
+        <div class="${v.booked?'vc-unavail':'vc-avail'}">${v.booked?'✗ Booked':'✓ Available'}</div>
+        ${v.shadow?'<div class="vc-shadow-lbl">⟳ Shadow Vendor</div>':''}
+        ${v.booked?`<div class="vc-booked-layer"><div class="vc-booked-lbl">Booked</div><button class="neg-btn" onclick="event.stopPropagation();openNeg('${v.name}')">Negotiate →</button></div>`:''}
+      </div>`;
+    }).join('');
+    return `<div class="vsection">
+      <div class="vsec-hdr">
+        <div class="vsec-title">${SECTION_LABELS[cat]}</div>
+        <button class="vsec-manual" onclick="goTo(5)">Manual Select</button>
+      </div>
+      <div class="vcards">${cards}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleAIVendor(cat, vi, el) {
+  if(VENDORS[cat][vi].booked) return;
+  const wasSel = el.classList.contains('vc-sel');
+  document.querySelectorAll(`.vcards`).forEach(()=>{});
+  // just toggle this card
+  el.classList.toggle('vc-sel', !wasSel);
+  const badge = el.querySelector('.vc-sel-badge');
+  if(!wasSel) {
+    if(!badge) { const b=document.createElement('div'); b.className='vc-sel-badge'; b.textContent='✓'; el.appendChild(b); }
+    toast(VENDORS[cat][vi].name + ' selected ✓');
+  } else {
+    if(badge) badge.remove();
+    toast(VENDORS[cat][vi].name + ' removed');
+  }
+}
+
+function openNeg(name) {
+  document.getElementById('negVendorName').textContent = name;
+  openM('negModal');
+}
+function sendNeg() {
+  const name = document.getElementById('negVendorName').textContent;
+  const bid = document.getElementById('negBid').value;
+  closeM('negModal');
+  toast(`Offer ${bid} sent to ${name} ✓`);
+}
+
+/* ═══════════════════════════════════════
+   S5 — MANUAL CARDS
+═══════════════════════════════════════ */
+let activeFilter = 'all';
+let activeSort = 'recommended';
+
+function buildManualCards() {
+  let allV = Object.values(VENDORS).flat();
+  if(activeFilter !== 'all') allV = allV.filter(v => v.cat === activeFilter);
+  if(activeSort === 'price-asc') allV.sort((a,b)=>a.price-b.price);
+  else if(activeSort === 'price-desc') allV.sort((a,b)=>b.price-a.price);
+  else if(activeSort === 'rating') allV.sort((a,b)=>b.rating-a.rating);
+  const wrap = document.getElementById('manualCards');
+  wrap.innerHTML = allV.map((v,i) => {
+    const sel = S.manualSelected.has(v.name);
+    return `<div class="mcard${sel?' msel':''}${v.booked?' mbooked':''} rip" onclick="${v.booked?`openNeg('${v.name}')`:`toggleManual('${v.name}',this)`}" data-booked="${v.booked}">
+      <div class="mc-img" style="background:${v.grad};">${v.emoji}</div>
+      ${sel?'<div class="mc-sel-check">✓</div>':''}
+      ${v.booked?`<div class="mc-booked-overlay"><div class="vc-booked-lbl">Booked</div><button class="neg-btn" onclick="event.stopPropagation();openNeg('${v.name}')">Negotiate →</button></div>`:''}
+      <div class="mc-body">
+        <div class="mc-cat">${SECTION_LABELS[v.cat]||v.cat}</div>
+        <div class="mc-name">${v.name}</div>
+        <div class="mc-row"><div class="mc-price">₹${v.price.toLocaleString('en-IN')}</div><div class="mc-rating">★ ${v.rating} (${v.rev})</div></div>
+        <div class="mc-avail ${v.booked?'full':'ok'}">${v.booked?'✗ Booked on your dates':'✓ Available'}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const cnt = S.manualSelected.size;
+  document.getElementById('manualSelCount').textContent = cnt > 0 ? `${cnt} vendor${cnt>1?'s':''} selected` : '0 vendors selected';
+}
+
+function toggleManual(name, el) {
+  if(S.manualSelected.has(name)) { S.manualSelected.delete(name); el.classList.remove('msel'); const ch=el.querySelector('.mc-sel-check'); if(ch)ch.remove(); toast(name+' removed'); }
+  else { S.manualSelected.add(name); el.classList.add('msel'); if(!el.querySelector('.mc-sel-check')){ const b=document.createElement('div');b.className='mc-sel-check';b.textContent='✓';el.appendChild(b); } toast(name+' added ✓'); }
+  document.getElementById('manualSelCount').textContent = `${S.manualSelected.size} vendor${S.manualSelected.size!==1?'s':''} selected`;
+}
+
+function toggleChip(el, cat) {
+  document.querySelectorAll('.filter-bar .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  activeFilter = cat;
+  buildManualCards();
+}
+function sortVendors(btn, sort) {
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  activeSort = sort;
+  buildManualCards();
+}
+function applyFilter() { closeM('filterModal'); buildManualCards(); toast('Filters applied!'); }
+function toggleFC(el) { el.closest('.fchips').querySelectorAll('.fc').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+
+/* ═══════════════════════════════════════
+   S6 — ITINERARY
+═══════════════════════════════════════ */
+function buildItinerary() {
+  // TABS
+  const tabs = document.getElementById('dayTabs');
+  tabs.innerHTML = ITINERARY.map((d,i) => `<div class="dtab${i===0?' on':''} rip" onclick="switchDay(${i},this)">${d.label}</div>`).join('');
+  renderDay(0);
+  // Update summary
+  const totalSlots = ITINERARY.reduce((a,d)=>a+d.slots.length,0);
+  document.getElementById('itiSummary').textContent = `${ITINERARY.length}-day itinerary · ${totalSlots} slots locked`;
+}
+
+function renderDay(idx) {
+  S.currentDay = idx;
+  const d = ITINERARY[idx];
+  const wrap = document.getElementById('timelineWrap');
+  wrap.innerHTML = `<div class="timeline">${d.slots.map((s,i)=>`
+    <div class="ti" style="animation-delay:${i*0.07}s;">
+      <div class="ti-time">${s.time}</div>
+      <div class="ti-card rip" onclick="openM('swapModal')">
+        <div class="ti-title">${s.title}</div>
+        <div class="ti-vendor">${s.vendor}</div>
+        <span class="ti-dur">${s.dur}</span>
+        <button class="ti-swap">⇄ Swap Slot</button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function switchDay(idx, el) {
+  document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  renderDay(idx);
+}
+
+function swapSlot(time) {
+  closeM('swapModal');
+  // Update the first swappable slot in current day
+  const slots = ITINERARY[S.currentDay].slots;
+  if(slots[0]) { const old = slots[0].time; slots[0].time = time; renderDay(S.currentDay); toast(`Slot updated to ${time} ✓`); }
+}
+
+/* ═══════════════════════════════════════
+   GROUP POPUP
+═══════════════════════════════════════ */
+function showGroupPopup() {
+  document.getElementById('groupPopup').classList.add('show');
+}
+function pickGroup(type) {
+  S.groupType = type;
+  document.getElementById('go-fam').classList.toggle('sel', type==='family');
+  document.getElementById('go-fri').classList.toggle('sel', type==='friends');
+  document.getElementById('groupCTA').style.display = 'block';
+}
+function confirmGroup() {
+  document.getElementById('groupPopup').classList.remove('show');
+  toast(`${S.groupType==='family'?'Family':'Friends'} group created! 3 members added.`);
+  buildInvoice();
+  goTo(8);
+}
+function skipGroup() {
+  S.groupType = null;
+  document.getElementById('groupPopup').classList.remove('show');
+  document.getElementById('groupMembersRow').style.display = 'none';
+  buildInvoice();
+  goTo(8);
+}
+
+/* ═══════════════════════════════════════
+   S8 — INVOICE
+═══════════════════════════════════════ */
+function buildInvoice() {
+  const lines = document.getElementById('invoiceLines');
+  lines.innerHTML = INVOICE_LINES.map(l => `
+    <div class="inv-line">
+      <div class="il-left"><div class="il-name">${l.name}</div><div class="il-vendor">${l.vendor}</div></div>
+      <div class="il-amount">₹${l.amount.toLocaleString('en-IN')}</div>
+    </div>`).join('');
+  const total = INVOICE_LINES.reduce((a,l)=>a+l.amount,0);
+  document.getElementById('invTotal').textContent = '₹' + total.toLocaleString('en-IN');
+  // update titles
+  const city = document.getElementById('cityIn')?.value || 'Jaipur';
+  const etEl = document.querySelector('.et-btn.sel .et-lbl');
+  const et = etEl ? etEl.textContent : 'Wedding';
+  const ds = document.getElementById('dateStart')?.value || '2025-11-14';
+  const de = singleDay ? ds : (document.getElementById('dateEnd')?.value || '2025-11-16');
+  document.getElementById('invTitle').textContent = `${et} · ${city}`;
+  document.getElementById('invMeta').textContent = `${ds} → ${de} · ${S.guests} Guests`;
+  document.getElementById('successSub').textContent = `${et} · ${city} · All vendors notified`;
+  document.getElementById('shareTitle').textContent = `${et} · ${city}`;
+  document.getElementById('shareMeta').textContent = `${ds} → ${de} · Confirmed`;
+}
+
+function confirmBooking() {
+  const btn = document.getElementById('confirmBtn');
+  btn.textContent = 'Confirming…';
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+  setTimeout(() => {
+    const s = document.getElementById('invStatus');
+    s.textContent = '✓ Confirmed';
+    s.className = 'status-confirmed';
+    toast('Booking confirmed! All 6 vendors notified ✓');
+    setTimeout(() => { goTo(9); launchConfetti(); }, 900);
+  }, 1800);
+}
+
+/* ═══════════════════════════════════════
+   CONFETTI
+═══════════════════════════════════════ */
+function launchConfetti() {
+  const c = document.getElementById('confetti');
+  c.innerHTML = '';
+  const cols = ['#E8B84B','#F5D07A','#52C896','#E05C7A','#5B9CF6','#F4874B','#F0EEF8'];
+  for(let i=0;i<80;i++) {
+    const p=document.createElement('div'); p.className='cfp';
+    const col=cols[i%cols.length], sz=Math.random()*10+4;
+    const left=Math.random()*100, delay=Math.random()*2, dur=Math.random()*2.5+2;
+    const shape=Math.random()>0.4?'50%':'2px';
+    p.style.cssText=`left:${left}%;width:${sz}px;height:${sz}px;background:${col};border-radius:${shape};animation-duration:${dur}s;animation-delay:${delay}s;`;
+    c.appendChild(p);
+  }
+  setTimeout(()=>c.innerHTML='',5500);
+}
+
+/* ═══════════════════════════════════════
+   INIT OVERRIDES
+═══════════════════════════════════════ */
+// Build manual cards when S5 is first entered
+const origGoTo = goTo;
+window.goTo = function(n) {
+  origGoTo(n);
+  if(n===5) buildManualCards();
+  if(n===6) buildItinerary();
+};
+
+// Init slider
+setTimeout(updateBar, 100);
+// Init fnav
+updateFlowNav();
+
+// Swipe navigation
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const diff=tx-e.changedTouches[0].clientX;
+  if(Math.abs(diff)>90){
+    const flow=[0,1,2,4,5,6,8,9];
+    const ci=flow.indexOf(S.screen);
+    if(ci===-1) return;
+    if(diff>0&&ci<flow.length-1) goTo(flow[ci+1]);
+    else if(diff<0&&ci>0) goTo(flow[ci-1]);
+  }
+},{passive:true});
+</script>
+</body>
+</html>
