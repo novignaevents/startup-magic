@@ -189,8 +189,28 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
       <div class="chip on" onclick="setCalendarStatus('free')">Mark Available</div>
       <div class="chip" onclick="setCalendarStatus('booked')">Mark Booked</div>
     </div>
+    <div style="display:flex;gap:8px;align-items:center;margin:6px 0 8px;">
+      <button class="btn btn-ghost" style="padding:6px 10px;" onclick="shiftMonth(-1)">◀</button>
+      <div class="sub" id="calTitle" style="font-weight:600;color:var(--t1);">Month</div>
+      <button class="btn btn-ghost" style="padding:6px 10px;" onclick="shiftMonth(1)">▶</button>
+    </div>
     <div class="calendar" id="cal"></div>
-    <div class="sub" id="calNote">Tap a date to toggle availability.</div>
+    <div class="sub" id="calNote">Tap a date to set availability + time window.</div>
+    <div style="margin-top:10px;border:1px solid var(--b1);border-radius:12px;padding:10px;background:var(--card2);">
+      <div class="lbl">Selected Date</div>
+      <div id="selDateLbl" style="color:var(--t1);font-weight:600;margin-bottom:8px;">None</div>
+      <div class="form" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+        <div><div class="lbl">Status</div>
+          <select class="fi" id="slotStatus">
+            <option value="free">Available</option>
+            <option value="booked">Booked</option>
+          </select>
+        </div>
+        <div><div class="lbl">Start</div><input class="fi" id="slotStart" type="time" value="10:00"></div>
+        <div><div class="lbl">End</div><input class="fi" id="slotEnd" type="time" value="18:00"></div>
+      </div>
+      <button class="btn btn-gold btn-wide" style="margin-top:10px;" onclick="saveSlot()">Save for this date</button>
+    </div>
   </div>
 </section>
 
@@ -316,6 +336,10 @@ function reject(id){toast('Rejected. Timer stopped.');}
 // ------- Calendar -------
 let calMode='free';
 let bookedDates=new Set(JSON.parse(localStorage.getItem('nv_booked_dates')||'[]'));
+let slotMap=JSON.parse(localStorage.getItem('nv_slot_map')||'{}'); // {date:{status,start,end}}
+let curMonth=new Date().getMonth();
+let curYear=new Date().getFullYear();
+let selectedKey=null;
 function setCalendarStatus(mode){
   calMode=mode;
   document.querySelectorAll('.chip-row .chip').forEach(c=>c.classList.toggle('on',c.textContent.includes(mode==='free'?'Available':'Booked')));
@@ -323,25 +347,49 @@ function setCalendarStatus(mode){
 function buildCalendar(){
   const cal=document.getElementById('cal'); if(!cal) return;
   cal.innerHTML='';
-  const today=new Date();
-  const year=today.getFullYear(),month=today.getMonth();
-  const first=new Date(year,month,1).getDay();
-  const days=new Date(year,month+1,0).getDate();
+  const first=new Date(curYear,curMonth,1).getDay();
+  const days=new Date(curYear,curMonth+1,0).getDate();
+  const title=document.getElementById('calTitle');
+  if(title){title.textContent=`${new Date(curYear,curMonth,1).toLocaleString('en-US',{month:'long',year:'numeric'})}`;}
   for(let i=0;i<first;i++){const d=document.createElement('div');cal.appendChild(d);}
   for(let d=1; d<=days; d++){
-    const key=`${year}-${month+1}-${d}`;
+    const key=`${curYear}-${curMonth+1}-${d}`;
     const el=document.createElement('div');
-    el.className='day '+(bookedDates.has(key)?'booked':'free');
+    const slot=slotMap[key];
+    const status = slot?slot.status:(bookedDates.has(key)?'booked':'free');
+    el.className='day '+status;
     el.textContent=d;
-    el.onclick=()=>toggleDay(key,el);
+    el.title = slot ? `${slot.status==='booked'?'Booked':'Available'} ${slot.start||''}-${slot.end||''}` : 'Tap to set';
+    el.onclick=()=>openDay(key,el);
     cal.appendChild(el);
   }
 }
-function toggleDay(key,el){
-  if(calMode==='booked'){bookedDates.add(key);localStorage.setItem('nv_booked_dates',JSON.stringify([...bookedDates]));}
-  else {bookedDates.delete(key);localStorage.setItem('nv_booked_dates',JSON.stringify([...bookedDates]));}
-  el.classList.toggle('booked',bookedDates.has(key));
-  el.classList.toggle('free',!bookedDates.has(key));
+function openDay(key,el){
+  selectedKey=key;
+  const slot=slotMap[key]||{status:calMode,start:'10:00',end:'18:00'};
+  document.getElementById('slotStatus').value=slot.status;
+  document.getElementById('slotStart').value=slot.start;
+  document.getElementById('slotEnd').value=slot.end;
+  const lbl=document.getElementById('selDateLbl');
+  if(lbl) lbl.textContent=new Date(key.replace(/-/g,'/')).toDateString();
+}
+function saveSlot(){
+  if(!selectedKey){toast('Pick a date first.');return;}
+  const status=document.getElementById('slotStatus').value;
+  const start=document.getElementById('slotStart').value;
+  const end=document.getElementById('slotEnd').value;
+  slotMap[selectedKey]={status,start,end};
+  localStorage.setItem('nv_slot_map',JSON.stringify(slotMap));
+  if(status==='booked') bookedDates.add(selectedKey); else bookedDates.delete(selectedKey);
+  localStorage.setItem('nv_booked_dates',JSON.stringify([...bookedDates]));
+  buildCalendar();
+  toast(`Saved ${status} ${start}-${end}`);
+}
+function shiftMonth(delta){
+  curMonth+=delta;
+  if(curMonth<0){curMonth=11;curYear--;}
+  if(curMonth>11){curMonth=0;curYear++;}
+  buildCalendar();
 }
 
 // ------- Analytics -------
