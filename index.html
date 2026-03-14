@@ -99,6 +99,54 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overfl
 .rwave{position:absolute;border-radius:50%;background:rgba(212,168,67,.18);transform:scale(0);animation:rw .55s linear;pointer-events:none;}
 @keyframes rw{to{transform:scale(4);opacity:0;}}
 
+/* ── CAPTION SYSTEM ── */
+/* Speed badge — "clones in 8 sec" style chips */
+.speed-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(72,184,122,.1);border:1px solid rgba(72,184,122,.28);color:var(--sage);padding:5px 12px;border-radius:20px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;font-weight:700;}
+.speed-badge .sb-icon{font-size:11px;}
+/* Emotional quote block */
+.eq{background:linear-gradient(135deg,rgba(212,168,67,.06),rgba(212,168,67,.02));border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:20px;}
+.eq-text{font-family:'Playfair Display',serif;font-size:clamp(14px,3vw,17px);font-style:italic;color:var(--t1);line-height:1.6;margin-bottom:4px;}
+.eq-attr{font-size:10px;color:var(--t3);letter-spacing:1px;}
+/* Micro-caption below inputs */
+.micro{font-size:10px;color:var(--t3);margin-top:5px;display:flex;align-items:center;gap:5px;line-height:1.5;}
+.micro .mic-icon{font-size:11px;flex-shrink:0;}
+/* Inline trust ribbon */
+.trust-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.trust-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:14px;font-size:10px;font-weight:600;border:1px solid var(--b2);color:var(--t2);background:var(--card);}
+.trust-pill .tp-icon{font-size:12px;}
+/* Floating progress hint in AI loader */
+.ai-caption{font-size:11px;color:var(--t3);margin-top:10px;font-style:italic;}
+/* Section intro caption */
+.section-caption{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;}
+.sc-icon{font-size:22px;flex-shrink:0;margin-top:1px;}
+.sc-text{font-size:12px;color:var(--t2);line-height:1.7;}
+.sc-text strong{color:var(--t1);font-weight:600;}
+/* Encouraging nudge below CTA bar label */
+.cta-nudge{font-size:9px;color:var(--sage);font-weight:600;margin-top:1px;}
+/* Timeline caption */
+.tl-caption{font-size:11px;color:var(--t3);text-align:center;padding:8px 0 14px;line-height:1.6;}
+/* Celebration banner */
+.celeb-banner{background:linear-gradient(135deg,rgba(212,168,67,.1),rgba(72,184,122,.06));border:1px solid rgba(212,168,67,.2);border-radius:14px;padding:16px 18px;margin-bottom:20px;text-align:center;}
+.celeb-line1{font-family:'Playfair Display',serif;font-size:clamp(16px,3.5vw,20px);font-style:italic;margin-bottom:4px;color:var(--gold);}
+.celeb-line2{font-size:11px;color:var(--t2);line-height:1.6;}
+/* Step time estimate */
+.step-time{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--t3);margin-bottom:18px;}
+.step-time .st-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+/* Social proof strip */
+.social-strip{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin-bottom:20px;padding-bottom:2px;}
+.social-strip::-webkit-scrollbar{display:none;}
+.social-card{flex:0 0 auto;background:var(--card);border:1px solid var(--b1);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--t2);display:flex;align-items:center;gap:7px;white-space:nowrap;}
+.social-card .sc-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+/* Floating tip tooltip on hover */
+.tip-wrap{position:relative;display:inline-flex;}
+.tip-badge{background:var(--gold);color:var(--bg);width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;cursor:help;flex-shrink:0;}
+/* invoice reassurance line */
+.reassure{display:flex;align-items:center;gap:8px;background:var(--sd);border:1px solid rgba(72,184,122,.2);border-radius:10px;padding:11px 14px;margin-bottom:16px;font-size:12px;color:var(--sage);}
+.reassure .ri{font-size:16px;flex-shrink:0;}
+/* Shimmer on cards (pulse of anticipation) */
+@keyframes shimmer{0%,100%{opacity:1;}50%{opacity:.7;}}
+.shimmer{animation:shimmer 2.5s ease-in-out infinite;}
+
 /* ═══════════════════════
    S0 — SPLASH
 ═══════════════════════ */
@@ -133,13 +181,34 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overfl
 /* ═══════════════════════
    S1 — EVENTS GALLERY
 ═══════════════════════ */
+/* Scratch-first bar — pinned at very top of S1, always visible */
+.scratch-top{
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(135deg,var(--card),rgba(212,168,67,.07));
+  border:1px solid rgba(212,168,67,.3);border-radius:14px;
+  padding:14px 16px;margin-bottom:20px;cursor:pointer;
+  transition:all .3s var(--ease);gap:12px;
+}
+.scratch-top:hover{border-color:var(--gold);box-shadow:0 6px 24px rgba(212,168,67,.18);}
+.scratch-top:active{transform:scale(.98);}
+.st-left{flex:1;min-width:0;}
+.st-title{font-family:'Playfair Display',serif;font-size:clamp(14px,3.5vw,17px);font-weight:600;margin-bottom:3px;}
+.st-sub{font-size:11px;color:var(--t2);line-height:1.5;}
+.st-badge{flex-shrink:0;background:var(--gold);color:var(--bg);font-family:'Space Mono',monospace;font-size:8px;font-weight:700;padding:5px 11px;border-radius:8px;letter-spacing:1px;white-space:nowrap;}
+/* Section divider */
+.gallery-divider{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.gallery-divider::before,.gallery-divider::after{content:'';flex:1;height:1px;background:var(--b1);}
+.gallery-divider span{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:3px;color:var(--t3);text-transform:uppercase;white-space:nowrap;}
 .events-wrap{margin-bottom:20px;}
-.events-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:16px;}
+/* Fully responsive grid: 1col mobile → 2col tablet → 3col desktop */
+.events-row{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:16px;}
+@media(min-width:520px){.events-row{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:880px){.events-row{grid-template-columns:repeat(3,1fr);}}
 .ecard{background:var(--card);border:1px solid var(--b1);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .35s var(--ease);position:relative;}
 .ecard:hover{transform:translateY(-5px) scale(1.01);border-color:var(--gold);box-shadow:0 18px 50px rgba(0,0,0,.5);}
 .ecard:active{transform:scale(.97);}
 .ecard.feat{border-color:rgba(212,168,67,.4);}
-.ec-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:50px;position:relative;overflow:hidden;}
+.ec-img{height:clamp(120px,25vw,160px);display:flex;align-items:center;justify-content:center;font-size:clamp(36px,8vw,50px);position:relative;overflow:hidden;}
 .ec-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.6));}
 .ec-bdg{position:absolute;top:10px;left:10px;z-index:1;padding:3px 10px;border-radius:12px;font-family:'Space Mono',monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;font-weight:700;}
 .bdg-g{background:var(--gold);color:var(--bg);}
@@ -148,16 +217,25 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overfl
 .bdg-b{background:var(--sky);color:#fff;}
 .ec-body{padding:14px;}
 .ec-type{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
-.ec-name{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:6px;}
+.ec-name{font-family:'Playfair Display',serif;font-size:clamp(15px,3.5vw,18px);margin-bottom:6px;}
 .ec-desc{font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:10px;}
 .ec-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
 .ec-tag{font-size:9px;padding:3px 9px;border-radius:10px;background:rgba(255,255,255,.05);color:var(--t2);}
-.ec-foot{display:flex;justify-content:space-between;align-items:center;}
+.ec-foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
 .ec-rating{font-size:12px;color:var(--gold);font-weight:600;}
-.ec-clone{background:var(--gd);border:1px solid rgba(212,168,67,.3);color:var(--gold);padding:7px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;}
+.ec-clone{background:var(--gd);border:1px solid rgba(212,168,67,.3);color:var(--gold);padding:7px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .ec-clone:hover{background:var(--gold);color:var(--bg);}
 .scratch-btn{display:block;text-align:center;padding:14px;background:var(--card);border:1px solid var(--b2);border-radius:12px;font-size:13px;color:var(--t2);cursor:pointer;transition:all .2s;margin-top:4px;}
 .scratch-btn:hover{border-color:var(--gold);color:var(--gold);}
+/* Social proof — horizontal scroll, capped width per card */
+.social-strip{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin-bottom:20px;padding-bottom:4px;}
+.social-strip::-webkit-scrollbar{display:none;}
+.social-card{flex:0 0 auto;max-width:clamp(220px,72vw,290px);background:var(--card);border:1px solid var(--b1);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--t2);display:flex;align-items:flex-start;gap:8px;line-height:1.55;white-space:normal;}
+.social-card .sc-av{width:28px;height:28px;min-width:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+/* Trust pills — wrap gracefully on all screen sizes */
+.trust-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;}
+.trust-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:14px;font-size:10px;font-weight:600;border:1px solid var(--b2);color:var(--t2);background:var(--card);}
+.trust-pill .tp-icon{font-size:11px;}
 
 /* ═══════════════════════
    S2 — EVENT DETAILS
@@ -263,9 +341,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .vsec-t{font-family:'Playfair Display',serif;font-size:18px;}
 .vsec-m{background:none;border:1px solid var(--b2);color:var(--t2);padding:5px 12px;border-radius:7px;font-size:10px;cursor:pointer;transition:all .2s;}
 .vsec-m:hover{border-color:var(--sky);color:var(--sky);}
-/* vendor cards – just 3: primary, shadow, negotiate */
-.vcards3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-@media(max-width:500px){.vcards3{grid-template-columns:1fr;}}
+/* vendor cards – 1 col on mobile, 3 col on tablet+ */
+.vcards3{display:grid;grid-template-columns:1fr;gap:10px;}
+@media(min-width:480px){.vcards3{grid-template-columns:repeat(3,1fr);}}
 .vc3{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:13px;cursor:pointer;transition:all .3s var(--ease);position:relative;overflow:hidden;}
 .vc3::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(212,168,67,.04));opacity:0;transition:opacity .3s;}
 .vc3:hover{border-color:var(--b2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35);}
@@ -301,7 +379,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .sort-row{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap;}
 .sb{padding:5px 12px;border-radius:7px;border:1px solid var(--b2);background:none;color:var(--t2);font-size:10px;cursor:pointer;transition:all .2s;}
 .sb.on{background:var(--gd);border-color:var(--gold);color:var(--gold);}
-.manual-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.manual-grid{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:400px){.manual-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:700px){.manual-grid{grid-template-columns:repeat(3,1fr);}}
 .mc{background:var(--card);border:1px solid var(--b1);border-radius:13px;overflow:hidden;cursor:pointer;transition:all .3s var(--ease);position:relative;}
 .mc:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.4);}
 .mc.sel{border-color:var(--gold);background:linear-gradient(135deg,var(--card),var(--gd));}
@@ -320,43 +400,150 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .mc-booked-ov{position:absolute;inset:0;background:rgba(6,5,10,.82);backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-radius:13px;}
 
 /* ═══════════════════════
-   FOOD / 3D PLATE
+   FOOD / 3D PLATE  — complete rewrite
 ═══════════════════════ */
-.food-screen{padding:18px 18px calc(var(--cta)+18px);max-width:980px;margin:0 auto;width:100%;}
-@media(min-width:700px){.food-screen{padding:30px 32px calc(var(--cta)+30px);}}
-/* Packages */
-.pkg-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:24px;}
-@media(min-width:500px){.pkg-grid{grid-template-columns:repeat(3,1fr);}}
-.pkg{background:var(--card);border:1px solid var(--b1);border-radius:13px;padding:16px;cursor:pointer;transition:all .3s var(--ease);position:relative;overflow:hidden;}
-.pkg::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;}
-.pkg:hover{border-color:var(--gold);transform:translateY(-3px);}
-.pkg:hover::before{opacity:1;}
-.pkg.sel{border-color:var(--gold);background:var(--gd);}
-.pkg-name{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:4px;}
-.pkg-price{font-size:20px;font-weight:700;color:var(--gold);margin-bottom:6px;}
-.pkg-items{font-size:11px;color:var(--t2);line-height:1.7;}
-/* 3d plate area */
-.plate-section{display:flex;flex-direction:column;gap:20px;}
-@media(min-width:700px){.plate-section{flex-direction:row;align-items:flex-start;}}
-.plate-wrap{flex:0 0 auto;width:100%;max-width:320px;margin:0 auto;}
-@media(min-width:700px){.plate-wrap{max-width:280px;margin:0;}}
-.plate-canvas-wrap{position:relative;width:100%;aspect-ratio:1;max-width:280px;margin:0 auto;}
-#plateCanvas{width:100%;height:100%;border-radius:50%;display:block;}
-.plate-legend{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
-.pl-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--t2);}
-.pl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.menu-wrap{flex:1;min-width:0;}
-.menu-section{margin-bottom:16px;}
-.menu-sec-t{font-family:'Playfair Display',serif;font-size:15px;margin-bottom:10px;color:var(--t2);padding-bottom:6px;border-bottom:1px solid var(--b1);}
+/* The food screen uses .scr layout, not a custom wrapper */
+#s7 .pb{padding-bottom:calc(var(--cta) + 24px);}
+/* Package grid */
+.pkg-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:20px;}
+@media(min-width:480px){.pkg-grid{grid-template-columns:repeat(3,1fr);}}
+.pkg{
+  background:var(--card);border:1px solid var(--b1);border-radius:13px;
+  padding:14px 16px;cursor:pointer;transition:all .3s var(--ease);
+  position:relative;overflow:hidden;
+}
+.pkg:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35);}
+.pkg.sel{border-color:var(--gold);background:linear-gradient(135deg,var(--card),var(--gd));}
+.pkg-check{
+  position:absolute;top:10px;right:10px;
+  background:var(--gold);color:var(--bg);
+  width:20px;height:20px;border-radius:50%;
+  display:none;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;
+}
+.pkg.sel .pkg-check{display:flex;}
+.pkg-name{font-family:'Playfair Display',serif;font-size:16px;margin-bottom:3px;padding-right:28px;}
+.pkg-price{font-size:18px;font-weight:700;color:var(--gold);margin-bottom:6px;}
+.pkg-items{font-size:10px;color:var(--t2);line-height:1.7;}
+
+/* Plate + menu layout */
+.food-layout{
+  display:grid;
+  grid-template-rows:auto 1fr;
+  gap:0;
+}
+@media(min-width:700px){
+  .food-layout{
+    grid-template-columns:240px 1fr;
+    grid-template-rows:auto;
+    gap:20px;
+    align-items:start;
+  }
+}
+
+/* PLATE COLUMN — sticky on desktop, fixed mini-preview on mobile */
+.plate-col{
+  display:flex;flex-direction:column;align-items:center;
+}
+@media(min-width:700px){
+  .plate-col{position:sticky;top:calc(var(--nav) + 12px);}
+}
+/* Mobile: compact horizontal strip at top */
+.plate-mobile-strip{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--b1);border-radius:12px;
+  padding:10px 14px;margin-bottom:16px;
+}
+@media(min-width:700px){.plate-mobile-strip{display:none;}}
+.pms-canvas-wrap{
+  position:relative;width:80px;height:80px;flex-shrink:0;
+}
+.pms-canvas-wrap canvas{width:80px;height:80px;border-radius:50%;display:block;}
+.pms-info{flex:1;min-width:0;}
+.pms-title{font-size:12px;font-weight:600;margin-bottom:2px;}
+.pms-count{font-size:10px;color:var(--t3);}
+.pms-items{font-size:10px;color:var(--t2);margin-top:4px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* Desktop plate */
+.plate-desktop{display:none;}
+@media(min-width:700px){.plate-desktop{display:flex;flex-direction:column;align-items:center;}}
+.plate-canvas-wrap{
+  position:relative;width:100%;max-width:220px;aspect-ratio:1;
+}
+.plate-canvas-wrap canvas{width:100%;height:100%;display:block;}
+.plate-legend{
+  margin-top:10px;width:100%;
+  display:flex;flex-wrap:wrap;gap:5px;justify-content:center;
+}
+.pl-item{
+  display:flex;align-items:center;gap:4px;
+  font-size:9px;color:var(--t2);
+  background:var(--card);border:1px solid var(--b1);
+  padding:3px 8px;border-radius:10px;cursor:pointer;
+  transition:all .2s;
+}
+.pl-item:hover{border-color:var(--rose);color:var(--rose);}
+.pl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.plate-count-lbl{
+  font-size:11px;color:var(--t2);margin-top:8px;text-align:center;
+  font-family:'Space Mono',monospace;letter-spacing:1px;
+}
+.plate-clear-btn{
+  margin-top:8px;background:none;border:1px solid var(--b2);
+  color:var(--t3);padding:5px 14px;border-radius:7px;font-size:10px;
+  cursor:pointer;transition:all .2s;width:100%;max-width:220px;
+}
+.plate-clear-btn:hover{border-color:var(--rose);color:var(--rose);}
+
+/* MENU COLUMN */
+.menu-col{min-width:0;}
+.menu-section{margin-bottom:20px;}
+.menu-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:8px;border-bottom:1px solid var(--b1);margin-bottom:10px;
+}
+.menu-sec-t{font-family:'Playfair Display',serif;font-size:16px;color:var(--t1);}
+.menu-sec-count{font-size:10px;color:var(--t3);font-family:'Space Mono',monospace;}
 .menu-items{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+@media(min-width:380px){.menu-items{grid-template-columns:repeat(3,1fr);}}
 @media(min-width:700px){.menu-items{grid-template-columns:repeat(3,1fr);}}
-.mitem{background:var(--card);border:1px solid var(--b1);border-radius:10px;padding:10px;cursor:pointer;transition:all .25s;display:flex;flex-direction:column;gap:4px;position:relative;}
-.mitem:hover{border-color:var(--b2);}
+.mitem{
+  background:var(--card);border:1px solid var(--b1);border-radius:10px;
+  padding:10px 8px;cursor:pointer;transition:all .25s;
+  display:flex;flex-direction:column;align-items:center;
+  gap:5px;position:relative;text-align:center;min-height:80px;
+  justify-content:center;
+}
+.mitem:hover{border-color:var(--b2);transform:scale(1.02);}
+.mitem:active{transform:scale(.96);}
 .mitem.sel{border-color:var(--gold);background:var(--gd);}
-.mitem-emoji{font-size:22px;}
-.mitem-name{font-size:11px;font-weight:600;line-height:1.3;}
-.mitem-cal{font-size:9px;color:var(--t3);}
-.mitem-ck{position:absolute;top:5px;right:5px;background:var(--gold);color:var(--bg);width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;animation:popIn .2s var(--ease);}
+.mitem-emoji{font-size:clamp(20px,4vw,24px);line-height:1;}
+.mitem-name{font-size:10px;font-weight:600;line-height:1.3;color:var(--t1);}
+.mitem-cal{font-size:8px;color:var(--t3);}
+.mitem-ck{
+  position:absolute;top:5px;right:5px;
+  background:var(--gold);color:var(--bg);
+  width:16px;height:16px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:700;animation:popIn .25s var(--ease);
+}
+.mitem-rm{
+  position:absolute;top:5px;right:5px;
+  background:var(--rose);color:#fff;
+  width:16px;height:16px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;cursor:pointer;
+  animation:popIn .25s var(--ease);
+  line-height:1;
+}
+/* Food drop animation container needs overflow:visible */
+.plate-canvas-wrap{overflow:visible;}
+
+/* Drop animation */
+@keyframes foodDrop{
+  0%{top:-40px;opacity:1;transform:translateX(-50%) scale(1.4);}
+  70%{top:35%;opacity:1;transform:translateX(-50%) scale(0.95);}
+  100%{top:40%;opacity:0;transform:translateX(-50%) scale(0.5);}
+}
 
 /* ═══════════════════════
    S6 — ITINERARY (drag-drop)
@@ -467,13 +654,38 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .scard{background:var(--card);border:1px solid var(--b1);border-radius:13px;padding:18px 10px;text-align:center;cursor:pointer;transition:all .3s var(--ease);}
 .scard:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.4);}
 .scard:active{transform:scale(.96);}
-.sc-i{font-size:30px;display:block;margin-bottom:8px;}
+.sc-i{font-size:28px;display:block;margin-bottom:8px;}
 .sc-n{font-size:12px;font-weight:600;margin-bottom:3px;}
 .sc-d{font-size:10px;color:var(--sage);font-weight:600;}
 /* confetti */
 #conf{position:fixed;inset:0;pointer-events:none;z-index:1000;}
 .cfp{position:absolute;top:-10px;animation:cfall linear both;}
 @keyframes cfall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(100dvh) rotate(720deg);opacity:0;}}
+
+/* ── GLOBAL EXTRA MOBILE FIXES ── */
+/* Prevent overflow on very narrow phones (320px) */
+@media(max-width:360px){
+  .h1{font-size:24px;}
+  .grp-opts{grid-template-columns:1fr;}
+  .vcards3{grid-template-columns:1fr;}
+  .vgrid{grid-template-columns:1fr;}
+  .et-grid{grid-template-columns:repeat(3,1fr);}
+  .pkg-grid{grid-template-columns:1fr;}
+  .city-grid{grid-template-columns:repeat(2,1fr);}
+  .bnum{font-size:32px;}
+  .ctabar{gap:8px;}
+  .btn-go{padding:11px 16px;font-size:12px;}
+}
+/* Timeline container on mobile */
+@media(max-width:500px){
+  .tl-container{grid-template-columns:50px 1fr;}
+  .tl-time-slot{font-size:8px;padding:0 3px;}
+  .tl-event{padding:6px 8px;}
+  .tl-event-title{font-size:11px;}
+  .tl-event-vendor{font-size:9px;}
+}
+/* Sort row wraps on mobile */
+.sort-row{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap;}
 
 /* ═══════════════════════
    VENUE PHOTOS MODAL
@@ -510,15 +722,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 ═══════════════════════════════════════ -->
 <div class="grp-pop" id="grpPop">
   <div class="grp-box">
-    <div style="font-size:40px;margin-bottom:14px;">🎊</div>
-    <div class="grp-title">Plan with your people</div>
-    <div class="grp-sub">Invite family or friends to co-plan your event. Or go solo — totally your call.</div>
+    <div style="font-size:44px;margin-bottom:12px;">🫂</div>
+    <div class="grp-title">The more, the merrier</div>
+    <div class="grp-sub" style="font-style:italic;color:var(--t2);">"The best events are planned together — every opinion makes it more yours."</div>
+    <div style="font-size:11px;color:var(--t3);margin-bottom:20px;margin-top:-6px;">Invite your people to compare vendors, vote on decisions, and co-create the plan.</div>
     <div class="grp-opts">
-      <div class="go rp" id="go-fam" onclick="pickGroup('family')"><span class="go-em">👨‍👩‍👧‍👦</span><div class="go-l">Family</div><div class="go-d">Parents, siblings & relatives</div></div>
-      <div class="go rp" id="go-fri" onclick="pickGroup('friends')"><span class="go-em">🎉</span><div class="go-l">Friends</div><div class="go-d">Besties & co-planners</div></div>
+      <div class="go rp" id="go-fam" onclick="pickGroup('family')"><span class="go-em">👨‍👩‍👧‍👦</span><div class="go-l">Family Group</div><div class="go-d">Parents, siblings & relatives who want a say</div></div>
+      <div class="go rp" id="go-fri" onclick="pickGroup('friends')"><span class="go-em">🎉</span><div class="go-l">Friends Group</div><div class="go-d">Besties, co-planners, the squad</div></div>
     </div>
+    <div style="font-size:10px;color:var(--t3);margin-bottom:14px;display:flex;align-items:center;gap:5px;justify-content:center;"><span>⚡</span>Group created instantly · Share via link or phone</div>
     <button class="grp-proceed" id="grpProceed" onclick="doGroup()">Create Group & Continue →</button>
-    <button class="grp-skip" id="grpSkip" onclick="doSolo()">Skip — continue solo</button>
+    <button class="grp-skip" id="grpSkip" onclick="doSolo()">I'm planning solo — skip this step</button>
+    <div style="font-size:10px;color:var(--t3);margin-top:10px;">You can always add people later from your event dashboard.</div>
   </div>
 </div>
 
@@ -599,7 +814,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="sp-tag">Effortless Events · Anywhere in India</div>
       <div class="sp-btns">
         <button class="sp-cta rp" onclick="goTo(1)">Start Planning →</button>
+        <span class="speed-badge shimmer" style="font-size:9px;"><span class="sb-icon">⚡</span>Full event booked in under 4 mins</span>
         <button class="sp-vendor rp" onclick="toast('Vendor portal opening soon!')">Join as Vendor</button>
+      </div>
+      <div style="margin-top:18px;font-size:11px;color:rgba(237,233,245,0.28);line-height:1.8;max-width:300px;margin-left:auto;margin-right:auto;font-style:italic;">
+        Your most important moments deserve<br>the perfect team behind them. 🥂
       </div>
     </div>
   </div>
@@ -620,10 +839,41 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </div>
   <div class="pb">
     <div class="eye">Discover · Step 01</div>
-    <div class="h1">Inspiration<br>Gallery</div>
-    <div class="sub">Browse top-rated events. Clone one to get started instantly — or build your own from scratch below.</div>
+    <div class="h1">Start with a<br>proven blueprint</div>
+    <div class="sub" style="margin-bottom:16px;">Browse real events loved by families like yours — or build your own from scratch.</div>
+
+    <!-- SCRATCH FIRST — always visible at top -->
+    <div class="scratch-top rp" onclick="goTo(2)">
+      <div class="st-left">
+        <div class="st-title">✦ Build my own event from scratch</div>
+        <div class="st-sub">Start fresh · You control every detail · Takes ~90 seconds</div>
+      </div>
+      <div class="st-badge">START →</div>
+    </div>
+
+    <!-- TRUST PILLS -->
+    <div class="trust-row">
+      <span class="trust-pill"><span class="tp-icon">⚡</span>Clone in 8 seconds</span>
+      <span class="trust-pill"><span class="tp-icon">✨</span>AI adapts to your budget</span>
+      <span class="trust-pill"><span class="tp-icon">🛡</span>Shadow backup on every vendor</span>
+    </div>
+
+    <!-- SOCIAL PROOF -->
+    <div class="social-strip">
+      <div class="social-card"><div class="sc-av" style="background:var(--gd);color:var(--gold);">P</div><span>"Planned my daughter's wedding in 3 mins flat." — Priya, Bengaluru ⭐⭐⭐⭐⭐</span></div>
+      <div class="social-card"><div class="sc-av" style="background:var(--rd);color:var(--rose);">R</div><span>"Cloned the palace event — saved ₹2L vs local quotes." — Rahul, Mysuru ⭐⭐⭐⭐⭐</span></div>
+      <div class="social-card"><div class="sc-av" style="background:var(--skd);color:var(--sky);">A</div><span>"Shadow vendor saved us when ours cancelled the night before." — Ananya ⭐⭐⭐⭐⭐</span></div>
+    </div>
+
+    <!-- GALLERY DIVIDER -->
+    <div class="gallery-divider"><span>Or clone a top-rated blueprint below</span></div>
+
     <div class="events-wrap" id="eventsWrap"></div>
-    <button class="scratch-btn rp" onclick="goTo(2)">✦ Start fresh — build your own event from scratch</button>
+
+    <div class="celeb-banner">
+      <div class="celeb-line1">"Every great celebration starts with a single decision."</div>
+      <div class="celeb-line2">Join 12,000+ families who trusted NoVigna with their most important days.</div>
+    </div>
   </div>
 </div>
 
@@ -637,9 +887,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <div class="pb">
     <div class="eye">Your Event · Step 02</div>
     <div class="h1">Tell us what<br>you're planning</div>
-    <div class="sub">Fill in the details. Our system will take it from here.</div>
+    <div class="step-time"><span class="st-dot"></span>Takes about 90 seconds · We handle the rest</div>
 
-    <div class="slbl">Event Type</div>
+    <div class="eq">
+      <div class="eq-text">"The details you share here become the blueprint for the best day of your life."</div>
+      <div class="eq-attr">— NoVigna AI Planner</div>
+    </div>
+
+    <div class="slbl">What's the occasion?</div>
     <div class="et-grid" id="etGrid">
       <div class="etb sel rp" onclick="pickET(this)"><span class="ei">💍</span><span class="el">Wedding</span></div>
       <div class="etb rp" onclick="pickET(this)"><span class="ei">🎂</span><span class="el">Birthday</span></div>
@@ -653,13 +908,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div class="sep"></div>
-    <div class="slbl">Event Location</div>
+    <div class="slbl">Where is your event? 📍</div>
     <button class="loc-btn rp" onclick="detectLocation()" style="margin-bottom:6px;">📍 Use My Current Location</button>
+    <div class="micro"><span class="mic-icon">💡</span>Planning in a different city? We find you the best vendors there — even if you've never been.</div>
     <div class="loc-or">— or choose a city in Karnataka —</div>
     <div class="city-grid" id="cityGrid"></div>
 
     <div class="sep"></div>
-    <div class="slbl">Single or Multi-Day?</div>
+    <div class="slbl">When is the big day?</div>
     <div class="sdt-toggle" onclick="toggleSingleDay()">
       <div class="tt" id="sdTt"><div class="th"></div></div>
       <span class="tl" id="sdLbl">Multi-day event (start & end date)</span>
@@ -669,31 +925,35 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="dsep">→</div>
       <div class="fg" id="endWrap"><label class="fl">End Date</label><input class="fi" type="date" id="dEnd" value="2025-11-16" oninput="updateBar()"></div>
     </div>
+    <div class="micro"><span class="mic-icon">📅</span>We check real-time vendor availability for every date you select.</div>
 
     <div class="sep"></div>
-    <div class="slbl">Number of Guests</div>
+    <div class="slbl">How many guests are you celebrating with?</div>
     <div class="gstepper">
       <button class="gsb rp" onclick="chGuests(-25)">−</button>
       <div class="gsc"><div class="gsnum" id="gnum">200</div><div class="gsu">guests</div></div>
       <button class="gsb rp" onclick="chGuests(25)">+</button>
     </div>
+    <div class="micro"><span class="mic-icon">🎉</span>The more people you celebrate with, the more memories you create.</div>
 
     <div class="sep"></div>
-    <div class="slbl">Budget</div>
+    <div class="slbl">What's your total budget?</div>
     <div class="bnum" id="budgetNum">₹15,00,000</div>
-    <div class="bhint">Drag to adjust</div>
+    <div class="bhint">Drag to adjust · AI splits this smartly across all vendors</div>
     <input type="range" id="budgetSlider" min="100000" max="10000000" value="1500000" step="50000" oninput="updateBudget(this.value)">
+    <div class="micro"><span class="mic-icon">🛡</span>No hidden fees. No surprises. What you see is what you pay.</div>
 
     <div class="sep"></div>
-    <div class="slbl">Venue Preference</div>
+    <div class="slbl">What kind of venue feels right?</div>
     <div class="vgrid">
       <div class="vopt rp" onclick="pickVenue(this)"><div class="vt">Standard</div><div class="vn">Classic</div><div class="vp">Up to ₹5L</div></div>
       <div class="vopt sel rp" onclick="pickVenue(this)"><div class="vt">Premium</div><div class="vn">Luxury</div><div class="vp">₹5L–₹20L</div></div>
       <div class="vopt rp" onclick="pickVenue(this)"><div class="vt">Ultra</div><div class="vn">Royal</div><div class="vp">₹20L+</div></div>
     </div>
+    <div class="micro" style="margin-top:8px;"><span class="mic-icon">✨</span>Every tier includes shadow backup — your event never gets cancelled.</div>
   </div>
   <div class="ctabar">
-    <div class="cta-l"><div class="cta-lbl">Your Event</div><div class="cta-v" id="ctaV">Wedding · Bengaluru · 200 guests</div></div>
+    <div class="cta-l"><div class="cta-lbl">Your Event</div><div class="cta-v" id="ctaV">Wedding · Bengaluru · 200 guests</div><div class="cta-nudge">⚡ Vendors ready in ~30 seconds</div></div>
     <button class="btn-go rp" onclick="runAI()">Find Vendors ✦</button>
   </div>
 </div>
@@ -702,7 +962,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <div class="scr" id="s3">
   <div class="ai-wrap">
     <div class="rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring-c">✦</div></div>
-    <div class="ai-title">Finding your perfect vendors</div>
+    <div class="ai-title">Crafting your perfect event</div>
     <div class="ai-msg" id="aiMsg">Initialising…</div>
     <div class="ai-pb"><div class="ai-pf" id="aiPf"></div></div>
     <div class="agents" id="agents">
@@ -712,6 +972,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="ag" id="ag4">Shadow Assigner</div>
       <div class="ag" id="ag5">Plan Builder</div>
     </div>
+    <div class="ai-caption" id="aiCaption">Scanning 2,400+ vendors across Karnataka…</div>
   </div>
 </div>
 
@@ -733,13 +994,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </div>
   <div class="pb">
     <div class="eye">Step 03 · Vendors</div>
-    <div class="h1">Your recommended<br>lineup</div>
-    <div class="sub">Best-matched vendors with backup coverage. Tap any card to select or swap.</div>
+    <div class="h1">Meet your<br>dream team</div>
+    <div class="step-time"><span class="st-dot"></span>Handpicked in 28 seconds · Every vendor verified</div>
+
+    <div class="section-caption">
+      <div class="sc-icon">🛡</div>
+      <div class="sc-text"><strong>Shadow backup on every booking.</strong> If any vendor cancels — even the night before — your shadow vendor activates instantly. You'll never know it happened.</div>
+    </div>
+
     <div class="bstrip"><div class="bstrip-top"><span style="font-size:13px;font-weight:600;">Budget Overview</span><span class="bstrip-rem" id="bRem">₹3.2L remaining</span></div><div class="btrack"><div class="bfill" id="bFill"></div></div><div class="bcats" id="bCats"></div></div>
     <div id="vendorSecs"></div>
   </div>
   <div class="ctabar">
-    <div class="cta-l"><div class="cta-lbl">Selection</div><div class="cta-v" id="v4count">Vendors matched</div></div>
+    <div class="cta-l"><div class="cta-lbl">Selection</div><div class="cta-v" id="v4count">Vendors matched</div><div class="cta-nudge">🛡 Shadow vendor pre-assigned to each</div></div>
     <button class="btn-go rp" onclick="goTo(6)">Build Plan →</button>
   </div>
 </div>
@@ -753,8 +1020,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </div>
   <div class="pb">
     <div class="eye">Manual Selection</div>
-    <div class="h1">Choose your<br>own vendors</div>
-    <div class="sub">Filter by category, sort by preference. Booked vendors show a negotiate option.</div>
+    <div class="h1">Your eye, your<br>choice</div>
+    <div class="step-time"><span class="st-dot"></span>Browse at your own pace · No pressure</div>
+    <div class="micro" style="margin-bottom:16px;"><span class="mic-icon">💡</span>Booked vendors are greyed out — tap them to send a negotiation offer. Sometimes they make room for the right event.</div>
     <div class="filter-chips" id="filterChips">
       <div class="fchip on rp" onclick="filterCat(this,'all')">All</div>
       <div class="fchip rp" onclick="filterCat(this,'venue')">🏛 Venue</div>
@@ -786,14 +1054,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <button class="nav-btn" onclick="goTo(4)">← Vendors</button>
   </div>
   <div class="pb">
-    <div class="eye">Step 04 · Plan</div>
-    <div class="h1">Your event<br>timeline</div>
-    <div class="sub">Drag events to reschedule. Tap an event to change its time slot.</div>
+    <div class="eye">Step 04 · Your Plan</div>
+    <div class="h1">Your story,<br>hour by hour</div>
+    <div class="step-time"><span class="st-dot"></span>AI-crafted · Every moment intentional</div>
+
+    <div class="eq">
+      <div class="eq-text">"A beautiful event isn't about a single grand gesture — it's about every moment flowing into the next."</div>
+      <div class="eq-attr">— Drag to rearrange · Tap any event to change its time</div>
+    </div>
+
     <div class="dtabs" id="dayTabs"></div>
     <div id="tlWrap"></div>
   </div>
   <div class="ctabar">
-    <div class="cta-l"><div class="cta-lbl">Timeline</div><div class="cta-v" id="itiV">Your plan is ready</div></div>
+    <div class="cta-l"><div class="cta-lbl">Your Timeline</div><div class="cta-v" id="itiV">Your plan is ready</div><div class="cta-nudge">✦ Drag events · Tap to change time</div></div>
     <button class="btn-go rp" onclick="showGroupPop()">Confirm Plan →</button>
   </div>
 </div>
@@ -805,33 +1079,65 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="nav-steps" id="ns-7"></div>
     <button class="nav-btn" onclick="goTo(6)">← Plan</button>
   </div>
-  <div class="food-screen">
+  <div class="pb">
     <div class="eye">Catering · Step 04b</div>
-    <div class="h1">Curate your<br>menu</div>
-    <div class="sub">Choose a package or build your own plate item by item.</div>
+    <div class="h1">Food is how you<br>say "I love you"</div>
+    <div class="step-time"><span class="st-dot"></span>Your guests will talk about the food for years · Tap to add, tap again to remove</div>
 
-    <div class="slbl">Choose a Package</div>
+    <!-- PACKAGES -->
+    <div class="slbl" style="margin-bottom:10px;">Choose a Package — or build your own below</div>
     <div class="pkg-grid" id="pkgGrid"></div>
 
     <div class="sep"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
-      <div class="slbl" style="margin:0;">Build Your Plate</div>
-      <div style="font-size:11px;color:var(--t3);">Tap items to add to your plate</div>
+    <div class="slbl" style="margin-bottom:14px;">Build Your Plate 🍽</div>
+
+    <!-- MOBILE PLATE STRIP — sticky mini plate preview while scrolling -->
+    <div class="plate-mobile-strip" id="plateMobileStrip">
+      <div class="pms-canvas-wrap">
+        <canvas id="plateCanvasMini" width="80" height="80"></canvas>
+      </div>
+      <div class="pms-info">
+        <div class="pms-title">Your Plate</div>
+        <div class="pms-count" id="pmsCount">Nothing added yet</div>
+        <div class="pms-items" id="pmsItems">Tap any item below to add it →</div>
+      </div>
     </div>
 
-    <div class="plate-section">
-      <div class="plate-wrap">
-        <div style="text-align:center;margin-bottom:8px;font-size:11px;color:var(--t3);">Your Plate</div>
-        <div class="plate-canvas-wrap"><canvas id="plateCanvas" width="280" height="280"></canvas></div>
+    <!-- MAIN FOOD LAYOUT: plate (desktop) + menu -->
+    <div class="food-layout">
+
+      <!-- DESKTOP PLATE (sticky column) -->
+      <div class="plate-col plate-desktop">
+        <div style="font-size:11px;color:var(--t3);margin-bottom:8px;font-family:'Space Mono',monospace;letter-spacing:1px;">YOUR PLATE</div>
+        <div class="plate-canvas-wrap" id="plateWrap">
+          <canvas id="plateCanvas" width="220" height="220"></canvas>
+        </div>
         <div class="plate-legend" id="plateLegend"></div>
-        <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--t2);" id="plateCount">0 items selected</div>
+        <div class="plate-count-lbl" id="plateCount">0 items on your plate</div>
+        <button class="plate-clear-btn rp" onclick="clearPlate()">✕ Clear plate</button>
       </div>
-      <div class="menu-wrap" id="menuWrap"></div>
+
+      <!-- MENU COLUMN -->
+      <div class="menu-col" id="menuWrap"></div>
+    </div>
+
+    <!-- MOBILE: show full plate below menu when items exist -->
+    <div id="plateMobileFullWrap" style="display:none;margin-top:24px;">
+      <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:8px;font-family:'Space Mono',monospace;letter-spacing:1px;">YOUR FULL PLATE</div>
+      <div style="max-width:260px;margin:0 auto;position:relative;">
+        <canvas id="plateCanvasFull" width="260" height="260" style="width:100%;height:auto;display:block;"></canvas>
+      </div>
+      <div class="plate-legend" id="plateLegendMobile" style="margin-top:10px;"></div>
+      <button class="plate-clear-btn rp" onclick="clearPlate()" style="margin-top:8px;">✕ Clear plate</button>
     </div>
   </div>
+
   <div class="ctabar">
-    <div class="cta-l"><div class="cta-lbl">Menu</div><div class="cta-v" id="menuV">Select your items</div></div>
-    <button class="btn-go rp" onclick="goTo(8)">Confirm Menu →</button>
+    <div class="cta-l">
+      <div class="cta-lbl">Your Menu</div>
+      <div class="cta-v" id="menuV">Select items — tap to add, tap again to remove</div>
+    </div>
+    <button class="btn-go rp" onclick="confirmMenuAndContinue()">Confirm Menu →</button>
   </div>
 </div>
 
@@ -844,8 +1150,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </div>
   <div class="pb">
     <div class="eye">Step 05 · Invoice</div>
-    <div class="h1">Review &<br>confirm</div>
-    <div class="sub">Your event summary. Confirming sends booking requests to all vendors.</div>
+    <div class="h1">One tap away from<br>making it real</div>
+    <div class="step-time"><span class="st-dot"></span>Review · Confirm · Celebrate</div>
+
+    <div class="reassure">
+      <span class="ri">🛡</span>
+      <span>Every vendor has a shadow backup. If anything changes, we fix it for you — automatically and silently.</span>
+    </div>
+
     <div class="inv-card">
       <div class="inv-hdr">
         <div><div class="inv-logo">No<b>Vigna</b></div><div style="font-size:9px;color:var(--t3);letter-spacing:2px;margin-top:5px;">EVENTS WITHOUT FRICTION</div></div>
@@ -865,7 +1177,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
   </div>
   <div class="ctabar">
-    <div class="cta-l"><div class="cta-lbl">Vendors confirm within</div><div class="cta-v">2 hours · Shadow backup active</div></div>
+    <div class="cta-l"><div class="cta-lbl">You're almost there</div><div class="cta-v">Vendors confirm in under 2 hours</div><div class="cta-nudge">🥂 Your event is about to become real</div></div>
     <button class="btn-go rp" id="confBtn" onclick="confirmBooking()">Confirm Booking ✦</button>
   </div>
 </div>
@@ -880,20 +1192,26 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <div class="pb">
     <div class="success-card">
       <span class="suc-icon">🎊</span>
-      <div class="suc-title">Event Confirmed!</div>
-      <div class="suc-sub" id="sucSub">Your vendors have been notified</div>
+      <div class="suc-title">It's happening. 🥹</div>
+      <div class="suc-sub" id="sucSub">Your vendors have been notified — your event is locked in</div>
     </div>
-    <div class="eye" style="margin-bottom:10px;">Complete the Experience</div>
-    <div class="sub" style="margin-top:-4px;margin-bottom:20px;">Exclusive partner rates for everything else you need.</div>
+
+    <div class="eq" style="margin-bottom:20px;">
+      <div class="eq-text">"The hardest part is done. Now all you have to do is show up and soak it all in."</div>
+      <div class="eq-attr">— NoVigna Team</div>
+    </div>
+
+    <div class="eye" style="margin-bottom:6px;">One Last Thing</div>
+    <div class="sub" style="margin-top:0;margin-bottom:16px;">Complete the full experience. Your group gets exclusive rates on everything below.</div>
     <div class="shop-grid">
-      <div class="scard rp" onclick="toast('Opening fashion partners…')"><span class="sc-i">👗</span><div class="sc-n">Attire</div><div class="sc-d">Up to 20% off</div></div>
-      <div class="scard rp" onclick="toast('Opening jewellery partners…')"><span class="sc-i">💎</span><div class="sc-n">Jewellery</div><div class="sc-d">Exclusive rates</div></div>
-      <div class="scard rp" onclick="toast('Hotels near venue…')"><span class="sc-i">🏨</span><div class="sc-n">Stays</div><div class="sc-d">Group discount</div></div>
-      <div class="scard rp" onclick="toast('Flights & transfers…')"><span class="sc-i">✈️</span><div class="sc-n">Travel</div><div class="sc-d">Bundle savings</div></div>
-      <div class="scard rp" onclick="toast('Mehendi artists nearby…')"><span class="sc-i">🌿</span><div class="sc-n">Mehendi</div><div class="sc-d">5 artists near you</div></div>
-      <div class="scard rp" onclick="toast('Bridal makeup packages…')"><span class="sc-i">💄</span><div class="sc-n">Makeup</div><div class="sc-d">Bridal packages</div></div>
-      <div class="scard rp" onclick="toast('Invitation options…')"><span class="sc-i">💌</span><div class="sc-n">Invitations</div><div class="sc-d">Print + digital</div></div>
-      <div class="scard rp" onclick="toast('Gift hampers…')"><span class="sc-i">🎁</span><div class="sc-n">Gifting</div><div class="sc-d">Curated hampers</div></div>
+      <div class="scard rp" onclick="toast('Opening fashion partners — look stunning on your day! 👗')"><span class="sc-i">👗</span><div class="sc-n">Attire</div><div class="sc-d">Up to 20% off</div></div>
+      <div class="scard rp" onclick="toast('Opening jewellery partners — you deserve to sparkle 💎')"><span class="sc-i">💎</span><div class="sc-n">Jewellery</div><div class="sc-d">Exclusive rates</div></div>
+      <div class="scard rp" onclick="toast('Best hotels near your venue — rest well, celebrate more 🏨')"><span class="sc-i">🏨</span><div class="sc-n">Stays</div><div class="sc-d">Group discount</div></div>
+      <div class="scard rp" onclick="toast('Flights & transfers sorted — arrive in style ✈️')"><span class="sc-i">✈️</span><div class="sc-n">Travel</div><div class="sc-d">Bundle savings</div></div>
+      <div class="scard rp" onclick="toast('Beautiful mehendi makes beautiful memories 🌿')"><span class="sc-i">🌿</span><div class="sc-n">Mehendi</div><div class="sc-d">5 artists near you</div></div>
+      <div class="scard rp" onclick="toast('Because you deserve to look your absolute best 💄')"><span class="sc-i">💄</span><div class="sc-n">Makeup</div><div class="sc-d">Bridal packages</div></div>
+      <div class="scard rp" onclick="toast('Invitations that set the tone — first impressions matter 💌')"><span class="sc-i">💌</span><div class="sc-n">Invitations</div><div class="sc-d">Print + digital</div></div>
+      <div class="scard rp" onclick="toast('Curated hampers — because every guest deserves to feel special 🎁')"><span class="sc-i">🎁</span><div class="sc-n">Gifting</div><div class="sc-d">Curated hampers</div></div>
     </div>
     <div style="background:var(--card);border:1px solid var(--b1);border-radius:13px;padding:20px;text-align:center;">
       <div class="eye" style="text-align:center;margin-bottom:6px;">Share Your Event</div>
@@ -996,9 +1314,7 @@ const INV_LINES=[
   {n:'Platform & Guarantee Fee',v:'Shadow cover · AI planning · Support',a:40000},
 ];
 
-/* ── PLATE STATE ── */
-let plateItems=[];
-let selPkg=-1;
+/* ── PLATE STATE — declared in food section below ── */
 
 /* ── NAV ── */
 function goTo(n){
@@ -1017,7 +1333,7 @@ function goTo(n){
   if(n===4){buildVendors();setTimeout(()=>{document.getElementById('bFill').style.width='79%';},400);}
   if(n===5)buildManual();
   if(n===6)buildItinerary();
-  if(n===7)buildFood();
+  if(n===7){buildFood();updateMobilePlateStrip();}
   if(n===8)buildInvoice();
 }
 window.goTo=goTo;
@@ -1104,8 +1420,8 @@ function buildEvents(){
 }
 function cloneEvent(i){
   const e=EVENTS[i];
-  toast(`Cloning "${e.name}"…`);
-  setTimeout(()=>{document.querySelectorAll('.etb').forEach(b=>b.classList.remove('sel'));const m=document.querySelector('.etb');if(m)m.classList.add('sel');goTo(2);},500);
+  toast(`✨ Cloning "${e.name}" — adapting to your city & budget…`);
+  setTimeout(()=>{document.querySelectorAll('.etb').forEach(b=>b.classList.remove('sel'));const m=document.querySelector('.etb');if(m)m.classList.add('sel');goTo(2);},600);
 }
 
 /* ── CITIES ── */
@@ -1165,7 +1481,22 @@ function updateBar(){
 }
 
 /* ── AI LOADING ── */
-const AIMSGS=['Initialising multi-agent system…','Scanning available vendors…','Checking calendar availability…','Budget Allocator running…','Shadow Assigner working…','Building your personalised plan…'];
+const AIMSGS=[
+  'Waking up our AI planner…',
+  'Scanning 2,400+ vendors in your city…',
+  'Reading 14,000 guest reviews so you don\'t have to…',
+  'Allocating your budget for maximum wow factor…',
+  'Pre-assigning shadow vendors as backup…',
+  'Putting your dream team together ✦',
+];
+const AI_CAPTIONS=[
+  'This usually takes about 28 seconds.',
+  'Checking real-time calendars for your exact dates…',
+  'Filtering by rating, reviews & availability…',
+  'Every rupee working hard for your event…',
+  'Your backup is assigned before you even ask.',
+  'Almost done — something beautiful is coming.',
+];
 function runAI(){
   goTo(3);
   let prog=0,ai=0;
@@ -1175,9 +1506,11 @@ function runAI(){
     const mi=Math.min(Math.floor(prog/(100/AIMSGS.length)),AIMSGS.length-1);
     document.getElementById('aiMsg').textContent=AIMSGS[mi];
     document.getElementById('aiPf').style.width=prog+'%';
+    const capEl=document.getElementById('aiCaption');
+    if(capEl)capEl.textContent=AI_CAPTIONS[mi]||'';
     if(ai<ags.length){document.getElementById(ags[ai]).classList.add('on');ai++;}
     if(prog>=100){clearInterval(iv);setTimeout(()=>goTo(4),350);}
-  },300);
+  },320);
 }
 
 /* ── VENDORS ── */
@@ -1189,31 +1522,38 @@ function buildVendors(){
     const vs=VENDOR_CATS[cat];
     const cards=vs.map(v=>{
       const isPrimary=v.type==='primary',isShadow=v.type==='shadow',isNeg=v.type==='negotiate';
-      const typeLabel=isPrimary?'✦ AI Pick':isShadow?'⟳ Shadow Backup':isNeg?'⚡ Open to Negotiate':'';
+      const typeLabel=isPrimary?'✦ AI Pick — Best Match':isShadow?'⟳ Shadow Backup — Auto-assigned':isNeg?'⚡ Open to Negotiate':'';
+      const typeSub=isPrimary?'Top-rated · Available · Best value for your budget':isShadow?'Steps in automatically if your primary cancels — you\'ll never know the difference':isNeg?'Currently booked, but they\'ve accepted offers before. Worth a try.':``;
       const cls=`vc3${isPrimary?' ai-pick':isShadow?' shadow':isNeg?' neg':''} rp`;
-      const isCatering=v.cat==='catering';
+      const isCatering = v.cat==='catering';
       return`<div class="${cls}" onclick="toggleVC3(this,'${v.cat}')">
         ${isPrimary?'<div class="vc3-check">✓</div>':''}
         <div class="vc3-type">${typeLabel}</div>
-        <div class="vc3-top"><div class="vc3-name">${v.name}</div><div class="vc3-r">★ ${v.rating}</div></div>
+        <div style="font-size:9px;color:var(--t3);margin-bottom:7px;line-height:1.5;">${typeSub}</div>
+        <div class="vc3-top"><div class="vc3-name">${v.name}</div><div class="vc3-r">★ ${v.rating} (${v.rev})</div></div>
         <div class="vc3-price">₹${v.price.toLocaleString('en-IN')}</div>
-        <div class="${v.avail?'vc3-avail':'vc3-unavail'}">${v.avail?'✓ Available on your dates':'✗ Currently booked'}</div>
-        ${v.photos.length?`<button class="view-photos-btn" onclick="event.stopPropagation();openPhotos('${v.name}',${JSON.stringify(v.photos).replace(/"/g,"'")})">View Photos & Videos</button>`:''}
-        ${isCatering?`<button class="view-photos-btn" style="margin-top:4px;background:var(--gd);border-color:rgba(212,168,67,.3);color:var(--gold);" onclick="event.stopPropagation();goTo(7)">Select Menu & Food Package →</button>`:''}
-        ${isNeg?`<button class="neg-btn-sm" onclick="event.stopPropagation();openNeg('${v.name}')">Send Offer to Negotiate</button>`:''}
+        <div class="${v.avail?'vc3-avail':'vc3-unavail'}">${v.avail?'✓ Available on your dates':'✗ Currently booked on your dates'}</div>
+        ${v.photos.length?`<button class="view-photos-btn" onclick="window._vc3Skip=true;event.stopPropagation();openPhotos('${v.name}',${JSON.stringify(v.photos).replace(/"/g,"'")})">📷 View Photos & Virtual Tour</button>`:''}
+        ${isCatering?`<button class="view-photos-btn" style="margin-top:4px;background:var(--gd);border-color:rgba(212,168,67,.3);color:var(--gold);" onclick="window._vc3Skip=true;event.stopPropagation();goTo(7)">🍽 Curate the Menu →</button>`:''}
+        ${isNeg?`<button class="neg-btn-sm" onclick="window._vc3Skip=true;event.stopPropagation();openNeg('${v.name}')">Send an offer — they might say yes</button>`:''}
       </div>`;
     }).join('');
     return`<div class="vsec"><div class="vsec-h"><div class="vsec-t">${cat}</div><button class="vsec-m" onclick="goTo(5)">Manual</button></div><div class="vcards3">${cards}</div></div>`;
   }).join('');
   document.getElementById('v4count').textContent=`${cats.length} categories matched · Shadow on every booking`;
 }
-function toggleVC3(el,cat){
-  if(el.classList.contains('neg'))return;
+function toggleVC3(el, cat){
+  // If the click came from a button inside the card (photos, menu, negotiate), ignore
+  if(window._vc3Skip){ window._vc3Skip=false; return; }
+  if(el.classList.contains('neg')) return;
   el.classList.toggle('ai-pick');
-  const hasCk=el.querySelector('.vc3-check');
-  if(el.classList.contains('ai-pick')&&!hasCk){const ck=document.createElement('div');ck.className='vc3-check';ck.textContent='✓';el.appendChild(ck);}
-  else if(!el.classList.contains('ai-pick')&&hasCk)hasCk.remove();
-  toast(el.classList.contains('ai-pick')?el.querySelector('.vc3-name').textContent+' selected ✓':'Vendor removed');
+  const hasCk = el.querySelector('.vc3-check');
+  if(el.classList.contains('ai-pick') && !hasCk){
+    const ck = document.createElement('div'); ck.className='vc3-check'; ck.textContent='✓'; el.appendChild(ck);
+  } else if(!el.classList.contains('ai-pick') && hasCk){
+    hasCk.remove();
+  }
+  toast(el.classList.contains('ai-pick') ? el.querySelector('.vc3-name').textContent+' selected ✓' : 'Vendor removed from selection');
 }
 function openPhotos(name,photos){
   document.getElementById('photoTitle').textContent=name+' — Gallery';
@@ -1374,181 +1714,425 @@ function pickSlot(time){
   toast('Time updated to '+time+' ✓');
 }
 
-/* ── GROUP POPUP ── */
-function showGroupPop(){document.getElementById('grpPop').classList.add('show');}
-function pickGroup(t){
-  S.group=t;
-  document.getElementById('go-fam').classList.toggle('sel',t==='family');
-  document.getElementById('go-fri').classList.toggle('sel',t==='friends');
-  document.getElementById('grpProceed').style.display='block';
+/* ══════════════════════════════════════
+   GROUP POPUP — bulletproof rewrite
+══════════════════════════════════════ */
+function showGroupPop(){
+  const pop = document.getElementById('grpPop');
+  if(!pop) return;
+  // Reset state
+  S.group = null;
+  const fam = document.getElementById('go-fam');
+  const fri = document.getElementById('go-fri');
+  const btn = document.getElementById('grpProceed');
+  if(fam) fam.classList.remove('sel');
+  if(fri) fri.classList.remove('sel');
+  if(btn) btn.style.display = 'none';
+  pop.classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
-function doGroup(){
-  document.getElementById('grpPop').classList.remove('show');
-  document.body.style.overflow='';
-  toast(`${S.group==='family'?'Family':'Friends'} group created ✓`);
-  goTo(8);
-}
-function doSolo(){
-  S.group=null;
-  document.getElementById('grpPop').classList.remove('show');
-  document.body.style.overflow='';
-  toast('Continuing solo ✓');
-  goTo(8);
-}
-// close group popup on backdrop click
-document.getElementById('grpPop').addEventListener('click',e=>{if(e.target===document.getElementById('grpPop'))doSolo();});
 
-/* ── FOOD / 3D PLATE ── */
-let selectedItems=[];
+function pickGroup(type){
+  S.group = type;
+  const fam = document.getElementById('go-fam');
+  const fri = document.getElementById('go-fri');
+  const btn = document.getElementById('grpProceed');
+  if(fam) fam.classList.toggle('sel', type==='family');
+  if(fri) fri.classList.toggle('sel', type==='friends');
+  if(btn){ btn.style.display = 'block'; btn.style.cssText = 'width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);border:none;padding:13px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;transition:all .2s;display:block;'; }
+}
+
+function closeGroupPop(){
+  const pop = document.getElementById('grpPop');
+  if(pop){ pop.classList.remove('show'); }
+  document.body.style.overflow = '';
+}
+
+function doGroup(){
+  closeGroupPop();
+  const label = S.group === 'family' ? 'Family' : 'Friends';
+  toast(`🎉 ${label} group created! Everyone can co-plan this event.`);
+  setTimeout(() => goTo(8), 300);
+}
+
+function doSolo(){
+  S.group = null;
+  closeGroupPop();
+  toast('Going solo — you\'ve got this. ✦');
+  setTimeout(() => goTo(8), 300);
+}
+
+// Attach backdrop close — deferred to after DOM ready
+window.addEventListener('load', () => {
+  const pop = document.getElementById('grpPop');
+  if(pop){
+    pop.addEventListener('click', e => {
+      if(e.target === pop) doSolo();
+    });
+  }
+});
+
+/* ══════════════════════════════════════
+   FOOD / 3D PLATE — complete rewrite
+══════════════════════════════════════ */
+let selectedItems = [];
+let selPkg = -1;
+
+/* Called when navigating to S7 */
 function buildFood(){
-  // packages
-  document.getElementById('pkgGrid').innerHTML=FOOD_PKGS.map((p,i)=>`
-    <div class="pkg rp${selPkg===i?' sel':''}" onclick="pickPkg(${i})">
+  buildPkgGrid();
+  buildMenuGrid();
+  drawAllPlates();
+  updateMenuBar();
+}
+
+/* ── PACKAGES ── */
+function buildPkgGrid(){
+  document.getElementById('pkgGrid').innerHTML = FOOD_PKGS.map((p,i) => `
+    <div class="pkg rp ${selPkg===i?'sel':''}" onclick="pickPkg(${i})">
+      <div class="pkg-check">✓</div>
       <div class="pkg-name">${p.name}</div>
-      <div class="pkg-price">₹${p.price}/plate</div>
+      <div class="pkg-price">₹${p.price}<span style="font-size:12px;color:var(--t3);font-weight:400;">/plate</span></div>
       <div class="pkg-items">${p.items}</div>
     </div>`).join('');
-  // menu
-  const mw=document.getElementById('menuWrap');
-  mw.innerHTML=Object.entries(MENU_ITEMS).map(([sec,items])=>`
-    <div class="menu-section">
-      <div class="menu-sec-t">${sec}</div>
-      <div class="menu-items">${items.map(it=>{
-        const sel=selectedItems.find(x=>x.n===it.n);
-        return`<div class="mitem${sel?' sel':''} rp" onclick="toggleFood(this,'${it.n}','${it.col}','${it.e}')">
-          ${sel?'<div class="mitem-ck">✓</div>':''}
-          <div class="mitem-emoji">${it.e}</div>
-          <div class="mitem-name">${it.n}</div>
-          <div class="mitem-cal">${it.c}</div>
-        </div>`;
-      }).join('')}</div>
-    </div>`).join('');
-  drawPlate();
-  updateMenuBar();
-}
-function pickPkg(i){
-  selPkg=i;
-  document.querySelectorAll('.pkg').forEach((p,pi)=>p.classList.toggle('sel',pi===i));
-  toast(FOOD_PKGS[i].name+' selected ✓');
-  updateMenuBar();
-}
-function toggleFood(el,name,col,emoji){
-  const idx=selectedItems.findIndex(x=>x.n===name);
-  if(idx>=0){selectedItems.splice(idx,1);el.classList.remove('sel');const ck=el.querySelector('.mitem-ck');if(ck)ck.remove();}
-  else{
-    selectedItems.push({n:name,col,e:emoji});
-    el.classList.add('sel');
-    if(!el.querySelector('.mitem-ck')){const ck=document.createElement('div');ck.className='mitem-ck';ck.textContent='✓';el.appendChild(ck);}
-  }
-  animatePlate(col,emoji);
-  drawPlate();
-  updateMenuBar();
-  buildPlateLegend();
-}
-function updateMenuBar(){
-  const pkg=selPkg>=0?FOOD_PKGS[selPkg].name+' + ':'';
-  document.getElementById('menuV').textContent=`${pkg}${selectedItems.length} custom items`;
-}
-function buildPlateLegend(){
-  document.getElementById('plateLegend').innerHTML=selectedItems.slice(0,6).map(it=>`<div class="pl-item"><div class="pl-dot" style="background:${it.col}"></div>${it.n}</div>`).join('');
-  document.getElementById('plateCount').textContent=selectedItems.length+' item'+(selectedItems.length!==1?'s':'')+' on your plate';
 }
 
-/* 3D PLATE CANVAS */
-function drawPlate(){
-  const canvas=document.getElementById('plateCanvas');
-  if(!canvas)return;
-  const ctx=canvas.getContext('2d');
-  const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2,R=W*0.46;
-  ctx.clearRect(0,0,W,H);
-  // shadow
-  const shadow=ctx.createRadialGradient(cx,cy+R*0.1,R*0.5,cx,cy+R*0.1,R*1.2);
-  shadow.addColorStop(0,'rgba(0,0,0,0.4)');shadow.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.beginPath();ctx.ellipse(cx,cy+R*0.1,R*1.05,R*0.3,0,0,Math.PI*2);
-  ctx.fillStyle=shadow;ctx.fill();
-  // plate body – 3D ellipse
-  const pg=ctx.createRadialGradient(cx-R*0.2,cy-R*0.2,R*0.1,cx,cy,R);
-  pg.addColorStop(0,'#FDFAF5');pg.addColorStop(0.6,'#F0EBE0');pg.addColorStop(1,'#D8D0C0');
-  ctx.beginPath();ctx.ellipse(cx,cy,R,R*0.92,0,0,Math.PI*2);
-  ctx.fillStyle=pg;ctx.fill();
-  // rim
-  ctx.beginPath();ctx.ellipse(cx,cy,R,R*0.92,0,0,Math.PI*2);
-  ctx.strokeStyle='rgba(200,190,175,0.6)';ctx.lineWidth=6;ctx.stroke();
-  // inner ring
-  ctx.beginPath();ctx.ellipse(cx,cy,R*0.88,R*0.81,0,0,Math.PI*2);
-  ctx.strokeStyle='rgba(200,190,175,0.3)';ctx.lineWidth=2;ctx.stroke();
-  if(selectedItems.length===0){
-    ctx.fillStyle='rgba(150,140,130,0.4)';ctx.font='14px Outfit,sans-serif';ctx.textAlign='center';
-    ctx.fillText('Tap items to add',cx,cy-8);ctx.fillText('to your plate',cx,cy+14);
+function pickPkg(i){
+  selPkg = selPkg === i ? -1 : i; // toggle off if already selected
+  buildPkgGrid();
+  const msgs = [
+    'Silver package locked in — warm and wonderful 🍛',
+    'Going all out! Your guests are truly lucky 🎉',
+    'The platinum experience — truly unforgettable 🌟'
+  ];
+  toast(selPkg >= 0 ? msgs[selPkg] : 'Package removed');
+  updateMenuBar();
+}
+
+/* ── MENU GRID ── */
+function buildMenuGrid(){
+  const mw = document.getElementById('menuWrap');
+  if(!mw) return;
+  mw.innerHTML = Object.entries(MENU_ITEMS).map(([sec, items]) => {
+    const selCount = items.filter(it => selectedItems.find(x => x.n === it.n)).length;
+    return `
+      <div class="menu-section">
+        <div class="menu-sec-hdr">
+          <div class="menu-sec-t">${sec}</div>
+          ${selCount > 0 ? `<div class="menu-sec-count">${selCount} on plate</div>` : ''}
+        </div>
+        <div class="menu-items">
+          ${items.map(it => {
+            const isSel = !!selectedItems.find(x => x.n === it.n);
+            // encode for safe inline onclick
+            const safeName = it.n.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+            const safeCol  = it.col;
+            const safeEmoji = it.e;
+            return `<div class="mitem ${isSel?'sel':''} rp" onclick="toggleFood(this,'${safeName}','${safeCol}','${safeEmoji}')">
+              ${isSel ? `<div class="mitem-rm">✕</div>` : ''}
+              <div class="mitem-emoji">${it.e}</div>
+              <div class="mitem-name">${it.n}</div>
+              <div class="mitem-cal">${it.c}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ── TOGGLE FOOD ITEM ── */
+function toggleFood(el, name, col, emoji){
+  const idx = selectedItems.findIndex(x => x.n === name);
+  if(idx >= 0){
+    // REMOVE
+    selectedItems.splice(idx, 1);
+    toast(`${emoji} ${name} removed from plate`);
+  } else {
+    // ADD
+    selectedItems.push({ n: name, col, e: emoji });
+    const msgs = [
+      `${emoji} Added to your plate!`,
+      `${emoji} Delicious choice! 😋`,
+      `${emoji} Your guests will love this!`,
+      `${emoji} Perfect addition! 🍽`,
+      `${emoji} Great pick! 🌟`
+    ];
+    toast(msgs[Math.floor(Math.random() * msgs.length)]);
+    animateDrop(emoji, col);
+  }
+  // Rebuild menu to update icons correctly
+  buildMenuGrid();
+  drawAllPlates();
+  updateMenuBar();
+  updateMobilePlateStrip();
+  // Show/hide the mobile full plate section
+  const mfw = document.getElementById('plateMobileFullWrap');
+  if(mfw) mfw.style.display = selectedItems.length > 0 ? 'block' : 'none';
+}
+
+/* ── ANIMATE DROP ── */
+function animateDrop(emoji, col){
+  // animate on the mini mobile plate
+  const miniWrap = document.querySelector('.pms-canvas-wrap');
+  // animate on the desktop plate wrap
+  const desktopWrap = document.getElementById('plateWrap');
+  [miniWrap, desktopWrap].forEach(wrap => {
+    if(!wrap) return;
+    const dp = document.createElement('div');
+    dp.textContent = emoji;
+    dp.style.cssText = `
+      position:absolute;font-size:24px;
+      top:-30px;left:50%;
+      transform:translateX(-50%);
+      pointer-events:none;z-index:20;
+      animation:foodDrop .65s var(--ease) forwards;
+    `;
+    wrap.appendChild(dp);
+    setTimeout(() => dp.remove(), 700);
+  });
+}
+
+/* ── DRAW PLATE (canvas) ── */
+function drawPlateOnCanvas(canvasId, size){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  // Ensure internal resolution matches
+  if(canvas.width !== size) canvas.width = size;
+  if(canvas.height !== size) canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const W = size, H = size, cx = W/2, cy = H/2, R = W * 0.44;
+  ctx.clearRect(0, 0, W, H);
+
+  // Drop shadow under plate
+  ctx.save();
+  const shadowG = ctx.createRadialGradient(cx, cy + R*0.15, R*0.3, cx, cy + R*0.15, R*1.15);
+  shadowG.addColorStop(0, 'rgba(0,0,0,0.45)');
+  shadowG.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + R*0.12, R*1.08, R*0.28, 0, 0, Math.PI*2);
+  ctx.fillStyle = shadowG;
+  ctx.fill();
+  ctx.restore();
+
+  // Plate base — 3D radial gradient
+  const plateG = ctx.createRadialGradient(cx - R*0.25, cy - R*0.25, R*0.05, cx, cy, R);
+  plateG.addColorStop(0, '#FEFCF8');
+  plateG.addColorStop(0.55, '#F2EBE0');
+  plateG.addColorStop(1, '#D4C8B8');
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI*2);
+  ctx.fillStyle = plateG;
+  ctx.fill();
+
+  // Outer rim highlight
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI*2);
+  const rimG = ctx.createLinearGradient(cx - R, cy - R, cx + R*0.5, cy + R*0.5);
+  rimG.addColorStop(0, 'rgba(255,255,255,0.7)');
+  rimG.addColorStop(1, 'rgba(180,165,148,0.4)');
+  ctx.strokeStyle = rimG;
+  ctx.lineWidth = size > 150 ? 8 : 4;
+  ctx.stroke();
+
+  // Inner ring groove
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * 0.85, 0, Math.PI*2);
+  ctx.strokeStyle = 'rgba(180,165,148,0.25)';
+  ctx.lineWidth = size > 150 ? 3 : 1.5;
+  ctx.stroke();
+
+  if(selectedItems.length === 0){
+    // Empty plate label
+    ctx.fillStyle = 'rgba(140,128,115,0.5)';
+    ctx.font = `${size > 150 ? 13 : 9}px Outfit,sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(size > 150 ? 'Tap items to add' : 'Empty', cx, cy - (size > 150 ? 9 : 0));
+    if(size > 150) ctx.fillText('to your plate', cx, cy + 12);
     return;
   }
-  // food segments
-  const n=selectedItems.length;
-  const sliceAngle=(Math.PI*2)/n;
-  const fr=R*0.82;
-  selectedItems.forEach((it,i)=>{
-    const startA=i*sliceAngle-Math.PI/2;
-    const endA=startA+sliceAngle;
-    const midA=startA+sliceAngle/2;
-    // segment
-    const sg=ctx.createRadialGradient(cx+Math.cos(midA)*fr*0.5,cy+Math.sin(midA)*fr*0.5*0.9,0,cx+Math.cos(midA)*fr*0.5,cy+Math.sin(midA)*fr*0.5*0.9,fr*0.5);
-    sg.addColorStop(0,it.col+'cc');sg.addColorStop(1,it.col+'55');
-    ctx.beginPath();ctx.moveTo(cx,cy);
-    ctx.ellipse(cx,cy,fr,fr*0.92,0,startA,endA);
-    ctx.closePath();ctx.fillStyle=sg;ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1.5;ctx.stroke();
-    // food emoji
-    const ex=cx+Math.cos(midA)*fr*0.6;
-    const ey=cy+Math.sin(midA)*fr*0.6*0.92;
-    ctx.font=n>6?'14px serif':'18px serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(it.e,ex,ey);
+
+  // Food segments — pie slices
+  const n = selectedItems.length;
+  const fr = R * 0.80;
+  const TAU = Math.PI * 2;
+
+  selectedItems.forEach((it, i) => {
+    const startA = (i / n) * TAU - Math.PI/2;
+    const endA = ((i + 1) / n) * TAU - Math.PI/2;
+    const midA = startA + (endA - startA) / 2;
+
+    // Build segment gradient from center out
+    const gx = cx + Math.cos(midA) * fr * 0.45;
+    const gy = cy + Math.sin(midA) * fr * 0.45;
+    const segG = ctx.createRadialGradient(gx, gy, 0, gx, gy, fr * 0.6);
+    segG.addColorStop(0, it.col + 'EE');
+    segG.addColorStop(1, it.col + '66');
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, fr, startA, endA);
+    ctx.closePath();
+    ctx.fillStyle = segG;
+    ctx.fill();
+
+    // Segment divider line
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(startA) * fr, cy + Math.sin(startA) * fr);
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Food emoji at midpoint
+    const emojiR = n === 1 ? fr * 0.45 : fr * 0.58;
+    const ex = cx + Math.cos(midA) * emojiR;
+    const ey = cy + Math.sin(midA) * emojiR;
+    const emojiSize = n <= 3 ? (size > 150 ? 20 : 12) : (size > 150 ? 16 : 10);
+    ctx.font = `${emojiSize}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(it.e, ex, ey);
   });
-  // center highlight
-  const hl=ctx.createRadialGradient(cx-R*0.15,cy-R*0.15,0,cx,cy,R*0.35);
-  hl.addColorStop(0,'rgba(255,255,255,0.25)');hl.addColorStop(1,'rgba(255,255,255,0)');
-  ctx.beginPath();ctx.ellipse(cx,cy,R*0.35,R*0.32,0,0,Math.PI*2);
-  ctx.fillStyle=hl;ctx.fill();
+
+  // Center circle highlight (gives 3D bowl feel)
+  const hlG = ctx.createRadialGradient(cx - R*0.18, cy - R*0.18, 0, cx, cy, R * 0.38);
+  hlG.addColorStop(0, 'rgba(255,255,255,0.30)');
+  hlG.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * 0.38, 0, Math.PI*2);
+  ctx.fillStyle = hlG;
+  ctx.fill();
+}
+
+/* Draw all three canvases */
+function drawAllPlates(){
+  drawPlateOnCanvas('plateCanvasMini', 80);
+  drawPlateOnCanvas('plateCanvas', 220);
+  drawPlateOnCanvas('plateCanvasFull', 260);
   buildPlateLegend();
 }
-// animate food drop onto plate
-function animatePlate(col,emoji){
-  const cw=document.querySelector('.plate-canvas-wrap');
-  if(!cw)return;
-  const dp=document.createElement('div');
-  dp.style.cssText=`position:absolute;font-size:28px;top:-30px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:10;animation:foodDrop .6s var(--ease) forwards;`;
-  dp.textContent=emoji;
-  cw.appendChild(dp);
-  const style=document.createElement('style');
-  style.textContent='@keyframes foodDrop{0%{top:-30px;opacity:1;transform:translateX(-50%) scale(1.3);}80%{top:40%;opacity:1;transform:translateX(-50%) scale(0.9);}100%{top:45%;opacity:0;transform:translateX(-50%) scale(0.6);}}';
-  document.head.appendChild(style);
-  setTimeout(()=>{dp.remove();style.remove();},700);
+
+/* ── PLATE LEGEND ── */
+function buildPlateLegend(){
+  const items = selectedItems.map((it, i) =>
+    `<div class="pl-item" onclick="toggleFood(null,'${it.n.replace(/'/g,"\\'")}','${it.col}','${it.e}')" title="Tap to remove">
+      <div class="pl-dot" style="background:${it.col}"></div>${it.n} ✕
+    </div>`
+  ).join('');
+
+  const leg1 = document.getElementById('plateLegend');
+  const leg2 = document.getElementById('plateLegendMobile');
+  if(leg1) leg1.innerHTML = items;
+  if(leg2) leg2.innerHTML = items;
+
+  const lbl = document.getElementById('plateCount');
+  if(lbl) lbl.textContent = selectedItems.length === 0
+    ? 'Nothing added yet — tap items below'
+    : `${selectedItems.length} item${selectedItems.length !== 1 ? 's' : ''} on your plate`;
+}
+
+/* ── MOBILE STRIP UPDATE ── */
+function updateMobilePlateStrip(){
+  const cnt = document.getElementById('pmsCount');
+  const items = document.getElementById('pmsItems');
+  if(cnt) cnt.textContent = selectedItems.length === 0
+    ? 'Nothing added yet'
+    : `${selectedItems.length} item${selectedItems.length !== 1 ? 's' : ''} added`;
+  if(items) items.textContent = selectedItems.length === 0
+    ? 'Tap any item below to add it →'
+    : selectedItems.map(x => x.e + ' ' + x.n).join(' · ');
+}
+
+/* ── CLEAR PLATE ── */
+function clearPlate(){
+  if(selectedItems.length === 0){ toast('Your plate is already empty!'); return; }
+  selectedItems = [];
+  buildMenuGrid();
+  drawAllPlates();
+  updateMenuBar();
+  updateMobilePlateStrip();
+  const mfw = document.getElementById('plateMobileFullWrap');
+  if(mfw) mfw.style.display = 'none';
+  toast('Plate cleared — start fresh! 🍽');
+}
+
+/* ── MENU BAR ── */
+function updateMenuBar(){
+  const pkg = selPkg >= 0 ? FOOD_PKGS[selPkg].name + ' · ' : '';
+  const cnt = selectedItems.length;
+  const msgs = [
+    'Select items — tap to add, tap again to remove',
+    '1 item added · Keep building your plate!',
+    'Looking delicious! 😋',
+    'Your plate is coming together beautifully ✨',
+    'A feast worthy of your celebration 🍽',
+    'What a spread — your guests are lucky!',
+    'Incredible selection! They\'ll love every bite 🌟'
+  ];
+  const m = msgs[Math.min(cnt, msgs.length - 1)];
+  const el = document.getElementById('menuV');
+  if(el) el.textContent = `${pkg}${cnt > 0 ? cnt + ' items · ' + m : m}`;
+}
+
+/* ── CONFIRM AND GO TO INVOICE ── */
+function confirmMenuAndContinue(){
+  if(selPkg < 0 && selectedItems.length === 0){
+    toast('Please select a package or add at least one item first!');
+    return;
+  }
+  const summary = selPkg >= 0
+    ? FOOD_PKGS[selPkg].name + (selectedItems.length > 0 ? ` + ${selectedItems.length} custom items` : '')
+    : `${selectedItems.length} custom items`;
+  toast(`Menu confirmed: ${summary} ✓`);
+  setTimeout(() => goTo(8), 400);
 }
 
 /* ── INVOICE ── */
 function buildInvoice(){
-  const et=document.querySelector('.etb.sel .el')?.textContent||'Wedding';
-  const ds=document.getElementById('dStart')?.value||S.dStart;
-  const de=sdOn?ds:(document.getElementById('dEnd')?.value||S.dEnd);
-  document.getElementById('invTitle').textContent=`${et} · ${S.city}`;
-  document.getElementById('invMeta').textContent=`${ds} → ${de} · ${S.guests} Guests`;
-  document.getElementById('invDate').textContent=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
-  document.getElementById('invLines').innerHTML=INV_LINES.map(l=>`
-    <div class="inv-line">
-      <div><div class="il-n">${l.n}</div><div class="il-v">${l.v}</div></div>
-      <div class="il-a">₹${l.a.toLocaleString('en-IN')}</div>
-    </div>`).join('');
-  const total=INV_LINES.reduce((a,l)=>a+l.a,0);
-  document.getElementById('invTotal').textContent='₹'+total.toLocaleString('en-IN');
-  document.getElementById('shareTitle').textContent=`${et} · ${S.city}`;
-  document.getElementById('shareMeta').textContent=`${ds} → ${de} · All confirmed`;
-  document.getElementById('sucSub').textContent=`${et} · ${S.city} · All vendors notified`;
+  try {
+    const etEl = document.querySelector('.etb.sel .el');
+    const et = etEl ? etEl.textContent : S.et || 'Wedding';
+    const ds = document.getElementById('dStart')?.value || S.dStart || '2025-11-14';
+    const de = sdOn ? ds : (document.getElementById('dEnd')?.value || S.dEnd || '2025-11-16');
+    const city = S.city || 'Bengaluru';
+    const guests = S.guests || 200;
+
+    const titleEl = document.getElementById('invTitle');
+    const metaEl = document.getElementById('invMeta');
+    const dateEl = document.getElementById('invDate');
+    const linesEl = document.getElementById('invLines');
+    const totalEl = document.getElementById('invTotal');
+    const sucSubEl = document.getElementById('sucSub');
+    const shareTitleEl = document.getElementById('shareTitle');
+    const shareMetaEl = document.getElementById('shareMeta');
+
+    if(titleEl) titleEl.textContent = `${et} · ${city}`;
+    if(metaEl) metaEl.textContent = `${ds} → ${de} · ${guests} Guests`;
+    if(dateEl) dateEl.textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+    if(linesEl) linesEl.innerHTML = INV_LINES.map(l=>`
+      <div class="inv-line">
+        <div><div class="il-n">${l.n}</div><div class="il-v">${l.v}</div></div>
+        <div class="il-a">₹${l.a.toLocaleString('en-IN')}</div>
+      </div>`).join('');
+    const total = INV_LINES.reduce((a,l)=>a+l.a,0);
+    if(totalEl) totalEl.textContent = '₹'+total.toLocaleString('en-IN');
+    if(shareTitleEl) shareTitleEl.textContent = `${et} · ${city}`;
+    if(shareMetaEl) shareMetaEl.textContent = `${ds} → ${de} · All confirmed`;
+    if(sucSubEl) sucSubEl.textContent = `${et} · ${city} · All vendors notified`;
+  } catch(e) {
+    console.warn('buildInvoice error:', e);
+  }
 }
 function confirmBooking(){
   const btn=document.getElementById('confBtn');
-  btn.textContent='Confirming…';btn.disabled=true;btn.style.opacity='0.7';
+  btn.innerHTML='Confirming… ✦';btn.disabled=true;btn.style.opacity='0.75';
+  // show encouraging caption
+  const reassure=document.querySelector('.reassure');
+  if(reassure){reassure.innerHTML='<span class="ri">🥹</span><span>Sending booking requests to all your vendors right now. This is it — your event is becoming real.</span>';}
   setTimeout(()=>{
     const s=document.getElementById('invStatus');s.textContent='✓ Confirmed';s.className='spill sp-conf';
-    toast('Booking confirmed! Vendors notified ✓');
+    toast('🎊 Booking confirmed! Your vendors are notified.');
     setTimeout(()=>{goTo(9);confetti();},900);
   },1800);
 }
