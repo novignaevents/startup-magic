@@ -745,12 +745,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .tb-ic{width:32px;height:32px;border-radius:8px;background:var(--card);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .2s;color:var(--t2);}
 .tb-ic:hover{border-color:var(--gold);color:var(--gold);}
 .content-wrap{flex:1;overflow-y:auto;padding-bottom:calc(var(--cta) + 24px);}
+.u-menubar{display:none;gap:8px;overflow-x:auto;padding:10px 12px;border-bottom:1px solid var(--b1);background:var(--bg2);}
+.u-menubar::-webkit-scrollbar{height:0;}
+.u-mb-item{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;border:1px solid var(--b1);font-size:11px;color:var(--t2);background:var(--card);cursor:pointer;transition:all .2s;}
+.u-mb-item.on{border-color:var(--gold);color:var(--gold);background:var(--gd);}
+.u-mb-item.locked{opacity:.5;cursor:not-allowed;}
 @media(max-width:768px){
   .sidebar{position:fixed;left:-250px;top:0;bottom:0;z-index:300;box-shadow:8px 0 30px rgba(0,0,0,.5);transition:left .3s var(--ease);}
   .sidebar.open{left:0;}
   .sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:299;}
   .sb-ov.open{display:block;}
   .tb-ham-u{display:flex !important;}
+  .u-menubar{display:flex;}
 }
 @media(min-width:769px){.tb-ham-u{display:none !important;}}
 @media(max-width:600px){
@@ -759,8 +765,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   .tb-crumb-u{display:none;}
   .tb-search-u{width:100%;order:3;}
   .tb-right-u{margin-left:auto;}
-  .content-wrap{padding-bottom:calc(var(--cta) + 12px);}
-  .ctabar{height:64px;}
+  .content-wrap{padding-bottom:calc(var(--cta) + env(safe-area-inset-bottom) + 16px);}
+  .ctabar{height:calc(var(--cta) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);}
 }
 
 </style>
@@ -930,6 +936,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <div class="tb-ic" title="Settings">⚙️</div>
         <div class="tb-ic" title="Profile" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);font-weight:700;font-size:11px;border:none;">NV</div>
       </div>
+    </div>
+    <div class="u-menubar" id="uMenubar">
+      <div class="u-mb-item on" data-step="0" onclick="goToSb(0,this)">Overview</div>
+      <div class="u-mb-item locked" data-step="1" onclick="goToSb(1,this)">Event Selection</div>
+      <div class="u-mb-item locked" data-step="2" onclick="goToSb(2,this)">Event Requirements</div>
+      <div class="u-mb-item locked" data-step="4" onclick="goToSb(4,this)">Vendor Recommendations</div>
+      <div class="u-mb-item locked" data-step="6" onclick="goToSb(6,this)">Itinerary Review</div>
+      <div class="u-mb-item locked" data-step="8" onclick="goToSb(8,this)">Invoice</div>
+      <div class="u-mb-item locked" data-step="9" onclick="goToSb(9,this)">Post-Event Services</div>
     </div>
     <div class="content-wrap">
 
@@ -2401,6 +2416,19 @@ function updateSidebar(n) {
   var crumb = document.getElementById('uCrumb');
   if (crumb) crumb.textContent = 'NoVigna > ' + (uStepLabels[n] || 'Step ' + n);
   closeUSidebar();
+
+  // sync mobile menubar
+  var mItems = document.querySelectorAll('.u-mb-item');
+  for (var j = 0; j < mItems.length; j++) {
+    var mStep = parseInt(mItems[j].getAttribute('data-step'));
+    mItems[j].classList.remove('on');
+    if (mStep <= maxUnlockedStep) {
+      mItems[j].classList.remove('locked');
+    }
+    if (mStep === n) {
+      mItems[j].classList.add('on');
+    }
+  }
 }
 
 function toggleUSidebar() {
