@@ -36,11 +36,12 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{background:var(--bg);overscroll-behavior:none;}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overflow-x:hidden;min-height:100dvh;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overflow:hidden;min-height:100dvh;}
 
 /* ── SCREENS ── */
 .scr{display:none;flex-direction:column;min-height:100dvh;animation:scrIn .45s var(--ease) both;}
 .scr.on{display:flex;}
+.scr{padding-bottom:var(--cta);}
 @keyframes scrIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 
 /* ── TOPNAV ── */
@@ -66,6 +67,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overfl
 
 /* ── CTA BAR ── */
 .ctabar{position:fixed;bottom:0;left:0;right:0;z-index:190;height:var(--cta);display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(6,5,10,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--b1);gap:12px;}
+.ctabar{transition:transform .35s var(--ease),opacity .35s var(--ease);}
+.ctabar.hidden{transform:translateY(110%);opacity:0;pointer-events:none;}
 @media(min-width:700px){.ctabar{padding:0 32px;}}
 .cta-l{flex:1;min-width:0;}
 .cta-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:2px;}
@@ -345,7 +348,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .vcards3{display:grid;grid-template-columns:1fr;gap:10px;}
 @media(min-width:480px){.vcards3{grid-template-columns:repeat(3,1fr);}}
 .vc3{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:13px;cursor:pointer;transition:all .3s var(--ease);position:relative;overflow:hidden;}
-.vc3::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(212,168,67,.04));opacity:0;transition:opacity .3s;}
+.vc3::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(212,168,67,.04));opacity:0;transition:opacity .3s;pointer-events:none;}
 .vc3:hover{border-color:var(--b2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35);}
 .vc3:hover::before{opacity:1;}
 .vc3.ai-pick{border-color:var(--gold);background:linear-gradient(135deg,var(--card),var(--gd));}
@@ -364,9 +367,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .vc3-check{position:absolute;top:9px;right:9px;background:var(--gold);color:var(--bg);width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;}
 /* view photos btn */
 .view-photos-btn{width:100%;margin-top:8px;background:rgba(90,143,224,.1);border:1px solid rgba(90,143,224,.3);color:var(--sky);padding:7px;border-radius:7px;font-size:10px;cursor:pointer;font-weight:600;transition:all .2s;}
+.view-photos-btn{position:relative;z-index:2;pointer-events:auto;}
 .view-photos-btn:hover{background:var(--sky);color:#fff;}
 /* neg button */
 .neg-btn-sm{width:100%;margin-top:8px;background:var(--rd);border:1px solid var(--rose);color:var(--rose);padding:7px;border-radius:7px;font-size:10px;cursor:pointer;font-weight:600;transition:all .2s;}
+.neg-btn-sm{position:relative;z-index:2;pointer-events:auto;}
 .neg-btn-sm:hover{background:var(--rose);color:#fff;}
 
 /* ═══════════════════════
@@ -706,6 +711,58 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .fnd{width:7px;height:7px;border-radius:50%;background:var(--b2);cursor:pointer;border:none;transition:all .3s;}
 .fnd.on{background:var(--gold);box-shadow:0 0 9px var(--gg);transform:scale(1.5);}
 .fnd.done{background:var(--gold);opacity:.35;}
+
+/* ===== SIDEBAR + TOPBAR LAYOUT ===== */
+.app-shell{display:flex;height:100dvh;overflow:hidden;}
+.sidebar{width:230px;background:var(--card);border-right:1px solid var(--b1);display:flex;flex-direction:column;flex-shrink:0;z-index:10;}
+.sb-logo-wrap{padding:18px 18px 14px;border-bottom:1px solid var(--b1);}
+.sb-logo-t{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.sb-logo-t b{color:var(--gold);font-style:italic;}
+.sb-logo-sub{font-size:9px;color:var(--t3);margin-top:3px;font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase;}
+.sb-nav-list{flex:1;padding:10px 8px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;}
+.sb-nav-list::-webkit-scrollbar{width:0;}
+.sb-itm{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--t2);transition:all .2s;border:1px solid transparent;}
+.sb-itm:hover{background:var(--bg2);color:var(--t1);}
+.sb-itm.on{background:var(--gd);color:var(--gold);font-weight:600;border-color:rgba(212,168,67,.2);}
+.sb-itm.locked{opacity:.4;cursor:not-allowed;}
+.sb-icn{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
+.sb-step-num{margin-left:auto;font-family:'Space Mono',monospace;font-size:9px;background:var(--b1);padding:2px 6px;border-radius:6px;}
+.sb-itm.on .sb-step-num{background:rgba(212,168,67,.2);color:var(--gold);}
+.sb-foot{padding:14px;border-top:1px solid var(--b1);}
+.sb-user-info{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;cursor:pointer;transition:background .2s;}
+.sb-user-info:hover{background:var(--bg2);}
+.sb-av-circle{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;color:var(--bg);font-weight:700;font-size:12px;flex-shrink:0;}
+.sb-un{font-size:12px;font-weight:600;}
+.sb-ur{font-size:10px;color:var(--t3);}
+.main-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar-u{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:var(--bg2);border-bottom:1px solid var(--b1);flex-shrink:0;gap:14px;}
+.tb-left-u{display:flex;align-items:center;gap:14px;flex:1;}
+.tb-crumb-u{font-family:'Space Mono',monospace;font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:2px;}
+.tb-search-u{background:var(--card);border:1px solid var(--b1);border-radius:8px;padding:7px 13px;color:var(--t1);font-family:'Outfit',sans-serif;font-size:12px;outline:none;width:260px;max-width:100%;transition:border .2s;}
+.tb-search-u:focus{border-color:var(--gold);}
+.tb-search-u::placeholder{color:var(--t3);}
+.tb-right-u{display:flex;align-items:center;gap:10px;}
+.tb-ic{width:32px;height:32px;border-radius:8px;background:var(--card);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .2s;color:var(--t2);}
+.tb-ic:hover{border-color:var(--gold);color:var(--gold);}
+.content-wrap{flex:1;overflow-y:auto;padding-bottom:calc(var(--cta) + 24px);}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-250px;top:0;bottom:0;z-index:300;box-shadow:8px 0 30px rgba(0,0,0,.5);transition:left .3s var(--ease);}
+  .sidebar.open{left:0;}
+  .sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:299;}
+  .sb-ov.open{display:block;}
+  .tb-ham-u{display:flex !important;}
+}
+@media(min-width:769px){.tb-ham-u{display:none !important;}}
+@media(max-width:600px){
+  .topbar-u{height:auto;padding:10px 12px;flex-wrap:wrap;gap:8px;}
+  .tb-left-u{flex-wrap:wrap;gap:8px;}
+  .tb-crumb-u{display:none;}
+  .tb-search-u{width:100%;order:3;}
+  .tb-right-u{margin-left:auto;}
+  .content-wrap{padding-bottom:calc(var(--cta) + 12px);}
+  .ctabar{height:64px;}
+}
+
 </style>
 </head>
 <body>
@@ -791,7 +848,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div id="pkgBody" style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:12px;"></div>
       <div id="pkgItems" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;"></div>
       <button class="btn-go rp" style="width:100%;justify-content:center;margin-bottom:8px;" onclick="addPkgItemsToPlate()">Load onto plate</button>
-      <button class="nav-btn" style="width:100%;justify-content:center;text-align:center;" onclick="closeM('pkgModal');goTo(7)">Open full menu builder</button>
+      <button class="nav-btn" style="width:100%;justify-content:center;text-align:center;" onclick="closeM('pkgModal');openMenuBuilder()">Open full menu builder</button>
     </div>
   </div>
 </div>
@@ -833,6 +890,62 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 <!-- ═════════════ SCREENS ════════════ -->
 
+<div class="sb-ov" id="uSbOv" onclick="toggleUSidebar()"></div>
+<div class="app-shell">
+
+  <div class="sidebar" id="uSidebar">
+    <div class="sb-logo-wrap">
+      <div class="sb-logo-t">No<b>Vigna</b></div>
+      <div class="sb-logo-sub">Event Planner</div>
+    </div>
+    <div class="sb-nav-list">
+      <div class="sb-itm on" data-step="0" onclick="goToSb(0,this)"><span class="sb-icn">✨</span> Overview<span class="sb-step-num">Start</span></div>
+      <div class="sb-itm locked" data-step="1" onclick="goToSb(1,this)"><span class="sb-icn">🎉</span> Event Selection<span class="sb-step-num">1</span></div>
+      <div class="sb-itm locked" data-step="2" onclick="goToSb(2,this)"><span class="sb-icn">🎨</span> Event Requirements<span class="sb-step-num">2</span></div>
+      <div class="sb-itm locked" data-step="4" onclick="goToSb(4,this)"><span class="sb-icn">🎪</span> Vendor Recommendations<span class="sb-step-num">4</span></div>
+      <div class="sb-itm locked" data-step="6" onclick="goToSb(6,this)"><span class="sb-icn">✅</span> Itinerary Review<span class="sb-step-num">6</span></div>
+      <div class="sb-itm locked" data-step="8" onclick="goToSb(8,this)"><span class="sb-icn">📄</span> Invoice<span class="sb-step-num">8</span></div>
+      <div class="sb-itm locked" data-step="9" onclick="goToSb(9,this)"><span class="sb-icn">🎉</span> Post-Event Services<span class="sb-step-num">9</span></div>
+    </div>
+    <div class="sb-foot">
+      <div class="sb-user-info">
+        <div class="sb-av-circle">NV</div>
+        <div>
+          <div class="sb-un">My Event</div>
+          <div class="sb-ur">Planning in progress</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-wrap">
+    <div class="topbar-u">
+      <div class="tb-left-u">
+        <div class="tb-ic tb-ham-u" onclick="toggleUSidebar()" style="font-size:16px;">☰</div>
+        <div class="tb-crumb-u" id="uCrumb">NoVigna › Welcome</div>
+        <input type="text" class="tb-search-u" placeholder="🔍  Search venues, caterers, decorators...">
+      </div>
+      <div class="tb-right-u">
+        <div class="tb-ic" title="Notifications">🔔</div>
+        <div class="tb-ic" title="Settings">⚙️</div>
+        <div class="tb-ic" title="Profile" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);font-weight:700;font-size:11px;border:none;">NV</div>
+      </div>
+    </div>
+    <div class="content-wrap">
+
+<!-- FOOD MODAL OVERLAY -->
+<div class="modal" id="foodModal" style="backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+  <div class="mbox" style="width:100%;max-width:1080px;height:88vh;border-radius:18px;overflow:hidden;padding:0;display:flex;flex-direction:column;">
+    <div class="mhdr" style="position:sticky;top:0;flex-shrink:0;">
+      <div class="mtitle">Catering · Build Your Menu</div>
+      <button class="mx" onclick="closeFoodModal()">✕</button>
+    </div>
+    <div class="mbody" style="padding:0;overflow:hidden;flex:1;">
+      <iframe id="foodFrame" src="" style="border:0;width:100%;height:100%;"></iframe>
+    </div>
+  </div>
+</div>
+
 <!-- S0 SPLASH -->
 <div class="scr on" id="s0">
   <div class="splash-bg">
@@ -855,12 +968,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       </div>
     </div>
   </div>
-  <div class="sp-stats">
-    <div><div class="stn" data-t="2400">0</div><div class="stl">Vendors</div></div>
-    <div><div class="stn" data-t="48">0</div><div class="stl">Cities</div></div>
-    <div><div class="stn">100%</div><div class="stl">Shadow Cover</div></div>
-    <div><div class="stn" data-t="12000">0</div><div class="stl">Events Done</div></div>
-  </div>
+    <div class="sp-stats">
+      <div><div class="stn" data-t="2400">0</div><div class="stl">Vendors</div></div>
+      <div><div class="stn" data-t="48">0</div><div class="stl">Cities</div></div>
+      <div><div class="stn">100%</div><div class="stl">Shadow Cover</div></div>
+      <div><div class="stn" data-t="12000">0</div><div class="stl">Events Done</div></div>
+    </div>
+
 </div>
 
 <!-- S1 EVENTS GALLERY -->
@@ -906,6 +1020,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="celeb-banner">
       <div class="celeb-line1">"Every great celebration starts with a single decision."</div>
       <div class="celeb-line2">Join 12,000+ families who trusted NoVigna with their most important days.</div>
+    </div>
+
+    <div class="sep"></div>
+    <div class="eye" style="margin-bottom:6px;">Post‑Event Services</div>
+    <div class="sub" style="margin-top:0;margin-bottom:16px;">Explore trusted partners for everything after booking — available anytime.</div>
+    <div class="shop-grid">
+      <div class="scard rp" onclick="toast('Opening fashion partners — look stunning on your day! 👗')"><span class="sc-i">👗</span><div class="sc-n">Attire</div><div class="sc-d">Up to 20% off</div></div>
+      <div class="scard rp" onclick="toast('Opening jewellery partners — you deserve to sparkle 💎')"><span class="sc-i">💎</span><div class="sc-n">Jewellery</div><div class="sc-d">Exclusive rates</div></div>
+      <div class="scard rp" onclick="toast('Best hotels near your venue — rest well, celebrate more 🏨')"><span class="sc-i">🏨</span><div class="sc-n">Stays</div><div class="sc-d">Group discount</div></div>
+      <div class="scard rp" onclick="toast('Flights & transfers sorted — arrive in style ✈️')"><span class="sc-i">✈️</span><div class="sc-n">Travel</div><div class="sc-d">Bundle savings</div></div>
+      <div class="scard rp" onclick="toast('Beautiful mehendi makes beautiful memories 🌿')"><span class="sc-i">🌿</span><div class="sc-n">Mehendi</div><div class="sc-d">5 artists near you</div></div>
+      <div class="scard rp" onclick="toast('Because you deserve to look your absolute best 💄')"><span class="sc-i">💄</span><div class="sc-n">Makeup</div><div class="sc-d">Bridal packages</div></div>
+      <div class="scard rp" onclick="toast('Invitations that set the tone — first impressions matter 💌')"><span class="sc-i">💌</span><div class="sc-n">Invitations</div><div class="sc-d">Print + digital</div></div>
+      <div class="scard rp" onclick="toast('Curated hampers — because every guest deserves to feel special 🎁')"><span class="sc-i">🎁</span><div class="sc-n">Gifting</div><div class="sc-d">Curated hampers</div></div>
     </div>
   </div>
 </div>
@@ -1106,74 +1234,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </div>
 </div>
 
-<!-- S7 FOOD/CATERING SELECTION -->
-<div class="scr" id="s7">
-  <div class="nav">
-    <div class="nav-logo">No<b>Vigna</b></div>
-    <div class="nav-steps" id="ns-7"></div>
-    <button class="nav-btn" onclick="goTo(6)">← Plan</button>
-  </div>
-  <div class="pb">
-    <div class="eye">Catering · Step 04b</div>
-    <div class="h1">Food is how you<br>say "I love you"</div>
-    <div class="step-time"><span class="st-dot"></span>Your guests will talk about the food for years · Tap to add, tap again to remove</div>
-
-    <!-- PACKAGES -->
-    <div class="slbl" style="margin-bottom:10px;">Choose a Package — or build your own below</div>
-    <div class="pkg-grid" id="pkgGrid"></div>
-
-    <div class="sep"></div>
-    <div class="slbl" style="margin-bottom:14px;">Build Your Plate 🍽</div>
-
-    <!-- MOBILE PLATE STRIP — sticky mini plate preview while scrolling -->
-    <div class="plate-mobile-strip" id="plateMobileStrip">
-      <div class="pms-canvas-wrap">
-        <canvas id="plateCanvasMini" width="80" height="80"></canvas>
-      </div>
-      <div class="pms-info">
-        <div class="pms-title">Your Plate</div>
-        <div class="pms-count" id="pmsCount">Nothing added yet</div>
-        <div class="pms-items" id="pmsItems">Tap any item below to add it →</div>
-      </div>
-    </div>
-
-    <!-- MAIN FOOD LAYOUT: plate (desktop) + menu -->
-    <div class="food-layout">
-
-      <!-- DESKTOP PLATE (sticky column) -->
-      <div class="plate-col plate-desktop">
-        <div style="font-size:11px;color:var(--t3);margin-bottom:8px;font-family:'Space Mono',monospace;letter-spacing:1px;">YOUR PLATE</div>
-        <div class="plate-canvas-wrap" id="plateWrap">
-          <canvas id="plateCanvas" width="220" height="220"></canvas>
-        </div>
-        <div class="plate-legend" id="plateLegend"></div>
-        <div class="plate-count-lbl" id="plateCount">0 items on your plate</div>
-        <button class="plate-clear-btn rp" onclick="clearPlate()">✕ Clear plate</button>
-      </div>
-
-      <!-- MENU COLUMN -->
-      <div class="menu-col" id="menuWrap"></div>
-    </div>
-
-    <!-- MOBILE: show full plate below menu when items exist -->
-    <div id="plateMobileFullWrap" style="display:none;margin-top:24px;">
-      <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:8px;font-family:'Space Mono',monospace;letter-spacing:1px;">YOUR FULL PLATE</div>
-      <div style="max-width:260px;margin:0 auto;position:relative;">
-        <canvas id="plateCanvasFull" width="260" height="260" style="width:100%;height:auto;display:block;"></canvas>
-      </div>
-      <div class="plate-legend" id="plateLegendMobile" style="margin-top:10px;"></div>
-      <button class="plate-clear-btn rp" onclick="clearPlate()" style="margin-top:8px;">✕ Clear plate</button>
-    </div>
-  </div>
-
-  <div class="ctabar">
-    <div class="cta-l">
-      <div class="cta-lbl">Your Menu</div>
-      <div class="cta-v" id="menuV">Select items — tap to add, tap again to remove</div>
-    </div>
-    <button class="btn-go rp" onclick="confirmMenuAndContinue()">Confirm Menu →</button>
-  </div>
-</div>
 
 <!-- S8 INVOICE -->
 <div class="scr" id="s8">
@@ -1264,8 +1324,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 const S={scr:0,et:'wedding',city:'Bengaluru',guests:200,dStart:'2025-11-14',dEnd:'2025-11-16',singleDay:false,budget:1500000,venue:'luxury',group:null,manSel:new Set(),currentDay:0,dragEl:null};
 
 /* ── FLOW MAP ── */
-const FLOW=[0,1,2,4,5,6,7,8,9];
-const SCR_STEPS={1:1,2:2,3:3,4:3,5:3,6:4,7:5,8:5,9:6};
+const FLOW=[0,1,2,4,5,6,8,9];
+const SCR_STEPS={1:1,2:2,3:3,4:3,5:3,6:4,8:5,9:6};
 window._vc3Skip=false;
 let chatLog=[
   {self:false,text:'Hey! I like the palace venue. Thoughts?'},
@@ -1374,6 +1434,7 @@ function goTo(n){
   if(n===6)buildItinerary();
   if(n===7){buildFood();updateMobilePlateStrip();}
   if(n===8)buildInvoice();
+  document.querySelectorAll('.ctabar').forEach(b=>b.classList.remove('hidden'));
 }
 window.goTo=goTo;
 
@@ -1563,18 +1624,19 @@ function buildVendors(){
       const isPrimary=v.type==='primary',isShadow=v.type==='shadow',isNeg=v.type==='negotiate';
       const typeLabel=isPrimary?'✦ AI Pick — Best Match':isShadow?'⟳ Shadow Backup — Auto-assigned':isNeg?'⚡ Open to Negotiate':'';
       const typeSub=isPrimary?'Top-rated · Available · Best value for your budget':isShadow?'Steps in automatically if your primary cancels — you\'ll never know the difference':isNeg?'Currently booked, but they\'ve accepted offers before. Worth a try.':``;
-      const cls=`vc3${isPrimary?' ai-pick':isShadow?' shadow':isNeg?' neg':''} rp`;
+      const isSelected = v.selected === undefined ? isPrimary : v.selected;
+      const cls=`vc3${isSelected?' ai-pick':''} ${isShadow?'shadow':''} ${isNeg?'neg':''} rp`;
       const isCatering = v.cat==='catering';
-      return`<div class="${cls}" onclick="toggleVC3(event,this,'${v.cat}')">
-        ${isPrimary?'<div class="vc3-check">✓</div>':''}
+      return`<div class="${cls}" onclick="toggleVC3(event,this,'${v.cat}', ${vs.indexOf(v)})">
+        ${isSelected?'<div class="vc3-check">✓</div>':''}
         <div class="vc3-type">${typeLabel}</div>
         <div style="font-size:9px;color:var(--t3);margin-bottom:7px;line-height:1.5;">${typeSub}</div>
         <div class="vc3-top"><div class="vc3-name">${v.name}</div><div class="vc3-r">★ ${v.rating} (${v.rev})</div></div>
         <div class="vc3-price">₹${v.price.toLocaleString('en-IN')}</div>
         <div class="${v.avail?'vc3-avail':'vc3-unavail'}">${v.avail?'✓ Available on your dates':'✗ Currently booked on your dates'}</div>
-        ${v.photos.length?`<button class="view-photos-btn" onclick="window._vc3Skip=true;event.stopPropagation();openPhotos('${v.name}',${JSON.stringify(v.photos).replace(/"/g,"'")})">📷 View Photos & Virtual Tour</button>`:''}
-        ${isCatering?`<button class="view-photos-btn no-select" style="margin-top:4px;background:var(--gd);border-color:rgba(212,168,67,.3);color:var(--gold);" onclick="window._vc3Skip=true;event.stopPropagation();openMenuBuilder();return false;">🍽 Curate the Menu →</button>
-        <button class="view-photos-btn no-select" style="margin-top:6px;" onclick="window._vc3Skip=true;event.stopPropagation();viewPackage(0);return false;">📖 View Package Menu</button>`:''}
+        ${v.photos.length?`<button class="view-photos-btn" onclick="window._vc3Skip=true;event.stopPropagation();openPhotos('${v.name}','${v.cat}',${JSON.stringify(v.photos).replace(/"/g,"'")})">📷 View Photos & Virtual Tour</button>`:''}
+        ${isCatering?`<button class="view-photos-btn no-select menu-btn" data-pkg="" style="margin-top:4px;background:var(--gd);border-color:rgba(212,168,67,.3);color:var(--gold);">🍽 Curate the Menu →</button>
+        <button class="view-photos-btn no-select menu-btn" data-pkg="0" style="margin-top:6px;">📖 View Package Menu</button>`:''}
         ${isNeg?`<button class="neg-btn-sm" onclick="window._vc3Skip=true;event.stopPropagation();openNeg('${v.name}')">Send an offer — they might say yes</button>`:''}
       </div>`;
     }).join('');
@@ -1582,12 +1644,19 @@ function buildVendors(){
   }).join('');
   document.getElementById('v4count').textContent=`${cats.length} categories matched · Shadow on every booking`;
 }
-function toggleVC3(ev, el, cat){
-  // If the click came from an inner action button, ignore
-  if(ev && ev.target && ev.target.closest('.no-select')) return;
+function toggleVC3(ev, el, cat, idx){
+  // If click came from inner action (menu buttons), ignore
+  if(ev && ev.defaultPrevented) return;
   if(window._vc3Skip){ window._vc3Skip=false; return; }
+  if(document.body.dataset.menuOpen==='1') return;
+  if(ev && ev.target && ev.target.closest && ev.target.closest('.no-select')) return;
+  if(ev && ev.target && ev.target.closest && ev.target.closest('.menu-btn')) return;
   if(el.classList.contains('neg')) return;
+
+  const vList = VENDOR_CATS[cat] || [];
   el.classList.toggle('ai-pick');
+  const isChecked = el.classList.contains('ai-pick');
+  if(vList[idx]) vList[idx].selected = isChecked;
   const hasCk = el.querySelector('.vc3-check');
   if(el.classList.contains('ai-pick') && !hasCk){
     const ck = document.createElement('div'); ck.className='vc3-check'; ck.textContent='✓'; el.appendChild(ck);
@@ -1596,10 +1665,17 @@ function toggleVC3(ev, el, cat){
   }
   toast(el.classList.contains('ai-pick') ? el.querySelector('.vc3-name').textContent+' selected ✓' : 'Vendor removed from selection');
 }
-function openPhotos(name,photos){
+function openPhotos(name,cat,photos){
   document.getElementById('photoTitle').textContent=name+' — Gallery';
   const colors=['linear-gradient(135deg,#2a1800,#7a3800)','linear-gradient(135deg,#001a2a,#003060)','linear-gradient(135deg,#1a0030,#480080)','linear-gradient(135deg,#0a2a1a,#1a6040)'];
-  const labels=['Exterior','Interior','Ceremony Hall','Garden View'];
+  const labelMap={
+    venue:['Exterior','Interior','Ceremony Hall','Garden View'],
+    photo:['Capture Gallery','Wedding Stories','Candid Moments','Highlights'],
+    decor:['Stage Decor','Mandap Styling','Aisle Florals','Table Styling'],
+    music:['Live Performance','Stage Setup','Band Lineup','Crowd Vibe'],
+    makeup:['Previous Work','Bridal Look','Engagement Look','Reception Look']
+  };
+  const labels=labelMap[cat]||['Showcase','Portfolio','Highlights','Featured'];
   document.getElementById('photoGrid').innerHTML=photos.map((e,i)=>`
     <div class="photo-cell rp" style="background:${colors[i%colors.length]};" onclick="toast('Opening full view…')">
       <div style="font-size:36px;z-index:1;">${e}</div>
@@ -1883,15 +1959,7 @@ function pickPkg(i){
 }
 
 function viewPackage(i=0){
-  selPkg = i;
-  const pkg = FOOD_PKGS[i] || FOOD_PKGS[0];
-  const body = document.getElementById('pkgBody');
-  const itemsEl = document.getElementById('pkgItems');
-  if(body) body.textContent = `${pkg.price}/plate · ${pkg.name}`;
-  if(itemsEl) itemsEl.innerHTML = (pkg.items||'').split(',').map(it=>`<span class="ec-tag">${it.trim()}</span>`).join('');
-  const title = document.getElementById('pkgTitle');
-  if(title) title.textContent = `${pkg.name} · ₹${pkg.price}/plate`;
-  openM('pkgModal');
+  openMenuBuilder(i);
 }
 
 function addPkgItemsToPlate(){
@@ -1907,6 +1975,7 @@ function addPkgItemsToPlate(){
   toast('Package applied to your plate ✓');
   const mfw = document.getElementById('plateMobileFullWrap');
   if(mfw) mfw.style.display = selectedItems.length > 0 ? 'block' : 'none';
+  openMenuBuilder();
 }
 
 /* ── MENU GRID ── */
@@ -2175,12 +2244,23 @@ function updateMenuBar(){
   if(el) el.textContent = `${pkg}${cnt > 0 ? cnt + ' items · ' + m : m}`;
 }
 
-function openMenuBuilder(){
+function openMenuBuilder(pkgIndex=null){
   window._vc3Skip=true;
-  goTo(7);
-  // focus the plate section for immediate context
-  setTimeout(()=>{const wrap=document.querySelector('#s7 .food-layout');if(wrap)wrap.scrollIntoView({behavior:'smooth',block:'start'});},80);
+  const frame=document.getElementById('foodFrame');
+  if(frame){
+    const base='food_menu.html';
+    const q = pkgIndex===null ? `t=${Date.now()}` : `pkg=${pkgIndex}&t=${Date.now()}`;
+    frame.src = `${base}?${q}`;
+  }
+  document.body.dataset.menuOpen='1';
+  openM('foodModal');
 }
+function closeFoodModal(){
+  closeM('foodModal');
+  delete document.body.dataset.menuOpen;
+  window._vc3Skip=false;
+}
+// delegated handler handles menu buttons (menu-btn)
 
 /* ── CONFIRM AND GO TO INVOICE ── */
 function confirmMenuAndContinue(){
@@ -2191,8 +2271,24 @@ function confirmMenuAndContinue(){
   const summary = selPkg >= 0
     ? FOOD_PKGS[selPkg].name + (selectedItems.length > 0 ? ` + ${selectedItems.length} custom items` : '')
     : `${selectedItems.length} custom items`;
+
+  let basePrice = selPkg >= 0 ? FOOD_PKGS[selPkg].price : (150 + selectedItems.length * 85);
+  let totalGuests = typeof S !== 'undefined' && typeof S.guests !== 'undefined' ? S.guests : 200;
+  let cateringTotal = basePrice * totalGuests;
+
+  if (typeof VENDOR_CATS !== 'undefined' && VENDOR_CATS['🍽 Catering']) {
+    VENDOR_CATS['🍽 Catering'].forEach(v => {
+      v.price = cateringTotal;
+    });
+  }
+
   toast(`Menu confirmed: ${summary} ✓`);
-  setTimeout(() => goTo(8), 400);
+  closeFoodModal();
+
+  if (typeof S !== 'undefined') {
+    if (S.scr === 4 && typeof buildVendors === 'function') buildVendors();
+    if (S.scr === 5 && typeof buildManual === 'function') buildManual();
+  }
 }
 
 /* ── INVOICE ── */
@@ -2276,6 +2372,111 @@ document.addEventListener('touchend',e=>{
 updateBar();
 buildFnav(0);
 buildSteps(0);
+
+// Sidebar navigation for user portal
+var uStepLabels = {
+  0:'Overview', 1:'Event Selection', 2:'Event Requirements',
+  4:'Vendor Recommendations', 6:'Itinerary Review', 8:'Invoice', 9:'Post-Event Services'
+};
+var maxUnlockedStep = 0;
+
+function goToSb(n, el) {
+  if (n > maxUnlockedStep) return;
+  goTo(n);
+}
+
+function updateSidebar(n) {
+  if (n > maxUnlockedStep) maxUnlockedStep = n;
+  var items = document.querySelectorAll('.sb-itm');
+  for (var i = 0; i < items.length; i++) {
+    var step = parseInt(items[i].getAttribute('data-step'));
+    items[i].classList.remove('on');
+    if (step <= maxUnlockedStep) {
+      items[i].classList.remove('locked');
+    }
+    if (step === n) {
+      items[i].classList.add('on');
+    }
+  }
+  var crumb = document.getElementById('uCrumb');
+  if (crumb) crumb.textContent = 'NoVigna > ' + (uStepLabels[n] || 'Step ' + n);
+  closeUSidebar();
+}
+
+function toggleUSidebar() {
+  document.getElementById('uSidebar').classList.toggle('open');
+  document.getElementById('uSbOv').classList.toggle('open');
+}
+function closeUSidebar() {
+  document.getElementById('uSidebar').classList.remove('open');
+  document.getElementById('uSbOv').classList.remove('open');
+}
+
+// Monkey-patch goTo to update sidebar
+(function() {
+  var check = setInterval(function() {
+    if (typeof window.goTo === 'function' && !window._goToPatched) {
+      var orig = window.goTo;
+      window.goTo = function(n) {
+        orig(n);
+        updateSidebar(n);
+      };
+      window._goToPatched = true;
+      clearInterval(check);
+    }
+  }, 100);
+})();
+
+// handle menu button clicks via delegation (capture prevents card toggle)
+document.addEventListener('click',function(e){
+  const btn = e.target && e.target.closest ? e.target.closest('.menu-btn') : null;
+  if(!btn) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  e.stopPropagation();
+  window._vc3Skip = true;
+  const pkgAttr = btn.getAttribute('data-pkg');
+  const pkgIndex = pkgAttr==='' ? null : parseInt(pkgAttr,10);
+  openMenuBuilder(isNaN(pkgIndex)? null : pkgIndex);
+}, true);
+
+// auto-hide CTA bar on scroll down, show on scroll up
+let lastScrollY = 0;
+window.addEventListener('scroll',function(){
+  const cur = window.scrollY;
+  const bars = document.querySelectorAll('.ctabar');
+  if(cur > lastScrollY + 12){
+    bars.forEach(b=>b.classList.add('hidden'));
+  } else if(cur < lastScrollY - 12){
+    bars.forEach(b=>b.classList.remove('hidden'));
+  }
+  lastScrollY = cur;
+});
+
+// receive menu selection from popup
+window.addEventListener('message',function(e){
+  if(!e || !e.data || e.data.type!=='foodSelected') return;
+  closeFoodModal();
+  if(Array.isArray(e.data.items)){
+    const palette=['#D4A843','#E07A40','#5A8FE0','#48B87A','#C85070','#A06BC0'];
+    const mapByName={};
+    Object.values(MENU_ITEMS).flat().forEach(it=>mapByName[it.n]=it);
+    selectedItems = e.data.items.map(function(name,i){
+      const ref=mapByName[name]||{};
+      return {n:name,col:ref.col||palette[i%palette.length],e:ref.e||'🍽'};
+    });
+  }
+  selPkg = typeof e.data.pkg==='number' ? e.data.pkg : -1;
+  if(typeof buildFood==='function' && document.getElementById('pkgGrid')) buildFood();
+  if(typeof updateMobilePlateStrip==='function') updateMobilePlateStrip();
+  if(typeof drawAllPlates==='function') drawAllPlates();
+  toast(e.data.summary || 'Menu updated!');
+});
+
 </script>
+
+    </div>
+  </div>
+</div>
 </body>
 </html>
