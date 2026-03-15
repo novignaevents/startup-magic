@@ -41,6 +41,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overfl
 /* ── SCREENS ── */
 .scr{display:none;flex-direction:column;min-height:100dvh;animation:scrIn .45s var(--ease) both;}
 .scr.on{display:flex;}
+.scr{padding-bottom:var(--cta);}
 @keyframes scrIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 
 /* ── TOPNAV ── */
@@ -66,6 +67,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overfl
 
 /* ── CTA BAR ── */
 .ctabar{position:fixed;bottom:0;left:0;right:0;z-index:190;height:var(--cta);display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(6,5,10,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--b1);gap:12px;}
+.ctabar{transition:transform .35s var(--ease),opacity .35s var(--ease);}
+.ctabar.hidden{transform:translateY(110%);opacity:0;pointer-events:none;}
 @media(min-width:700px){.ctabar{padding:0 32px;}}
 .cta-l{flex:1;min-width:0;}
 .cta-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:2px;}
@@ -345,7 +348,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .vcards3{display:grid;grid-template-columns:1fr;gap:10px;}
 @media(min-width:480px){.vcards3{grid-template-columns:repeat(3,1fr);}}
 .vc3{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:13px;cursor:pointer;transition:all .3s var(--ease);position:relative;overflow:hidden;}
-.vc3::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(212,168,67,.04));opacity:0;transition:opacity .3s;}
+.vc3::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(212,168,67,.04));opacity:0;transition:opacity .3s;pointer-events:none;}
 .vc3:hover{border-color:var(--b2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35);}
 .vc3:hover::before{opacity:1;}
 .vc3.ai-pick{border-color:var(--gold);background:linear-gradient(135deg,var(--card),var(--gd));}
@@ -364,9 +367,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .vc3-check{position:absolute;top:9px;right:9px;background:var(--gold);color:var(--bg);width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;}
 /* view photos btn */
 .view-photos-btn{width:100%;margin-top:8px;background:rgba(90,143,224,.1);border:1px solid rgba(90,143,224,.3);color:var(--sky);padding:7px;border-radius:7px;font-size:10px;cursor:pointer;font-weight:600;transition:all .2s;}
+.view-photos-btn{position:relative;z-index:2;pointer-events:auto;}
 .view-photos-btn:hover{background:var(--sky);color:#fff;}
 /* neg button */
 .neg-btn-sm{width:100%;margin-top:8px;background:var(--rd);border:1px solid var(--rose);color:var(--rose);padding:7px;border-radius:7px;font-size:10px;cursor:pointer;font-weight:600;transition:all .2s;}
+.neg-btn-sm{position:relative;z-index:2;pointer-events:auto;}
 .neg-btn-sm:hover{background:var(--rose);color:#fff;}
 
 /* ═══════════════════════
@@ -739,7 +744,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .tb-right-u{display:flex;align-items:center;gap:10px;}
 .tb-ic{width:32px;height:32px;border-radius:8px;background:var(--card);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .2s;color:var(--t2);}
 .tb-ic:hover{border-color:var(--gold);color:var(--gold);}
-.content-wrap{flex:1;overflow-y:auto;}
+.content-wrap{flex:1;overflow-y:auto;padding-bottom:calc(var(--cta) + 24px);}
 @media(max-width:768px){
   .sidebar{position:fixed;left:-250px;top:0;bottom:0;z-index:300;box-shadow:8px 0 30px rgba(0,0,0,.5);transition:left .3s var(--ease);}
   .sidebar.open{left:0;}
@@ -1418,7 +1423,9 @@ function goTo(n){
   if(n===4){buildVendors();setTimeout(()=>{document.getElementById('bFill').style.width='79%';},400);}
   if(n===5)buildManual();
   if(n===6)buildItinerary();
+  if(n===7){buildFood();updateMobilePlateStrip();}
   if(n===8)buildInvoice();
+  document.querySelectorAll('.ctabar').forEach(b=>b.classList.remove('hidden'));
 }
 window.goTo=goTo;
 
@@ -1618,9 +1625,9 @@ function buildVendors(){
         <div class="vc3-top"><div class="vc3-name">${v.name}</div><div class="vc3-r">★ ${v.rating} (${v.rev})</div></div>
         <div class="vc3-price">₹${v.price.toLocaleString('en-IN')}</div>
         <div class="${v.avail?'vc3-avail':'vc3-unavail'}">${v.avail?'✓ Available on your dates':'✗ Currently booked on your dates'}</div>
-        ${v.photos.length?`<button class="view-photos-btn" onclick="window._vc3Skip=true;event.stopPropagation();openPhotos('${v.name}',${JSON.stringify(v.photos).replace(/"/g,"'")})">📷 View Photos & Virtual Tour</button>`:''}
-        ${isCatering?`<button class="view-photos-btn no-select" style="margin-top:4px;background:var(--gd);border-color:rgba(212,168,67,.3);color:var(--gold);" onclick="openMenuFromCard(event)">🍽 Curate the Menu →</button>
-        <button class="view-photos-btn no-select" style="margin-top:6px;" onclick="openMenuFromCard(event, 0)">📖 View Package Menu</button>`:''}
+        ${v.photos.length?`<button class="view-photos-btn" onclick="window._vc3Skip=true;event.stopPropagation();openPhotos('${v.name}','${v.cat}',${JSON.stringify(v.photos).replace(/"/g,"'")})">📷 View Photos & Virtual Tour</button>`:''}
+        ${isCatering?`<button class="view-photos-btn no-select menu-btn" data-pkg="" style="margin-top:4px;background:var(--gd);border-color:rgba(212,168,67,.3);color:var(--gold);">🍽 Curate the Menu →</button>
+        <button class="view-photos-btn no-select menu-btn" data-pkg="0" style="margin-top:6px;">📖 View Package Menu</button>`:''}
         ${isNeg?`<button class="neg-btn-sm" onclick="window._vc3Skip=true;event.stopPropagation();openNeg('${v.name}')">Send an offer — they might say yes</button>`:''}
       </div>`;
     }).join('');
@@ -1630,10 +1637,11 @@ function buildVendors(){
 }
 function toggleVC3(ev, el, cat, idx){
   // If click came from inner action (menu buttons), ignore
+  if(ev && ev.defaultPrevented) return;
   if(window._vc3Skip){ window._vc3Skip=false; return; }
   if(document.body.dataset.menuOpen==='1') return;
   if(ev && ev.target && ev.target.closest && ev.target.closest('.no-select')) return;
-  if(ev && ev.target && ev.target.closest && ev.target.closest('button')) return;
+  if(ev && ev.target && ev.target.closest && ev.target.closest('.menu-btn')) return;
   if(el.classList.contains('neg')) return;
 
   const vList = VENDOR_CATS[cat] || [];
@@ -1648,10 +1656,17 @@ function toggleVC3(ev, el, cat, idx){
   }
   toast(el.classList.contains('ai-pick') ? el.querySelector('.vc3-name').textContent+' selected ✓' : 'Vendor removed from selection');
 }
-function openPhotos(name,photos){
+function openPhotos(name,cat,photos){
   document.getElementById('photoTitle').textContent=name+' — Gallery';
   const colors=['linear-gradient(135deg,#2a1800,#7a3800)','linear-gradient(135deg,#001a2a,#003060)','linear-gradient(135deg,#1a0030,#480080)','linear-gradient(135deg,#0a2a1a,#1a6040)'];
-  const labels=['Exterior','Interior','Ceremony Hall','Garden View'];
+  const labelMap={
+    venue:['Exterior','Interior','Ceremony Hall','Garden View'],
+    photo:['Capture Gallery','Wedding Stories','Candid Moments','Highlights'],
+    decor:['Stage Decor','Mandap Styling','Aisle Florals','Table Styling'],
+    music:['Live Performance','Stage Setup','Band Lineup','Crowd Vibe'],
+    makeup:['Previous Work','Bridal Look','Engagement Look','Reception Look']
+  };
+  const labels=labelMap[cat]||['Showcase','Portfolio','Highlights','Featured'];
   document.getElementById('photoGrid').innerHTML=photos.map((e,i)=>`
     <div class="photo-cell rp" style="background:${colors[i%colors.length]};" onclick="toast('Opening full view…')">
       <div style="font-size:36px;z-index:1;">${e}</div>
@@ -2225,10 +2240,8 @@ function openMenuBuilder(pkgIndex=null){
   const frame=document.getElementById('foodFrame');
   if(frame){
     const base='food_menu.html';
-    const finalUrl = pkgIndex===null ? base : `${base}?pkg=${pkgIndex}`;
-    // Force reload if same src
-    if(frame.src.indexOf(finalUrl) !== -1) frame.contentWindow.location.reload();
-    else frame.src = finalUrl;
+    const q = pkgIndex===null ? `t=${Date.now()}` : `pkg=${pkgIndex}&t=${Date.now()}`;
+    frame.src = `${base}?${q}`;
   }
   document.body.dataset.menuOpen='1';
   openM('foodModal');
@@ -2238,16 +2251,7 @@ function closeFoodModal(){
   delete document.body.dataset.menuOpen;
   window._vc3Skip=false;
 }
-function openMenuFromCard(ev,pkgIndex=null){
-  if(ev){
-    ev.preventDefault();
-    ev.stopPropagation();
-    ev.stopImmediatePropagation();
-  }
-  window._vc3Skip=true;
-  openMenuBuilder(pkgIndex);
-  return false;
-}
+// delegated handler handles menu buttons (menu-btn)
 
 /* ── CONFIRM AND GO TO INVOICE ── */
 function confirmMenuAndContinue(){
@@ -2413,6 +2417,32 @@ function closeUSidebar() {
     }
   }, 100);
 })();
+
+// handle menu button clicks via delegation (capture prevents card toggle)
+document.addEventListener('click',function(e){
+  const btn = e.target && e.target.closest ? e.target.closest('.menu-btn') : null;
+  if(!btn) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  e.stopPropagation();
+  window._vc3Skip = true;
+  const pkgAttr = btn.getAttribute('data-pkg');
+  const pkgIndex = pkgAttr==='' ? null : parseInt(pkgAttr,10);
+  openMenuBuilder(isNaN(pkgIndex)? null : pkgIndex);
+}, true);
+
+// auto-hide CTA bar on scroll down, show on scroll up
+let lastScrollY = 0;
+window.addEventListener('scroll',function(){
+  const cur = window.scrollY;
+  const bars = document.querySelectorAll('.ctabar');
+  if(cur > lastScrollY + 12){
+    bars.forEach(b=>b.classList.add('hidden'));
+  } else if(cur < lastScrollY - 12){
+    bars.forEach(b=>b.classList.remove('hidden'));
+  }
+  lastScrollY = cur;
+});
 
 // receive menu selection from popup
 window.addEventListener('message',function(e){
