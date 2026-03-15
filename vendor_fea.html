@@ -73,23 +73,112 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
 .foot{padding:20px 18px;text-align:center;color:var(--t3);font-size:11px;}
 .cta-banner{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;}
 .cta-banner .btn{flex:1;min-width:160px;}
-@media(max-width:720px){.nav{padding:0 12px;} .hero{padding:18px 12px 4px;} .grid,.split{padding:10px 12px 30px;}}
+@media(max-width:720px){.hero{padding:18px 12px 4px;} .grid,.split{padding:10px 12px 30px;}}
+
+/* ===== SIDEBAR + TOPBAR LAYOUT ===== */
+.app-shell{display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:230px;background:var(--card);border-right:1px solid var(--b1);display:flex;flex-direction:column;flex-shrink:0;z-index:10;}
+.sb-logo{padding:18px 18px 14px;border-bottom:1px solid var(--b1);}
+.sb-logo-text{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.sb-logo-text b{color:var(--gold);font-style:italic;}
+.sb-logo-sub{font-size:9px;color:var(--t3);margin-top:3px;font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase;}
+.sb-nav{flex:1;padding:10px 8px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;}
+.sb-nav::-webkit-scrollbar{width:0;}
+.sb-item{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--t2);transition:all .2s;border:1px solid transparent;}
+.sb-item:hover{background:var(--bg2);color:var(--t1);}
+.sb-item.on{background:var(--gd);color:var(--gold);font-weight:600;border-color:rgba(212,168,67,.2);}
+.sb-icon{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
+.sb-footer{padding:14px;border-top:1px solid var(--b1);}
+.sb-user{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;cursor:pointer;transition:background .2s;}
+.sb-user:hover{background:var(--bg2);}
+.sb-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;color:var(--bg);font-weight:700;font-size:12px;flex-shrink:0;}
+.sb-uname{font-size:12px;font-weight:600;}
+.sb-urole{font-size:10px;color:var(--t3);}
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:var(--bg2);border-bottom:1px solid var(--b1);flex-shrink:0;gap:14px;}
+.tb-left{display:flex;align-items:center;gap:14px;flex:1;}
+.tb-crumb{font-family:'Space Mono',monospace;font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:2px;}
+.tb-search{background:var(--card);border:1px solid var(--b1);border-radius:8px;padding:7px 13px;color:var(--t1);font-family:'Outfit',sans-serif;font-size:12px;outline:none;width:260px;max-width:100%;transition:border .2s;}
+.tb-search:focus{border-color:var(--gold);}
+.tb-search::placeholder{color:var(--t3);}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-icon{width:32px;height:32px;border-radius:8px;background:var(--card);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .2s;color:var(--t2);}
+.tb-icon:hover{border-color:var(--gold);color:var(--gold);}
+.content-scroll{flex:1;overflow-y:auto;padding:24px 24px 40px;}
+.content-scroll::-webkit-scrollbar{width:5px;}
+.content-scroll::-webkit-scrollbar-track{background:transparent;}
+.content-scroll::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px;}
+.mod-section{display:none;animation:fadeIn .35s var(--ease) both;}
+.mod-section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.mod-header{margin-bottom:20px;}
+.mod-title{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,32px);font-weight:700;margin-bottom:4px;}
+.mod-sub{font-size:13px;color:var(--t2);}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-250px;top:0;bottom:0;z-index:300;box-shadow:8px 0 30px rgba(0,0,0,.5);transition:left .3s var(--ease);}
+  .sidebar.open{left:0;}
+  .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:299;}
+  .sb-overlay.open{display:block;}
+  .tb-ham{display:flex !important;}
+}
+@media(min-width:769px){.tb-ham{display:none !important;}}
+
 </style>
 </head>
 <body>
-<div class="nav">
-  <div class="nav-logo" onclick="window.location.href='index.html'">No<b>Vigna</b></div>
-  <div class="nav-actions">
-    <button class="btn btn-ghost" onclick="scrollToSection('auth')">Login / Signup</button>
-    <button class="btn btn-gold" onclick="scrollToSection('dashboard')">Go to Dashboard</button>
-  </div>
-</div>
+<div class="sb-overlay" id="vSbOverlay" onclick="toggleVSidebar()"></div>
+<div class="app-shell">
 
-<section class="hero">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="vSidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-text">No<b>Vigna</b></div>
+      <div class="sb-logo-sub">Vendor Platform</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-item on" onclick="switchVMod('welcome',this)"><span class="sb-icon">🏠</span> Welcome</div>
+      <div class="sb-item" onclick="switchVMod('onboarding',this)"><span class="sb-icon">📝</span> Onboarding</div>
+      <div class="sb-item" onclick="switchVMod('dashboard',this)"><span class="sb-icon">📊</span> Dashboard</div>
+      <div class="sb-item" onclick="switchVMod('analytics',this)"><span class="sb-icon">📈</span> Analytics</div>
+      <div class="sb-item" onclick="switchVMod('profile',this)"><span class="sb-icon">👤</span> My Profile</div>
+      <div class="sb-item" onclick="switchVMod('history',this)"><span class="sb-icon">📋</span> History & Issues</div>
+    </div>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar">VD</div>
+        <div>
+          <div class="sb-uname">My Vendor Account</div>
+          <div class="sb-urole">Active · Verified</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN AREA -->
+  <div class="main-area">
+    <div class="topbar">
+      <div class="tb-left">
+        <div class="tb-icon tb-ham" onclick="toggleVSidebar()" style="font-size:16px;">☰</div>
+        <div class="tb-crumb" id="vCrumb">Vendor › Welcome</div>
+        <input type="text" class="tb-search" placeholder="🔍  Search bookings, events, payouts...">
+      </div>
+      <div class="tb-right">
+        <div class="tb-icon" title="Notifications">🔔</div>
+        <div class="tb-icon" title="Settings">⚙️</div>
+        <div class="tb-icon" title="Profile" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);font-weight:700;font-size:11px;border:none;">VD</div>
+      </div>
+    </div>
+
+    <div class="content-scroll">
+
+      <!-- MODULE: WELCOME -->
+      <div class="mod-section active" data-mod="welcome">
+
+<section class="hero" style="padding-top:0;">
   <div class="hero-card">
     <div class="eye">Vendors · Welcome</div>
     <div class="h1">Grow with<br>India’s smoothest events platform</div>
-    <div class="sub">Instant assignments, guaranteed payments, shadow backups, and a concierge team that keeps your calendar full.</div>
+    <div class="sub">Instant assignments, guaranteed payments, shadow backups, and a concierge team that keeps your calendar full. <em style="color:var(--gold);">Your talent deserves a stage — we build it.</em></div>
     <div class="pill-row">
       <span class="pill">OTP + Password login</span>
       <span class="pill">KYC + GST + FSSAI</span>
@@ -98,8 +187,8 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
       <span class="pill">Shadow cover promise</span>
     </div>
     <div class="cta-banner">
-      <button class="btn btn-gold" onclick="scrollToSection('onboard')">Start onboarding</button>
-      <button class="btn btn-ghost" onclick="scrollToSection('admin')">View admin controls</button>
+      <button class="btn btn-gold" onclick="switchVMod('onboarding',document.querySelectorAll('.sb-item')[1])">Start onboarding</button>
+      <button class="btn btn-ghost" onclick="switchVMod('dashboard',document.querySelectorAll('.sb-item')[2])">Go to Dashboard</button>
     </div>
   </div>
   <div class="hero-card">
@@ -109,8 +198,12 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
     <div class="badge">🏅 Priority ranks unlock top-paying events</div>
   </div>
 </section>
+      </div>
 
-<section id="auth" class="grid">
+      <!-- MODULE: ONBOARDING -->
+      <div class="mod-section" data-mod="onboarding">
+        <div class="mod-header"><div class="mod-title">Get Onboarded</div><div class="mod-sub">🚀 Submit your details and start receiving premium event assignments.</div></div>
+<section id="auth" class="grid" style="padding-top:0;">
   <div class="card">
     <div class="tag">Access</div>
     <h3>Login / Signup</h3>
@@ -174,8 +267,12 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
     <div class="badge">⏱ 15-min average response time</div>
   </div>
 </section>
+      </div>
 
-<section id="dashboard" class="split">
+      <!-- MODULE: DASHBOARD -->
+      <div class="mod-section" data-mod="dashboard">
+        <div class="mod-header"><div class="mod-title">Your Command Center</div><div class="mod-sub">⚡ Live assignments, calendar, and real-time status — everything to keep you in control.</div></div>
+<section id="dashboardSec" class="split" style="padding-top:0;">
   <div class="card">
     <div class="tag">Vendor Dashboard</div>
     <h3>Live Assignments</h3>
@@ -213,8 +310,12 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
     </div>
   </div>
 </section>
+      </div>
 
-<section class="split">
+      <!-- MODULE: ANALYTICS -->
+      <div class="mod-section" data-mod="analytics">
+        <div class="mod-header"><div class="mod-title">Revenue & Performance</div><div class="mod-sub">💰 Track your earnings, acceptance rate, and climb the vendor ladder.</div></div>
+<section class="split" style="padding-top:0;">
   <div class="card">
     <div class="tag">Analytics</div>
     <h3>Revenue & Performance</h3>
@@ -229,8 +330,87 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
     <div class="badge">🎯 Current Rank: <span id="rankLabel">Rising</span></div>
   </div>
 </section>
+      </div>
 
-<section id="admin" class="grid">
+      <!-- MODULE: PROFILE -->
+      <div class="mod-section" data-mod="profile">
+        <div class="mod-header"><div class="mod-title">My Profile & Settings</div><div class="mod-sub">✨ A polished profile attracts premium clients. Keep it sharp.</div></div>
+<!-- PROFILE & SETTINGS SECTION -->
+<section id="profile" class="split">
+  <div class="card">
+    <div class="tag">My Profile</div>
+    <h3>Edit Business Details</h3>
+    <div class="sub">Keep your profile updated to get matched with the right events. <em style="color:var(--gold);">A polished profile attracts premium clients.</em></div>
+    <div class="form" id="profileForm">
+      <div>
+        <div class="lbl">Business Name</div>
+        <input class="fi" id="pName" placeholder="Eg. Spice Route Catering">
+      </div>
+      <div>
+        <div class="lbl">Contact Email</div>
+        <input class="fi" id="pEmail" type="email" placeholder="you@brand.com">
+      </div>
+      <div>
+        <div class="lbl">Phone</div>
+        <input class="fi" id="pPhone" placeholder="+91" inputmode="tel">
+      </div>
+      <div>
+        <div class="lbl">City</div>
+        <input class="fi" id="pCity" placeholder="Bengaluru">
+      </div>
+      <div>
+        <div class="lbl">Category</div>
+        <select class="fi" id="pCat">
+          <option>Catering</option><option>Photography</option><option>Decor</option><option>Music</option><option>Venue</option>
+        </select>
+      </div>
+      <div>
+        <div class="lbl">Base Pricing (₹)</div>
+        <input class="fi" id="pPrice" type="number" placeholder="420000">
+      </div>
+      <div>
+        <div class="lbl">Bio / Tagline</div>
+        <input class="fi" id="pBio" placeholder="Award-winning team with 8+ years of experience">
+      </div>
+      <div>
+        <div class="lbl">Update Portfolio</div>
+        <input class="fi" id="pMedia" type="file" multiple accept="image/*,video/*">
+      </div>
+    </div>
+    <button class="btn btn-gold btn-wide" style="margin-top:10px;" onclick="saveProfile()">Save Changes</button>
+    <div class="sub" id="profileStatus"></div>
+  </div>
+  <div class="card">
+    <div class="tag">Settings</div>
+    <h3>Preferences & Notifications</h3>
+    <div class="sub">🔔 Choose how NoVigna reaches you. Stay in control.</div>
+    <div class="list">
+      <div class="list-item">
+        <div><strong>Email Notifications</strong><div class="sub">Booking alerts, payment receipts</div></div>
+        <label style="cursor:pointer;"><input type="checkbox" checked> On</label>
+      </div>
+      <div class="list-item">
+        <div><strong>SMS Alerts</strong><div class="sub">Urgent assignments & escalations</div></div>
+        <label style="cursor:pointer;"><input type="checkbox" checked> On</label>
+      </div>
+      <div class="list-item">
+        <div><strong>Auto-accept within SLA</strong><div class="sub">Accept assignments if no action within 2 hrs</div></div>
+        <label style="cursor:pointer;"><input type="checkbox"> Off</label>
+      </div>
+      <div class="list-item">
+        <div><strong>Public Profile Visibility</strong><div class="sub">Allow users to browse your portfolio</div></div>
+        <label style="cursor:pointer;"><input type="checkbox" checked> On</label>
+      </div>
+    </div>
+    <div class="badge" style="margin-top:12px;">🛡️ Your data is encrypted and never shared without consent</div>
+  </div>
+</section>
+      </div>
+
+      <!-- MODULE: HISTORY -->
+      <div class="mod-section" data-mod="history">
+        <div class="mod-header"><div class="mod-title">History & Compliance</div><div class="mod-sub">📝 Your complete event trail. Stay accountable, stay booked.</div></div>
+<section id="admin" class="grid" style="padding-top:0;">
   <div class="card">
     <div class="tag">Admin · Main Dashboard</div>
     <h3>Live Event View</h3>
@@ -284,8 +464,11 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
     </div>
   </div>
 </section>
+      </div>
 
-<div class="foot">Need help? relationship@novigna.com · +91-90000-00000</div>
+    </div>
+  </div>
+</div>
 
 <script>
 function scrollToSection(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
@@ -437,6 +620,55 @@ function renderDashboard(){
 }
 
 window.addEventListener('load',renderDashboard);
+
+// ------- Profile -------
+function loadProfile() {
+  if (vendorProfile) {
+    const el = id => document.getElementById(id);
+    if (el('pName')) el('pName').value = vendorProfile.name || '';
+    if (el('pEmail')) el('pEmail').value = vendorProfile.email || '';
+    if (el('pPhone')) el('pPhone').value = vendorProfile.phone || '';
+    if (el('pCity')) el('pCity').value = vendorProfile.city || '';
+    if (el('pCat')) el('pCat').value = vendorProfile.cat || 'Catering';
+    if (el('pPrice')) el('pPrice').value = vendorProfile.price || '';
+  }
+}
+function saveProfile() {
+  const profile = {
+    name: document.getElementById('pName').value.trim(),
+    email: document.getElementById('pEmail').value.trim(),
+    phone: document.getElementById('pPhone').value.trim(),
+    city: document.getElementById('pCity').value.trim(),
+    cat: document.getElementById('pCat').value,
+    price: document.getElementById('pPrice').value.trim(),
+    bio: document.getElementById('pBio').value.trim(),
+    submitted: vendorProfile ? vendorProfile.submitted : new Date().toISOString(),
+    status: vendorProfile ? vendorProfile.status : 'Active'
+  };
+  vendorProfile = profile;
+  localStorage.setItem('nv_vendor_profile', JSON.stringify(profile));
+  document.getElementById('profileStatus').textContent = '✅ Profile saved successfully at ' + new Date().toLocaleTimeString();
+  toast('Profile updated!');
+}
+window.addEventListener('load', loadProfile);
+
+// ------- Sidebar Module Switching -------
+const vModLabels = {
+  welcome:'Welcome', onboarding:'Onboarding', dashboard:'Dashboard',
+  analytics:'Analytics', profile:'My Profile', history:'History & Issues'
+};
+function switchVMod(mod, el) {
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('on'));
+  if (el) el.classList.add('on');
+  document.querySelectorAll('.mod-section').forEach(s => s.classList.remove('active'));
+  const t = document.querySelector('[data-mod="'+mod+'"]');
+  if (t) { t.classList.add('active'); document.querySelector('.content-scroll').scrollTop=0; }
+  const c = document.getElementById('vCrumb');
+  if (c) c.textContent = 'Vendor \u203a ' + (vModLabels[mod]||mod);
+  closeVSidebar();
+}
+function toggleVSidebar(){ document.getElementById('vSidebar').classList.toggle('open'); document.getElementById('vSbOverlay').classList.toggle('open'); }
+function closeVSidebar(){ document.getElementById('vSidebar').classList.remove('open'); document.getElementById('vSbOverlay').classList.remove('open'); }
 </script>
 </body>
 </html>

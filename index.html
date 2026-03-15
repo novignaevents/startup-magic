@@ -36,7 +36,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{background:var(--bg);overscroll-behavior:none;}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overflow-x:hidden;min-height:100dvh;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overflow:hidden;min-height:100dvh;}
 
 /* ── SCREENS ── */
 .scr{display:none;flex-direction:column;min-height:100dvh;animation:scrIn .45s var(--ease) both;}
@@ -706,6 +706,49 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .fnd{width:7px;height:7px;border-radius:50%;background:var(--b2);cursor:pointer;border:none;transition:all .3s;}
 .fnd.on{background:var(--gold);box-shadow:0 0 9px var(--gg);transform:scale(1.5);}
 .fnd.done{background:var(--gold);opacity:.35;}
+
+/* ===== SIDEBAR + TOPBAR LAYOUT ===== */
+.app-shell{display:flex;height:100dvh;overflow:hidden;}
+.sidebar{width:230px;background:var(--card);border-right:1px solid var(--b1);display:flex;flex-direction:column;flex-shrink:0;z-index:10;}
+.sb-logo-wrap{padding:18px 18px 14px;border-bottom:1px solid var(--b1);}
+.sb-logo-t{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.sb-logo-t b{color:var(--gold);font-style:italic;}
+.sb-logo-sub{font-size:9px;color:var(--t3);margin-top:3px;font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase;}
+.sb-nav-list{flex:1;padding:10px 8px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;}
+.sb-nav-list::-webkit-scrollbar{width:0;}
+.sb-itm{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--t2);transition:all .2s;border:1px solid transparent;}
+.sb-itm:hover{background:var(--bg2);color:var(--t1);}
+.sb-itm.on{background:var(--gd);color:var(--gold);font-weight:600;border-color:rgba(212,168,67,.2);}
+.sb-itm.locked{opacity:.4;cursor:not-allowed;}
+.sb-icn{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
+.sb-step-num{margin-left:auto;font-family:'Space Mono',monospace;font-size:9px;background:var(--b1);padding:2px 6px;border-radius:6px;}
+.sb-itm.on .sb-step-num{background:rgba(212,168,67,.2);color:var(--gold);}
+.sb-foot{padding:14px;border-top:1px solid var(--b1);}
+.sb-user-info{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;cursor:pointer;transition:background .2s;}
+.sb-user-info:hover{background:var(--bg2);}
+.sb-av-circle{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;color:var(--bg);font-weight:700;font-size:12px;flex-shrink:0;}
+.sb-un{font-size:12px;font-weight:600;}
+.sb-ur{font-size:10px;color:var(--t3);}
+.main-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar-u{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:var(--bg2);border-bottom:1px solid var(--b1);flex-shrink:0;gap:14px;}
+.tb-left-u{display:flex;align-items:center;gap:14px;flex:1;}
+.tb-crumb-u{font-family:'Space Mono',monospace;font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:2px;}
+.tb-search-u{background:var(--card);border:1px solid var(--b1);border-radius:8px;padding:7px 13px;color:var(--t1);font-family:'Outfit',sans-serif;font-size:12px;outline:none;width:260px;max-width:100%;transition:border .2s;}
+.tb-search-u:focus{border-color:var(--gold);}
+.tb-search-u::placeholder{color:var(--t3);}
+.tb-right-u{display:flex;align-items:center;gap:10px;}
+.tb-ic{width:32px;height:32px;border-radius:8px;background:var(--card);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .2s;color:var(--t2);}
+.tb-ic:hover{border-color:var(--gold);color:var(--gold);}
+.content-wrap{flex:1;overflow-y:auto;}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-250px;top:0;bottom:0;z-index:300;box-shadow:8px 0 30px rgba(0,0,0,.5);transition:left .3s var(--ease);}
+  .sidebar.open{left:0;}
+  .sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:299;}
+  .sb-ov.open{display:block;}
+  .tb-ham-u{display:flex !important;}
+}
+@media(min-width:769px){.tb-ham-u{display:none !important;}}
+
 </style>
 </head>
 <body>
@@ -832,6 +875,52 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 </div>
 
 <!-- ═════════════ SCREENS ════════════ -->
+
+<div class="sb-ov" id="uSbOv" onclick="toggleUSidebar()"></div>
+<div class="app-shell">
+
+  <div class="sidebar" id="uSidebar">
+    <div class="sb-logo-wrap">
+      <div class="sb-logo-t">No<b>Vigna</b></div>
+      <div class="sb-logo-sub">Event Planner</div>
+    </div>
+    <div class="sb-nav-list">
+      <div class="sb-itm on" data-step="0" onclick="goToSb(0,this)"><span class="sb-icn">✨</span> Welcome<span class="sb-step-num">Start</span></div>
+      <div class="sb-itm locked" data-step="1" onclick="goToSb(1,this)"><span class="sb-icn">🎉</span> Event Details<span class="sb-step-num">1</span></div>
+      <div class="sb-itm locked" data-step="2" onclick="goToSb(2,this)"><span class="sb-icn">🎨</span> Design & Style<span class="sb-step-num">2</span></div>
+      <div class="sb-itm locked" data-step="3" onclick="goToSb(3,this)"><span class="sb-icn">🤖</span> AI Matching<span class="sb-step-num">3</span></div>
+      <div class="sb-itm locked" data-step="4" onclick="goToSb(4,this)"><span class="sb-icn">🎪</span> Vendor Results<span class="sb-step-num">4</span></div>
+      <div class="sb-itm locked" data-step="5" onclick="goToSb(5,this)"><span class="sb-icn">🔍</span> Explore More<span class="sb-step-num">5</span></div>
+      <div class="sb-itm locked" data-step="6" onclick="goToSb(6,this)"><span class="sb-icn">✅</span> Review<span class="sb-step-num">6</span></div>
+      <div class="sb-itm locked" data-step="7" onclick="goToSb(7,this)"><span class="sb-icn">💳</span> Payment<span class="sb-step-num">7</span></div>
+      <div class="sb-itm locked" data-step="8" onclick="goToSb(8,this)"><span class="sb-icn">📄</span> Invoice<span class="sb-step-num">8</span></div>
+      <div class="sb-itm locked" data-step="9" onclick="goToSb(9,this)"><span class="sb-icn">🎉</span> Celebrate!<span class="sb-step-num">9</span></div>
+    </div>
+    <div class="sb-foot">
+      <div class="sb-user-info">
+        <div class="sb-av-circle">NV</div>
+        <div>
+          <div class="sb-un">My Event</div>
+          <div class="sb-ur">Planning in progress</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-wrap">
+    <div class="topbar-u">
+      <div class="tb-left-u">
+        <div class="tb-ic tb-ham-u" onclick="toggleUSidebar()" style="font-size:16px;">☰</div>
+        <div class="tb-crumb-u" id="uCrumb">NoVigna › Welcome</div>
+        <input type="text" class="tb-search-u" placeholder="🔍  Search venues, caterers, decorators...">
+      </div>
+      <div class="tb-right-u">
+        <div class="tb-ic" title="Notifications">🔔</div>
+        <div class="tb-ic" title="Settings">⚙️</div>
+        <div class="tb-ic" title="Profile" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);font-weight:700;font-size:11px;border:none;">NV</div>
+      </div>
+    </div>
+    <div class="content-wrap">
 
 <!-- S0 SPLASH -->
 <div class="scr on" id="s0">
@@ -2276,6 +2365,65 @@ document.addEventListener('touchend',e=>{
 updateBar();
 buildFnav(0);
 buildSteps(0);
+
+// Sidebar navigation for user portal
+var uStepLabels = {
+  0:'Welcome', 1:'Event Details', 2:'Design & Style', 3:'AI Matching',
+  4:'Vendor Results', 5:'Explore More', 6:'Review', 7:'Payment', 8:'Invoice', 9:'Celebrate!'
+};
+var maxUnlockedStep = 0;
+
+function goToSb(n, el) {
+  if (n > maxUnlockedStep) return;
+  goTo(n);
+}
+
+function updateSidebar(n) {
+  if (n > maxUnlockedStep) maxUnlockedStep = n;
+  var items = document.querySelectorAll('.sb-itm');
+  for (var i = 0; i < items.length; i++) {
+    var step = parseInt(items[i].getAttribute('data-step'));
+    items[i].classList.remove('on');
+    if (step <= maxUnlockedStep) {
+      items[i].classList.remove('locked');
+    }
+    if (step === n) {
+      items[i].classList.add('on');
+    }
+  }
+  var crumb = document.getElementById('uCrumb');
+  if (crumb) crumb.textContent = 'NoVigna > ' + (uStepLabels[n] || 'Step ' + n);
+  closeUSidebar();
+}
+
+function toggleUSidebar() {
+  document.getElementById('uSidebar').classList.toggle('open');
+  document.getElementById('uSbOv').classList.toggle('open');
+}
+function closeUSidebar() {
+  document.getElementById('uSidebar').classList.remove('open');
+  document.getElementById('uSbOv').classList.remove('open');
+}
+
+// Monkey-patch goTo to update sidebar
+(function() {
+  var check = setInterval(function() {
+    if (typeof window.goTo === 'function' && !window._goToPatched) {
+      var orig = window.goTo;
+      window.goTo = function(n) {
+        orig(n);
+        updateSidebar(n);
+      };
+      window._goToPatched = true;
+      clearInterval(check);
+    }
+  }, 100);
+})();
+
 </script>
+
+    </div>
+  </div>
+</div>
 </body>
 </html>
