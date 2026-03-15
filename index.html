@@ -834,7 +834,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div id="pkgBody" style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:12px;"></div>
       <div id="pkgItems" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;"></div>
       <button class="btn-go rp" style="width:100%;justify-content:center;margin-bottom:8px;" onclick="addPkgItemsToPlate()">Load onto plate</button>
-      <button class="nav-btn" style="width:100%;justify-content:center;text-align:center;" onclick="closeM('pkgModal');goTo(7)">Open full menu builder</button>
+      <button class="nav-btn" style="width:100%;justify-content:center;text-align:center;" onclick="closeM('pkgModal');openMenuBuilder()">Open full menu builder</button>
     </div>
   </div>
 </div>
@@ -885,16 +885,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="sb-logo-sub">Event Planner</div>
     </div>
     <div class="sb-nav-list">
-      <div class="sb-itm on" data-step="0" onclick="goToSb(0,this)"><span class="sb-icn">✨</span> Welcome<span class="sb-step-num">Start</span></div>
-      <div class="sb-itm locked" data-step="1" onclick="goToSb(1,this)"><span class="sb-icn">🎉</span> Event Details<span class="sb-step-num">1</span></div>
-      <div class="sb-itm locked" data-step="2" onclick="goToSb(2,this)"><span class="sb-icn">🎨</span> Design & Style<span class="sb-step-num">2</span></div>
-      <div class="sb-itm locked" data-step="3" onclick="goToSb(3,this)"><span class="sb-icn">🤖</span> AI Matching<span class="sb-step-num">3</span></div>
-      <div class="sb-itm locked" data-step="4" onclick="goToSb(4,this)"><span class="sb-icn">🎪</span> Vendor Results<span class="sb-step-num">4</span></div>
-      <div class="sb-itm locked" data-step="5" onclick="goToSb(5,this)"><span class="sb-icn">🔍</span> Explore More<span class="sb-step-num">5</span></div>
-      <div class="sb-itm locked" data-step="6" onclick="goToSb(6,this)"><span class="sb-icn">✅</span> Review<span class="sb-step-num">6</span></div>
-      <div class="sb-itm locked" data-step="7" onclick="goToSb(7,this)"><span class="sb-icn">💳</span> Payment<span class="sb-step-num">7</span></div>
+      <div class="sb-itm on" data-step="0" onclick="goToSb(0,this)"><span class="sb-icn">✨</span> Overview<span class="sb-step-num">Start</span></div>
+      <div class="sb-itm locked" data-step="1" onclick="goToSb(1,this)"><span class="sb-icn">🎉</span> Event Selection<span class="sb-step-num">1</span></div>
+      <div class="sb-itm locked" data-step="2" onclick="goToSb(2,this)"><span class="sb-icn">🎨</span> Event Requirements<span class="sb-step-num">2</span></div>
+      <div class="sb-itm locked" data-step="4" onclick="goToSb(4,this)"><span class="sb-icn">🎪</span> Vendor Recommendations<span class="sb-step-num">4</span></div>
+      <div class="sb-itm locked" data-step="6" onclick="goToSb(6,this)"><span class="sb-icn">✅</span> Itinerary Review<span class="sb-step-num">6</span></div>
       <div class="sb-itm locked" data-step="8" onclick="goToSb(8,this)"><span class="sb-icn">📄</span> Invoice<span class="sb-step-num">8</span></div>
-      <div class="sb-itm locked" data-step="9" onclick="goToSb(9,this)"><span class="sb-icn">🎉</span> Celebrate!<span class="sb-step-num">9</span></div>
+      <div class="sb-itm locked" data-step="9" onclick="goToSb(9,this)"><span class="sb-icn">🎉</span> Post-Event Services<span class="sb-step-num">9</span></div>
     </div>
     <div class="sb-foot">
       <div class="sb-user-info">
@@ -922,6 +919,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
     <div class="content-wrap">
 
+<!-- FOOD MODAL OVERLAY -->
+<div class="modal" id="foodModal" style="backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+  <div class="mbox" style="width:100%;max-width:1080px;height:88vh;border-radius:18px;overflow:hidden;padding:0;display:flex;flex-direction:column;">
+    <div class="mhdr" style="position:sticky;top:0;flex-shrink:0;">
+      <div class="mtitle">Catering · Build Your Menu</div>
+      <button class="mx" onclick="closeFoodModal()">✕</button>
+    </div>
+    <div class="mbody" style="padding:0;overflow:hidden;flex:1;">
+      <iframe id="foodFrame" src="" style="border:0;width:100%;height:100%;"></iframe>
+    </div>
+  </div>
+</div>
+
 <!-- S0 SPLASH -->
 <div class="scr on" id="s0">
   <div class="splash-bg">
@@ -944,12 +954,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       </div>
     </div>
   </div>
-  <div class="sp-stats">
-    <div><div class="stn" data-t="2400">0</div><div class="stl">Vendors</div></div>
-    <div><div class="stn" data-t="48">0</div><div class="stl">Cities</div></div>
-    <div><div class="stn">100%</div><div class="stl">Shadow Cover</div></div>
-    <div><div class="stn" data-t="12000">0</div><div class="stl">Events Done</div></div>
-  </div>
+    <div class="sp-stats">
+      <div><div class="stn" data-t="2400">0</div><div class="stl">Vendors</div></div>
+      <div><div class="stn" data-t="48">0</div><div class="stl">Cities</div></div>
+      <div><div class="stn">100%</div><div class="stl">Shadow Cover</div></div>
+      <div><div class="stn" data-t="12000">0</div><div class="stl">Events Done</div></div>
+    </div>
+
 </div>
 
 <!-- S1 EVENTS GALLERY -->
@@ -995,6 +1006,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="celeb-banner">
       <div class="celeb-line1">"Every great celebration starts with a single decision."</div>
       <div class="celeb-line2">Join 12,000+ families who trusted NoVigna with their most important days.</div>
+    </div>
+
+    <div class="sep"></div>
+    <div class="eye" style="margin-bottom:6px;">Post‑Event Services</div>
+    <div class="sub" style="margin-top:0;margin-bottom:16px;">Explore trusted partners for everything after booking — available anytime.</div>
+    <div class="shop-grid">
+      <div class="scard rp" onclick="toast('Opening fashion partners — look stunning on your day! 👗')"><span class="sc-i">👗</span><div class="sc-n">Attire</div><div class="sc-d">Up to 20% off</div></div>
+      <div class="scard rp" onclick="toast('Opening jewellery partners — you deserve to sparkle 💎')"><span class="sc-i">💎</span><div class="sc-n">Jewellery</div><div class="sc-d">Exclusive rates</div></div>
+      <div class="scard rp" onclick="toast('Best hotels near your venue — rest well, celebrate more 🏨')"><span class="sc-i">🏨</span><div class="sc-n">Stays</div><div class="sc-d">Group discount</div></div>
+      <div class="scard rp" onclick="toast('Flights & transfers sorted — arrive in style ✈️')"><span class="sc-i">✈️</span><div class="sc-n">Travel</div><div class="sc-d">Bundle savings</div></div>
+      <div class="scard rp" onclick="toast('Beautiful mehendi makes beautiful memories 🌿')"><span class="sc-i">🌿</span><div class="sc-n">Mehendi</div><div class="sc-d">5 artists near you</div></div>
+      <div class="scard rp" onclick="toast('Because you deserve to look your absolute best 💄')"><span class="sc-i">💄</span><div class="sc-n">Makeup</div><div class="sc-d">Bridal packages</div></div>
+      <div class="scard rp" onclick="toast('Invitations that set the tone — first impressions matter 💌')"><span class="sc-i">💌</span><div class="sc-n">Invitations</div><div class="sc-d">Print + digital</div></div>
+      <div class="scard rp" onclick="toast('Curated hampers — because every guest deserves to feel special 🎁')"><span class="sc-i">🎁</span><div class="sc-n">Gifting</div><div class="sc-d">Curated hampers</div></div>
     </div>
   </div>
 </div>
@@ -1195,74 +1220,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </div>
 </div>
 
-<!-- S7 FOOD/CATERING SELECTION -->
-<div class="scr" id="s7">
-  <div class="nav">
-    <div class="nav-logo">No<b>Vigna</b></div>
-    <div class="nav-steps" id="ns-7"></div>
-    <button class="nav-btn" onclick="goTo(6)">← Plan</button>
-  </div>
-  <div class="pb">
-    <div class="eye">Catering · Step 04b</div>
-    <div class="h1">Food is how you<br>say "I love you"</div>
-    <div class="step-time"><span class="st-dot"></span>Your guests will talk about the food for years · Tap to add, tap again to remove</div>
-
-    <!-- PACKAGES -->
-    <div class="slbl" style="margin-bottom:10px;">Choose a Package — or build your own below</div>
-    <div class="pkg-grid" id="pkgGrid"></div>
-
-    <div class="sep"></div>
-    <div class="slbl" style="margin-bottom:14px;">Build Your Plate 🍽</div>
-
-    <!-- MOBILE PLATE STRIP — sticky mini plate preview while scrolling -->
-    <div class="plate-mobile-strip" id="plateMobileStrip">
-      <div class="pms-canvas-wrap">
-        <canvas id="plateCanvasMini" width="80" height="80"></canvas>
-      </div>
-      <div class="pms-info">
-        <div class="pms-title">Your Plate</div>
-        <div class="pms-count" id="pmsCount">Nothing added yet</div>
-        <div class="pms-items" id="pmsItems">Tap any item below to add it →</div>
-      </div>
-    </div>
-
-    <!-- MAIN FOOD LAYOUT: plate (desktop) + menu -->
-    <div class="food-layout">
-
-      <!-- DESKTOP PLATE (sticky column) -->
-      <div class="plate-col plate-desktop">
-        <div style="font-size:11px;color:var(--t3);margin-bottom:8px;font-family:'Space Mono',monospace;letter-spacing:1px;">YOUR PLATE</div>
-        <div class="plate-canvas-wrap" id="plateWrap">
-          <canvas id="plateCanvas" width="220" height="220"></canvas>
-        </div>
-        <div class="plate-legend" id="plateLegend"></div>
-        <div class="plate-count-lbl" id="plateCount">0 items on your plate</div>
-        <button class="plate-clear-btn rp" onclick="clearPlate()">✕ Clear plate</button>
-      </div>
-
-      <!-- MENU COLUMN -->
-      <div class="menu-col" id="menuWrap"></div>
-    </div>
-
-    <!-- MOBILE: show full plate below menu when items exist -->
-    <div id="plateMobileFullWrap" style="display:none;margin-top:24px;">
-      <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:8px;font-family:'Space Mono',monospace;letter-spacing:1px;">YOUR FULL PLATE</div>
-      <div style="max-width:260px;margin:0 auto;position:relative;">
-        <canvas id="plateCanvasFull" width="260" height="260" style="width:100%;height:auto;display:block;"></canvas>
-      </div>
-      <div class="plate-legend" id="plateLegendMobile" style="margin-top:10px;"></div>
-      <button class="plate-clear-btn rp" onclick="clearPlate()" style="margin-top:8px;">✕ Clear plate</button>
-    </div>
-  </div>
-
-  <div class="ctabar">
-    <div class="cta-l">
-      <div class="cta-lbl">Your Menu</div>
-      <div class="cta-v" id="menuV">Select items — tap to add, tap again to remove</div>
-    </div>
-    <button class="btn-go rp" onclick="confirmMenuAndContinue()">Confirm Menu →</button>
-  </div>
-</div>
 
 <!-- S8 INVOICE -->
 <div class="scr" id="s8">
@@ -1353,8 +1310,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 const S={scr:0,et:'wedding',city:'Bengaluru',guests:200,dStart:'2025-11-14',dEnd:'2025-11-16',singleDay:false,budget:1500000,venue:'luxury',group:null,manSel:new Set(),currentDay:0,dragEl:null};
 
 /* ── FLOW MAP ── */
-const FLOW=[0,1,2,4,5,6,7,8,9];
-const SCR_STEPS={1:1,2:2,3:3,4:3,5:3,6:4,7:5,8:5,9:6};
+const FLOW=[0,1,2,4,5,6,8,9];
+const SCR_STEPS={1:1,2:2,3:3,4:3,5:3,6:4,8:5,9:6};
 window._vc3Skip=false;
 let chatLog=[
   {self:false,text:'Hey! I like the palace venue. Thoughts?'},
@@ -1461,7 +1418,6 @@ function goTo(n){
   if(n===4){buildVendors();setTimeout(()=>{document.getElementById('bFill').style.width='79%';},400);}
   if(n===5)buildManual();
   if(n===6)buildItinerary();
-  if(n===7){buildFood();updateMobilePlateStrip();}
   if(n===8)buildInvoice();
 }
 window.goTo=goTo;
@@ -1652,18 +1608,19 @@ function buildVendors(){
       const isPrimary=v.type==='primary',isShadow=v.type==='shadow',isNeg=v.type==='negotiate';
       const typeLabel=isPrimary?'✦ AI Pick — Best Match':isShadow?'⟳ Shadow Backup — Auto-assigned':isNeg?'⚡ Open to Negotiate':'';
       const typeSub=isPrimary?'Top-rated · Available · Best value for your budget':isShadow?'Steps in automatically if your primary cancels — you\'ll never know the difference':isNeg?'Currently booked, but they\'ve accepted offers before. Worth a try.':``;
-      const cls=`vc3${isPrimary?' ai-pick':isShadow?' shadow':isNeg?' neg':''} rp`;
+      const isSelected = v.selected === undefined ? isPrimary : v.selected;
+      const cls=`vc3${isSelected?' ai-pick':''} ${isShadow?'shadow':''} ${isNeg?'neg':''} rp`;
       const isCatering = v.cat==='catering';
-      return`<div class="${cls}" onclick="toggleVC3(event,this,'${v.cat}')">
-        ${isPrimary?'<div class="vc3-check">✓</div>':''}
+      return`<div class="${cls}" onclick="toggleVC3(event,this,'${v.cat}', ${vs.indexOf(v)})">
+        ${isSelected?'<div class="vc3-check">✓</div>':''}
         <div class="vc3-type">${typeLabel}</div>
         <div style="font-size:9px;color:var(--t3);margin-bottom:7px;line-height:1.5;">${typeSub}</div>
         <div class="vc3-top"><div class="vc3-name">${v.name}</div><div class="vc3-r">★ ${v.rating} (${v.rev})</div></div>
         <div class="vc3-price">₹${v.price.toLocaleString('en-IN')}</div>
         <div class="${v.avail?'vc3-avail':'vc3-unavail'}">${v.avail?'✓ Available on your dates':'✗ Currently booked on your dates'}</div>
         ${v.photos.length?`<button class="view-photos-btn" onclick="window._vc3Skip=true;event.stopPropagation();openPhotos('${v.name}',${JSON.stringify(v.photos).replace(/"/g,"'")})">📷 View Photos & Virtual Tour</button>`:''}
-        ${isCatering?`<button class="view-photos-btn no-select" style="margin-top:4px;background:var(--gd);border-color:rgba(212,168,67,.3);color:var(--gold);" onclick="window._vc3Skip=true;event.stopPropagation();openMenuBuilder();return false;">🍽 Curate the Menu →</button>
-        <button class="view-photos-btn no-select" style="margin-top:6px;" onclick="window._vc3Skip=true;event.stopPropagation();viewPackage(0);return false;">📖 View Package Menu</button>`:''}
+        ${isCatering?`<button class="view-photos-btn no-select" style="margin-top:4px;background:var(--gd);border-color:rgba(212,168,67,.3);color:var(--gold);" onclick="openMenuFromCard(event)">🍽 Curate the Menu →</button>
+        <button class="view-photos-btn no-select" style="margin-top:6px;" onclick="openMenuFromCard(event, 0)">📖 View Package Menu</button>`:''}
         ${isNeg?`<button class="neg-btn-sm" onclick="window._vc3Skip=true;event.stopPropagation();openNeg('${v.name}')">Send an offer — they might say yes</button>`:''}
       </div>`;
     }).join('');
@@ -1671,12 +1628,18 @@ function buildVendors(){
   }).join('');
   document.getElementById('v4count').textContent=`${cats.length} categories matched · Shadow on every booking`;
 }
-function toggleVC3(ev, el, cat){
-  // If the click came from an inner action button, ignore
-  if(ev && ev.target && ev.target.closest('.no-select')) return;
+function toggleVC3(ev, el, cat, idx){
+  // If click came from inner action (menu buttons), ignore
   if(window._vc3Skip){ window._vc3Skip=false; return; }
+  if(document.body.dataset.menuOpen==='1') return;
+  if(ev && ev.target && ev.target.closest && ev.target.closest('.no-select')) return;
+  if(ev && ev.target && ev.target.closest && ev.target.closest('button')) return;
   if(el.classList.contains('neg')) return;
+
+  const vList = VENDOR_CATS[cat] || [];
   el.classList.toggle('ai-pick');
+  const isChecked = el.classList.contains('ai-pick');
+  if(vList[idx]) vList[idx].selected = isChecked;
   const hasCk = el.querySelector('.vc3-check');
   if(el.classList.contains('ai-pick') && !hasCk){
     const ck = document.createElement('div'); ck.className='vc3-check'; ck.textContent='✓'; el.appendChild(ck);
@@ -1972,15 +1935,7 @@ function pickPkg(i){
 }
 
 function viewPackage(i=0){
-  selPkg = i;
-  const pkg = FOOD_PKGS[i] || FOOD_PKGS[0];
-  const body = document.getElementById('pkgBody');
-  const itemsEl = document.getElementById('pkgItems');
-  if(body) body.textContent = `${pkg.price}/plate · ${pkg.name}`;
-  if(itemsEl) itemsEl.innerHTML = (pkg.items||'').split(',').map(it=>`<span class="ec-tag">${it.trim()}</span>`).join('');
-  const title = document.getElementById('pkgTitle');
-  if(title) title.textContent = `${pkg.name} · ₹${pkg.price}/plate`;
-  openM('pkgModal');
+  openMenuBuilder(i);
 }
 
 function addPkgItemsToPlate(){
@@ -1996,6 +1951,7 @@ function addPkgItemsToPlate(){
   toast('Package applied to your plate ✓');
   const mfw = document.getElementById('plateMobileFullWrap');
   if(mfw) mfw.style.display = selectedItems.length > 0 ? 'block' : 'none';
+  openMenuBuilder();
 }
 
 /* ── MENU GRID ── */
@@ -2264,11 +2220,33 @@ function updateMenuBar(){
   if(el) el.textContent = `${pkg}${cnt > 0 ? cnt + ' items · ' + m : m}`;
 }
 
-function openMenuBuilder(){
+function openMenuBuilder(pkgIndex=null){
   window._vc3Skip=true;
-  goTo(7);
-  // focus the plate section for immediate context
-  setTimeout(()=>{const wrap=document.querySelector('#s7 .food-layout');if(wrap)wrap.scrollIntoView({behavior:'smooth',block:'start'});},80);
+  const frame=document.getElementById('foodFrame');
+  if(frame){
+    const base='food_menu.html';
+    const finalUrl = pkgIndex===null ? base : `${base}?pkg=${pkgIndex}`;
+    // Force reload if same src
+    if(frame.src.indexOf(finalUrl) !== -1) frame.contentWindow.location.reload();
+    else frame.src = finalUrl;
+  }
+  document.body.dataset.menuOpen='1';
+  openM('foodModal');
+}
+function closeFoodModal(){
+  closeM('foodModal');
+  delete document.body.dataset.menuOpen;
+  window._vc3Skip=false;
+}
+function openMenuFromCard(ev,pkgIndex=null){
+  if(ev){
+    ev.preventDefault();
+    ev.stopPropagation();
+    ev.stopImmediatePropagation();
+  }
+  window._vc3Skip=true;
+  openMenuBuilder(pkgIndex);
+  return false;
 }
 
 /* ── CONFIRM AND GO TO INVOICE ── */
@@ -2280,8 +2258,24 @@ function confirmMenuAndContinue(){
   const summary = selPkg >= 0
     ? FOOD_PKGS[selPkg].name + (selectedItems.length > 0 ? ` + ${selectedItems.length} custom items` : '')
     : `${selectedItems.length} custom items`;
+
+  let basePrice = selPkg >= 0 ? FOOD_PKGS[selPkg].price : (150 + selectedItems.length * 85);
+  let totalGuests = typeof S !== 'undefined' && typeof S.guests !== 'undefined' ? S.guests : 200;
+  let cateringTotal = basePrice * totalGuests;
+
+  if (typeof VENDOR_CATS !== 'undefined' && VENDOR_CATS['🍽 Catering']) {
+    VENDOR_CATS['🍽 Catering'].forEach(v => {
+      v.price = cateringTotal;
+    });
+  }
+
   toast(`Menu confirmed: ${summary} ✓`);
-  setTimeout(() => goTo(8), 400);
+  closeFoodModal();
+
+  if (typeof S !== 'undefined') {
+    if (S.scr === 4 && typeof buildVendors === 'function') buildVendors();
+    if (S.scr === 5 && typeof buildManual === 'function') buildManual();
+  }
 }
 
 /* ── INVOICE ── */
@@ -2368,8 +2362,8 @@ buildSteps(0);
 
 // Sidebar navigation for user portal
 var uStepLabels = {
-  0:'Welcome', 1:'Event Details', 2:'Design & Style', 3:'AI Matching',
-  4:'Vendor Results', 5:'Explore More', 6:'Review', 7:'Payment', 8:'Invoice', 9:'Celebrate!'
+  0:'Overview', 1:'Event Selection', 2:'Event Requirements',
+  4:'Vendor Recommendations', 6:'Itinerary Review', 8:'Invoice', 9:'Post-Event Services'
 };
 var maxUnlockedStep = 0;
 
@@ -2419,6 +2413,26 @@ function closeUSidebar() {
     }
   }, 100);
 })();
+
+// receive menu selection from popup
+window.addEventListener('message',function(e){
+  if(!e || !e.data || e.data.type!=='foodSelected') return;
+  closeFoodModal();
+  if(Array.isArray(e.data.items)){
+    const palette=['#D4A843','#E07A40','#5A8FE0','#48B87A','#C85070','#A06BC0'];
+    const mapByName={};
+    Object.values(MENU_ITEMS).flat().forEach(it=>mapByName[it.n]=it);
+    selectedItems = e.data.items.map(function(name,i){
+      const ref=mapByName[name]||{};
+      return {n:name,col:ref.col||palette[i%palette.length],e:ref.e||'🍽'};
+    });
+  }
+  selPkg = typeof e.data.pkg==='number' ? e.data.pkg : -1;
+  if(typeof buildFood==='function' && document.getElementById('pkgGrid')) buildFood();
+  if(typeof updateMobilePlateStrip==='function') updateMobilePlateStrip();
+  if(typeof drawAllPlates==='function') drawAllPlates();
+  toast(e.data.summary || 'Menu updated!');
+});
 
 </script>
 
