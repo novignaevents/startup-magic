@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /vendor_fea.html
+Allow: /food_menu.html
+
+Disallow: /admin.html
+
+Sitemap: https://novighna.com/sitemap.xml
