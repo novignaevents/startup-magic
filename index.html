@@ -58,28 +58,28 @@ event organizers near me Shivamogga, best wedding planners Karnataka">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#06050A;
-  --bg2:#0D0B14;
-  --card:#14121F;
-  --card2:#1C1A2A;
-  --panel:#221F30;
+  --bg:#070214;
+  --bg2:#0F0525;
+  --card:#180A36;
+  --card2:#220F49;
+  --panel:#2D1560;
   --b1:rgba(255,255,255,0.07);
   --b2:rgba(255,255,255,0.13);
   --b3:rgba(255,255,255,0.22);
-  --gold:#D4A843;
-  --gold2:#F0C96B;
-  --gd:rgba(212,168,67,0.14);
-  --gg:rgba(212,168,67,0.35);
-  --rose:#C85070;
-  --rd:rgba(200,80,112,0.14);
-  --sage:#48B87A;
-  --sd:rgba(72,184,122,0.14);
-  --sky:#5A8FE0;
-  --skd:rgba(90,143,224,0.14);
-  --amber:#E07A40;
-  --t1:#EDE9F5;
-  --t2:rgba(237,233,245,0.6);
-  --t3:rgba(237,233,245,0.3);
+  --gold:#FF2A75;
+  --gold2:#FF7B00;
+  --gd:rgba(255,42,117,0.15);
+  --gg:rgba(255,42,117,0.35);
+  --rose:#FF003C;
+  --rd:rgba(255,0,60,0.15);
+  --sage:#00FF9D;
+  --sd:rgba(0,255,157,0.15);
+  --sky:#00D4FF;
+  --skd:rgba(0,212,255,0.15);
+  --amber:#FFBB00;
+  --t1:#FFFFFF;
+  --t2:rgba(255,255,255,0.8);
+  --t3:rgba(255,255,255,0.5);
   --r:14px;
   --nav:60px;
   --cta:70px;
@@ -87,10 +87,21 @@ event organizers near me Shivamogga, best wedding planners Karnataka">
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{background:var(--bg);overscroll-behavior:none;}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overflow:hidden;min-height:100dvh;}
+body{
+  font-family:'Outfit',sans-serif;
+  background: 
+    radial-gradient(circle at 15% 50%, rgba(255,42,117,0.12), transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(0,212,255,0.12), transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(0,255,157,0.12), transparent 40%),
+    var(--bg);
+  background-attachment: fixed;
+  color:var(--t1);
+  overflow:hidden;
+  min-height:100dvh;
+}
 
 /* ── SCREENS ── */
-.scr{display:none;flex-direction:column;min-height:100dvh;animation:scrIn .45s var(--ease) both;}
+.scr{display:none;flex-direction:column;height:100dvh;overflow-y:auto;animation:scrIn .45s var(--ease) both;}
 .scr.on{display:flex;}
 .scr{padding-bottom:var(--cta);}
 @keyframes scrIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
@@ -117,9 +128,16 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overfl
 .slbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;opacity:.8;}
 
 /* ── CTA BAR ── */
+<<<<<<< HEAD
+.ctabar{position:sticky;margin-top:auto;bottom:0;z-index:190;height:var(--cta);display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(6,5,10,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--b1);gap:12px;}
+=======
 .ctabar{position:fixed;bottom:0;left:0;right:0;z-index:190;height:var(--cta);display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(6,5,10,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--b1);gap:12px;}
 .ctabar{transition:transform .35s var(--ease),opacity .35s var(--ease);}
 .ctabar.hidden{transform:translateY(110%);opacity:0;pointer-events:none;}
+<<<<<<< HEAD
+>>>>>>> 5c8910328a774721a46103f9bf4448c83fe852b5
+=======
+>>>>>>> 5c8910328a774721a46103f9bf4448c83fe852b5
 @media(min-width:700px){.ctabar{padding:0 32px;}}
 .cta-l{flex:1;min-width:0;}
 .cta-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:2px;}
@@ -398,13 +416,22 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 /* vendor cards – 1 col on mobile, 3 col on tablet+ */
 .vcards3{display:grid;grid-template-columns:1fr;gap:10px;}
 @media(min-width:480px){.vcards3{grid-template-columns:repeat(3,1fr);}}
+<<<<<<< HEAD
+<<<<<<< HEAD
+.vc3{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:13px;cursor:pointer;transition:all .3s var(--ease);position:relative;overflow:hidden;opacity:0.4;filter:grayscale(100%);}
+.vc3::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(212,168,67,.04));opacity:0;transition:opacity .3s;}
+.vc3:hover{border-color:var(--t3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35);}
+=======
+=======
+>>>>>>> 5c8910328a774721a46103f9bf4448c83fe852b5
 .vc3{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:13px;cursor:pointer;transition:all .3s var(--ease);position:relative;overflow:hidden;}
 .vc3::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(212,168,67,.04));opacity:0;transition:opacity .3s;pointer-events:none;}
 .vc3:hover{border-color:var(--b2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35);}
+>>>>>>> 5c8910328a774721a46103f9bf4448c83fe852b5
 .vc3:hover::before{opacity:1;}
-.vc3.ai-pick{border-color:var(--gold);background:linear-gradient(135deg,var(--card),var(--gd));}
-.vc3.shadow{border-style:dashed;border-color:var(--sage);}
-.vc3.neg{border-color:rgba(200,80,112,.4);}
+.vc3.ai-pick{border-color:var(--gold);background:linear-gradient(135deg,var(--card),var(--gd));opacity:1;filter:grayscale(0%);box-shadow:0 0 15px var(--gd);}
+.vc3.shadow{border-style:dashed;border-color:rgba(0,255,157,0.5);background:rgba(0,255,157,0.06);opacity:0.85;filter:grayscale(30%);}
+.vc3.neg{border-color:rgba(255,0,60,.4);opacity:0.4;}
 .vc3-type{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:6px;}
 .vc3.ai-pick .vc3-type{color:var(--gold);}
 .vc3.shadow .vc3-type{color:var(--sage);}
@@ -956,11 +983,28 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="sb-logo-sub">Event Planner</div>
     </div>
     <div class="sb-nav-list">
+<<<<<<< HEAD
+<<<<<<< HEAD
+      <div class="sb-itm on" data-step="0" onclick="goToSb(0,this)"><span class="sb-icn">✨</span> Welcome<span class="sb-step-num">Start</span></div>
+      <div class="sb-itm locked" data-step="1" onclick="goToSb(1,this)"><span class="sb-icn">🎉</span> Event Details<span class="sb-step-num">1</span></div>
+      <div class="sb-itm locked" data-step="2" onclick="goToSb(2,this)"><span class="sb-icn">🎨</span> Design & Style<span class="sb-step-num">2</span></div>
+      <div class="sb-itm locked" data-step="3" onclick="goToSb(3,this)"><span class="sb-icn">🤖</span> AI Matching<span class="sb-step-num">3</span></div>
+      <div class="sb-itm locked" data-step="4" onclick="goToSb(4,this)"><span class="sb-icn">🎪</span> Vendor Results<span class="sb-step-num">4</span></div>
+      <div class="sb-itm locked" data-step="5" onclick="goToSb(5,this)"><span class="sb-icn">🔍</span> Explore More<span class="sb-step-num">5</span></div>
+      <div class="sb-itm locked" data-step="6" onclick="goToSb(6,this)"><span class="sb-icn">✅</span> Review<span class="sb-step-num">6</span></div>
+      <div class="sb-itm locked" data-step="7" onclick="goToSb(7,this)"><span class="sb-icn">🍽️</span> Curate Menu<span class="sb-step-num">7</span></div>
+=======
+=======
+>>>>>>> 5c8910328a774721a46103f9bf4448c83fe852b5
       <div class="sb-itm on" data-step="0" onclick="goToSb(0,this)"><span class="sb-icn">✨</span> Overview<span class="sb-step-num">Start</span></div>
       <div class="sb-itm locked" data-step="1" onclick="goToSb(1,this)"><span class="sb-icn">🎉</span> Event Selection<span class="sb-step-num">1</span></div>
       <div class="sb-itm locked" data-step="2" onclick="goToSb(2,this)"><span class="sb-icn">🎨</span> Event Requirements<span class="sb-step-num">2</span></div>
       <div class="sb-itm locked" data-step="4" onclick="goToSb(4,this)"><span class="sb-icn">🎪</span> Vendor Recommendations<span class="sb-step-num">4</span></div>
       <div class="sb-itm locked" data-step="6" onclick="goToSb(6,this)"><span class="sb-icn">✅</span> Itinerary Review<span class="sb-step-num">6</span></div>
+<<<<<<< HEAD
+>>>>>>> 5c8910328a774721a46103f9bf4448c83fe852b5
+=======
+>>>>>>> 5c8910328a774721a46103f9bf4448c83fe852b5
       <div class="sb-itm locked" data-step="8" onclick="goToSb(8,this)"><span class="sb-icn">📄</span> Invoice<span class="sb-step-num">8</span></div>
       <div class="sb-itm locked" data-step="9" onclick="goToSb(9,this)"><span class="sb-icn">🎉</span> Post-Event Services<span class="sb-step-num">9</span></div>
     </div>
@@ -1226,7 +1270,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
     <div class="section-caption">
       <div class="sc-icon">🛡</div>
-      <div class="sc-text"><strong>Shadow backup on every booking.</strong> If any vendor cancels — even the night before — your shadow vendor activates instantly. You'll never know it happened.</div>
+      <div class="sc-text"><strong>Shaadi Shield (The Kavach Guarantee).</strong> Backup vendor pre-assigned for every booking. If your primary vendor cancels—even the night before—your next priority shadow steps in instantly. Total peace of mind.</div>
     </div>
 
     <div class="bstrip"><div class="bstrip-top"><span style="font-size:13px;font-weight:600;">Budget Overview</span><span class="bstrip-rem" id="bRem">₹3.2L remaining</span></div><div class="btrack"><div class="bfill" id="bFill"></div></div><div class="bcats" id="bCats"></div></div>
@@ -1361,17 +1405,50 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="eq-attr">— NoVighna Team</div>
     </div>
 
-    <div class="eye" style="margin-bottom:6px;">One Last Thing</div>
-    <div class="sub" style="margin-top:0;margin-bottom:16px;">Complete the full experience. Your group gets exclusive rates on everything below.</div>
+    <div class="dash-tabs" style="display:flex;gap:14px;margin-bottom:20px;border-bottom:1px solid var(--b1);padding-bottom:10px;overflow-x:auto;">
+      <div class="d-tab rp" style="color:var(--gold);font-weight:700;cursor:pointer;border-bottom:2px solid var(--gold);padding-bottom:4px;" onclick="toast('Viewing Event Details')">View Your Event</div>
+      <div class="d-tab rp" style="color:var(--t2);cursor:pointer;padding-bottom:4px;" onclick="toast('Opened Notifications')">Notifications <span style="background:var(--rose);color:#fff;padding:2px 6px;border-radius:10px;font-size:9px;">3</span></div>
+      <div class="d-tab rp" style="color:var(--t2);cursor:pointer;padding-bottom:4px;" onclick="toast('Opened Deals')">Ads & Promotions</div>
+    </div>
+
+    <!-- EVENT DETAILS SUMMARY -->
+    <div style="background:var(--card);border:1px solid var(--b1);border-radius:14px;padding:20px;margin-bottom:24px;">
+      <h3 style="font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);margin-bottom:14px;">The Blueprint ✦</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:12px;color:var(--t2);margin-bottom:22px;">
+        <div><strong>Occasion:</strong> <span style="color:var(--t1);">Wedding</span></div>
+        <div><strong>Location:</strong> <span style="color:var(--t1);">Bengaluru</span></div>
+        <div><strong>Dates:</strong> <span style="color:var(--t1);">14 Nov – 16 Nov</span></div>
+        <div><strong>Guests:</strong> <span style="color:var(--t1);">200</span></div>
+        <div><strong>Allocated Budget:</strong> <span style="color:var(--t1);">₹15,00,000</span></div>
+        <div><strong>Support Team:</strong> <span style="color:var(--sage);">Assigned ✓</span></div>
+      </div>
+      
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--t3);text-transform:uppercase;margin-bottom:10px;">Confirmed Lineup</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+         <div style="display:flex;justify-content:space-between;padding:10px;background:var(--bg2);border:1px solid var(--b1);border-radius:10px;font-size:12px;align-items:center;"><span>🏛 Venue</span><span style="font-weight:600;">Jai Mahal Palace</span></div>
+         <div style="display:flex;justify-content:space-between;padding:10px;background:var(--bg2);border:1px solid var(--b1);border-radius:10px;font-size:12px;align-items:center;"><span>📸 Photography</span><span style="font-weight:600;">Pixels & Poetry</span></div>
+         <div style="display:flex;justify-content:space-between;padding:10px;background:var(--bg2);border:1px solid var(--b1);border-radius:10px;font-size:12px;align-items:center;"><span>🍽 Catering</span><span style="font-weight:600;">Spice Route Catering</span></div>
+      </div>
+      
+      <!-- ASSIGNED RM CARD -->
+      <div style="margin-top:20px;padding:16px;background:linear-gradient(135deg,rgba(72,184,122,0.1),var(--card));border:1px solid rgba(72,184,122,0.3);border-radius:12px;display:flex;align-items:center;gap:14px;">
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--sage);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0;">A</div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--sage);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Your Relationship Manager</div>
+          <div style="font-size:16px;font-weight:700;color:var(--t1);">Anjali Sen</div>
+          <div style="font-size:11px;color:var(--t2);margin-top:4px;">📞 +91 98765 43210 &nbsp;<span style="opacity:0.5;">|</span>&nbsp; 💬 WhatsApp</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROMOTIONS/ADS -->
+    <div class="eye" style="margin-bottom:6px;">Ads & Partner Deals</div>
+    <div class="sub" style="margin-top:0;margin-bottom:16px;">Exclusive sponsored rates for your group</div>
     <div class="shop-grid">
-      <div class="scard rp" onclick="toast('Opening fashion partners — look stunning on your day! 👗')"><span class="sc-i">👗</span><div class="sc-n">Attire</div><div class="sc-d">Up to 20% off</div></div>
-      <div class="scard rp" onclick="toast('Opening jewellery partners — you deserve to sparkle 💎')"><span class="sc-i">💎</span><div class="sc-n">Jewellery</div><div class="sc-d">Exclusive rates</div></div>
-      <div class="scard rp" onclick="toast('Best hotels near your venue — rest well, celebrate more 🏨')"><span class="sc-i">🏨</span><div class="sc-n">Stays</div><div class="sc-d">Group discount</div></div>
-      <div class="scard rp" onclick="toast('Flights & transfers sorted — arrive in style ✈️')"><span class="sc-i">✈️</span><div class="sc-n">Travel</div><div class="sc-d">Bundle savings</div></div>
-      <div class="scard rp" onclick="toast('Beautiful mehendi makes beautiful memories 🌿')"><span class="sc-i">🌿</span><div class="sc-n">Mehendi</div><div class="sc-d">5 artists near you</div></div>
-      <div class="scard rp" onclick="toast('Because you deserve to look your absolute best 💄')"><span class="sc-i">💄</span><div class="sc-n">Makeup</div><div class="sc-d">Bridal packages</div></div>
-      <div class="scard rp" onclick="toast('Invitations that set the tone — first impressions matter 💌')"><span class="sc-i">💌</span><div class="sc-n">Invitations</div><div class="sc-d">Print + digital</div></div>
-      <div class="scard rp" onclick="toast('Curated hampers — because every guest deserves to feel special 🎁')"><span class="sc-i">🎁</span><div class="sc-n">Gifting</div><div class="sc-d">Curated hampers</div></div>
+      <div class="scard rp" onclick="toast('Opening fashion ad...')"><span class="sc-i">👗</span><div class="sc-n">Kalki Fashion</div><div class="sc-d" style="color:var(--gold);">Sponsored · 15% Off</div></div>
+      <div class="scard rp" onclick="toast('Opening jewelry ad...')"><span class="sc-i">💎</span><div class="sc-n">Tanishq</div><div class="sc-d" style="color:var(--gold);">Sponsored · 0% Making</div></div>
+      <div class="scard rp" onclick="toast('Opening travel ad...')"><span class="sc-i">✈️</span><div class="sc-n">Vistara</div><div class="sc-d" style="color:var(--gold);">Sponsored · Group Rate</div></div>
+      <div class="scard rp" onclick="toast('Opening makeup ad...')"><span class="sc-i">💄</span><div class="sc-n">MAC Cosmetics</div><div class="sc-d" style="color:var(--gold);">Sponsored · Bridal Offer</div></div>
     </div>
     <div style="background:var(--card);border:1px solid var(--b1);border-radius:13px;padding:20px;text-align:center;">
       <div class="eye" style="text-align:center;margin-bottom:6px;">Share Your Event</div>
@@ -1939,14 +2016,14 @@ function doGroup(){
   const label = S.group === 'family' ? 'Family' : 'Friends';
   toast(`🎉 ${label} group created! Everyone can co-plan this event.`);
   openChat(label);
-  setTimeout(() => goTo(8), 200);
+  setTimeout(() => goTo(7), 200);
 }
 
 function doSolo(){
   S.group = null;
   closeGroupPop();
   toast('Going solo — you\'ve got this. ✦');
-  setTimeout(() => goTo(8), 300);
+  setTimeout(() => goTo(7), 300);
 }
 
 // Attach backdrop close — deferred to after DOM ready

@@ -15,14 +15,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#06050A;--bg2:#0D0B14;--card:#14121F;--card2:#1C1A2A;--panel:#221F30;
+  --bg:#070214;--bg2:#0F0525;--card:#180A36;--card2:#220F49;--panel:#2D1560;
   --b1:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.13);--b3:rgba(255,255,255,0.22);
-  --gold:#D4A843;--gold2:#F0C96B;--gd:rgba(212,168,67,0.14);--gg:rgba(212,168,67,0.35);
-  --rose:#C85070;--sage:#48B87A;--sky:#5A8FE0;--amber:#E07A40;--t1:#EDE9F5;--t2:rgba(237,233,245,0.7);--t3:rgba(237,233,245,0.35);
+  --gold:#FF2A75;--gold2:#FF7B00;--gd:rgba(255,42,117,0.15);--gg:rgba(255,42,117,0.35);
+  --rose:#FF003C;--sage:#00FF9D;--sky:#00D4FF;--amber:#FFBB00;--t1:#FFFFFF;--t2:rgba(255,255,255,0.8);--t3:rgba(255,255,255,0.5);
   --r:14px;--nav:64px;--ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20%,rgba(90,143,224,.08),transparent 32%),radial-gradient(circle at 80% 10%,rgba(200,80,112,.07),transparent 32%),var(--bg);color:var(--t1);min-height:100vh;}
+body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20%,rgba(0,212,255,.12),transparent 40%),radial-gradient(circle at 80% 10%,rgba(255,42,117,.12),transparent 40%),var(--bg);background-attachment:fixed;color:var(--t1);min-height:100vh;}
 .nav{height:var(--nav);display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(6,5,10,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;}
 .nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;cursor:pointer;letter-spacing:-.4px;}
 .nav-logo b{color:var(--gold);font-style:italic;}
@@ -131,6 +131,23 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
 }
 @media(min-width:769px){.tb-ham{display:none !important;}}
 
+/* New additions */
+.day.selected-day{border:2px solid var(--gold);background:var(--gd);box-shadow:inset 0 0 10px rgba(255,42,117,0.4);}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;padding:18px;}
+.modal.open{opacity:1;pointer-events:all;}
+.mbox{background:var(--bg2);border:1px solid var(--b2);width:100%;max-width:580px;max-height:88dvh;overflow-y:auto;border-radius:16px;transform:translateY(30px);transition:transform .4s var(--ease);}
+.modal.open .mbox{transform:translateY(0);}
+.mhdr{display:flex;justify-content:space-between;align-items:center;padding:18px 22px 14px;border-bottom:1px solid var(--b1);position:sticky;top:0;background:var(--bg2);z-index:2;}
+.mtitle{font-family:'Playfair Display',serif;font-size:20px;}
+.mx{background:none;border:1px solid var(--b2);color:var(--t2);width:30px;height:30px;cursor:pointer;border-radius:7px;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.mx:hover{border-color:var(--rose);color:var(--rose);}
+.mbody{padding:18px 22px 28px;}
+
+/* Marquee logic */
+.marquee-wrap{overflow:hidden;position:relative;width:100%;margin-top:12px;height:140px;}
+.marquee-content{display:flex;flex-direction:column;gap:8px;animation:scrollUp 15s linear infinite;}
+@keyframes scrollUp{from{transform:translateY(0);}to{transform:translateY(-50%);}}
+.marquee-content:hover{animation-play-state:paused;}
 </style>
 </head>
 <body>
@@ -287,6 +304,16 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
     <h3>Live Assignments</h3>
     <div class="sub">Accept/Reject with a 2h timer. We show user contact after acceptance.</div>
     <div class="list" id="assignList"></div>
+    
+    <!-- Vendor RM Card -->
+    <div style="margin-top:16px;padding:14px;background:linear-gradient(135deg,rgba(90,143,224,0.1),var(--card2));border:1px solid rgba(90,143,224,0.3);border-radius:12px;display:flex;align-items:center;gap:12px;">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--sky);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;">R</div>
+      <div>
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--sky);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Vendor Success Manager</div>
+        <div style="font-size:14px;font-weight:700;color:var(--t1);">Rahul Verma</div>
+        <div style="font-size:10px;color:var(--t2);margin-top:2px;">For escalations: +91 8888 2222</div>
+      </div>
+    </div>
   </div>
   <div class="card">
     <div class="tag">Availability</div>
@@ -333,10 +360,45 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
     <div class="bar-labels" id="revLabels"></div>
   </div>
   <div class="card">
-    <div class="tag">Ratings & Ladder</div>
+    <div class="tag">Gamification</div>
     <h3>Climb the ladder</h3>
     <div class="sub">Reviews, on-time scores, and cancellations drive your rank. Stay green to get priority events.</div>
-    <div class="badge">🎯 Current Rank: <span id="rankLabel">Rising</span></div>
+    <div class="badge">🎯 Current Rank: <span id="rankLabel">Rising Star</span></div>
+    
+    <div style="margin-top:20px;font-size:11px;color:var(--gold);font-weight:600;text-transform:uppercase;letter-spacing:1px;">👑 The Royal Roster (Top 5%)</div>
+    <div class="marquee-wrap" style="height:100px;">
+      <div class="marquee-content">
+        <!-- Content duplicated for infinite scroll -->
+        <div class="list-item"><div><strong>1. Regal Events Co.</strong></div><div class="stat" style="font-size:12px;">4.99★</div></div>
+        <div class="list-item"><div><strong>2. Velvet Decorators</strong></div><div class="stat" style="font-size:12px;">4.98★</div></div>
+        <div class="list-item" style="border-color:var(--gold);background:var(--gd);"><div><strong style="color:var(--gold);">3. Spice Route Catering (You)</strong></div><div class="stat" style="font-size:12px;color:var(--gold);">4.96★</div></div>
+        <div class="list-item"><div><strong>4. Pixels & Poetry</strong></div><div class="stat" style="font-size:12px;">4.95★</div></div>
+        <div class="list-item"><div><strong>1. Regal Events Co.</strong></div><div class="stat" style="font-size:12px;">4.99★</div></div>
+        <div class="list-item"><div><strong>2. Velvet Decorators</strong></div><div class="stat" style="font-size:12px;">4.98★</div></div>
+        <div class="list-item" style="border-color:var(--gold);background:var(--gd);"><div><strong style="color:var(--gold);">3. Spice Route Catering (You)</strong></div><div class="stat" style="font-size:12px;color:var(--gold);">4.96★</div></div>
+        <div class="list-item"><div><strong>4. Pixels & Poetry</strong></div><div class="stat" style="font-size:12px;">4.95★</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;font-size:11px;color:var(--sage);font-weight:600;text-transform:uppercase;letter-spacing:1px;">🏆 Legends of the Mandap (Most Served)</div>
+    <div class="marquee-wrap" style="height:100px;margin-bottom:16px;">
+      <div class="marquee-content" style="animation-duration:18s;animation-direction:reverse;">
+        <div class="list-item"><div><strong>1. Shaadi Sounds</strong></div><div class="stat" style="font-size:12px;color:var(--sage);">142</div></div>
+        <div class="list-item"><div><strong>2. Silver Spoons</strong></div><div class="stat" style="font-size:12px;color:var(--sage);">98</div></div>
+        <div class="list-item" style="border-color:var(--sage);background:rgba(72,184,122,0.1);"><div><strong style="color:var(--sage);">3. Spice Route Catering (You)</strong></div><div class="stat" style="font-size:12px;color:var(--sage);">42</div></div>
+        <div class="list-item"><div><strong>4. Majestic Mandaps</strong></div><div class="stat" style="font-size:12px;color:var(--sage);">39</div></div>
+        <div class="list-item"><div><strong>1. Shaadi Sounds</strong></div><div class="stat" style="font-size:12px;color:var(--sage);">142</div></div>
+        <div class="list-item"><div><strong>2. Silver Spoons</strong></div><div class="stat" style="font-size:12px;color:var(--sage);">98</div></div>
+        <div class="list-item" style="border-color:var(--sage);background:rgba(72,184,122,0.1);"><div><strong style="color:var(--sage);">3. Spice Route Catering (You)</strong></div><div class="stat" style="font-size:12px;color:var(--sage);">42</div></div>
+        <div class="list-item"><div><strong>4. Majestic Mandaps</strong></div><div class="stat" style="font-size:12px;color:var(--sage);">39</div></div>
+      </div>
+    </div>
+
+    <!-- Restoring Swayamvar Sprints -->
+    <div class="list-item" style="margin-top:12px;border:1px solid var(--sky);">
+      <div><strong>🚀 Swayamvar Sprints</strong><div class="sub" style="margin:0;">Weekly response time competitions</div></div>
+      <div class="status-pill s-open" style="cursor:pointer;background:var(--skd);color:var(--sky);font-weight:600;">Join Challenge</div>
+    </div>
   </div>
 </section>
       </div>
@@ -479,6 +541,34 @@ body{font-family:'Outfit',sans-serif;background:radial-gradient(circle at 20% 20
   </div>
 </div>
 
+<!-- ASSIGNMENT MODAL -->
+<div class="modal" id="assignModal">
+  <div class="mbox">
+    <div class="mhdr"><div class="mtitle">Event Details</div><button class="mx" onclick="closeM('assignModal')">✕</button></div>
+    <div class="mbody">
+      <div style="display:none;" id="evmId"></div>
+      <h2 style="font-family:'Playfair Display',serif;color:var(--gold);margin-bottom:16px;font-size:24px;" id="evmTitle">Title</h2>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;color:var(--t2);margin-bottom:20px;background:var(--card2);padding:16px;border-radius:10px;border:1px solid var(--b1);">
+        <div><strong>Date:</strong> <span id="evmDate" style="color:var(--t1);"></span></div>
+        <div><strong>Timing:</strong> <span id="evmTime" style="color:var(--t1);"></span></div>
+        <div style="grid-column:1/-1;"><strong>Location:</strong> <span id="evmVanue" style="color:var(--t1);"></span></div>
+        <div style="grid-column:1/-1;border-top:1px solid var(--b2);padding-top:12px;"><strong>Payout:</strong> <span id="evmBudget" style="color:var(--sage);font-size:16px;font-weight:700;"></span></div>
+      </div>
+      
+      <div id="rejReasonBox" style="display:none;margin-bottom:20px;">
+        <div style="font-size:11px;color:var(--rose);margin-bottom:6px;font-weight:600;">⚠️ Rejection limits your ranking. Please state your reason:</div>
+        <textarea id="rejReasonInp" class="fi" style="width:100%;height:80px;resize:vertical;" placeholder="E.g., Overbooked, unviable travel, etc. (Required)"></textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" style="flex:1;color:var(--rose);border-color:rgba(255,0,60,.4);" onclick="tryReject()">Reject</button>
+        <button class="btn btn-gold" style="flex:2;" onclick="acceptAssignment()">Accept Event ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 function scrollToSection(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
 
@@ -504,26 +594,72 @@ function submitOnboard(){
 
 // ------- Assignments -------
 const assignments = [
-  {id:'EVT-1021',name:'Luxury Wedding',date:'2026-04-02',city:'Bengaluru',budget:650000,expires:120},
-  {id:'EVT-1029',name:'Corporate Gala',date:'2026-04-05',city:'Hyderabad',budget:320000,expires:95},
+  {id:'EVT-1021',name:'Luxury Wedding',date:'2026-04-02',time:'05:30 PM - 11:30 PM',city:'Bengaluru',venue:'Jai Mahal Palace',budget:650000,expires:120,status:'Pending'},
+  {id:'EVT-1029',name:'Corporate Gala',date:'2026-04-05',time:'09:00 AM - 05:00 PM',city:'Hyderabad',venue:'Taj Krishna',budget:320000,expires:95,status:'Pending'},
 ];
 function renderAssignments(){
   const wrap=document.getElementById('assignList');
   if(!wrap)return;
-  wrap.innerHTML=assignments.map(a=>`
-    <div class="list-item">
+  const pend = assignments.filter(a=>a.status==='Pending');
+  if(pend.length===0){
+     wrap.innerHTML = '<div class="sub">No pending assignments.</div>';
+     return;
+  }
+  wrap.innerHTML=pend.map(a=>`
+    <div class="list-item" onclick="openAssignModal('${a.id}')" style="cursor:pointer;background:var(--card2);border:1px solid var(--b2);border-radius:10px;transition:all 0.2s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.borderColor='var(--gold)'" onmouseleave="this.style.transform='none';this.style.borderColor='var(--b2)'">
       <div>
-        <div style="font-weight:700;">${a.name}</div>
-        <div class="sub">${a.city} · ${a.date} · ₹${a.budget.toLocaleString('en-IN')}</div>
-      </div>
-      <div style="display:flex;gap:6px;">
-        <button class="btn btn-ghost" onclick="accept(${a.id})" data-id="${a.id}">Accept</button>
-        <button class="btn btn-ghost" onclick="reject(${a.id})" data-id="${a.id}">Reject</button>
+        <div style="font-weight:700;font-size:14px;color:var(--gold);margin-bottom:2px;">${a.name} <span style="font-size:10px;color:var(--t3);font-weight:400;margin-left:6px;">Tap for details &rarr;</span></div>
+        <div class="sub" style="margin:0;">${a.city} · ${a.date} · ₹${a.budget.toLocaleString('en-IN')}</div>
       </div>
     </div>`).join('');
 }
-function accept(id){toast('Accepted. Client contact shared.');}
-function reject(id){toast('Rejected. Timer stopped.');}
+
+function openAssignModal(id){
+  const a = assignments.find(x=>x.id===id);
+  if(!a) return;
+  document.getElementById('evmId').textContent=a.id;
+  document.getElementById('evmTitle').textContent=a.name;
+  document.getElementById('evmDate').textContent=a.date;
+  document.getElementById('evmTime').textContent=a.time;
+  document.getElementById('evmVanue').textContent=a.venue;
+  document.getElementById('evmBudget').textContent='₹'+a.budget.toLocaleString('en-IN');
+  document.getElementById('rejReasonBox').style.display='none';
+  document.getElementById('rejReasonInp').value='';
+  openM('assignModal');
+}
+
+function acceptAssignment(){
+  const id=document.getElementById('evmId').textContent;
+  const a = assignments.find(x=>x.id===id);
+  if(a) a.status='Accepted';
+  closeM('assignModal');
+  toast('Accepted! Client contact shared.');
+  renderAssignments();
+}
+
+function tryReject(){
+  const box=document.getElementById('rejReasonBox');
+  if(box.style.display==='none'){
+    box.style.display='block';
+    setTimeout(()=>document.getElementById('rejReasonInp').focus(),100);
+  } else {
+    // confirm reject
+    const val=document.getElementById('rejReasonInp').value.trim();
+    if(val.length < 10){
+      toast('Please provide a valid mandatory reason (min 10 chars).');
+      return;
+    }
+    const id=document.getElementById('evmId').textContent;
+    const a = assignments.find(x=>x.id===id);
+    if(a) a.status='Rejected';
+    closeM('assignModal');
+    toast('Event rejected. Timing slot reopened.');
+    renderAssignments();
+  }
+}
+
+function openM(id){ document.getElementById(id).classList.add('open'); }
+function closeM(id){ document.getElementById(id).classList.remove('open'); }
 
 // ------- Calendar -------
 let calMode='free';
@@ -531,7 +667,8 @@ let bookedDates=new Set(JSON.parse(localStorage.getItem('nv_booked_dates')||'[]'
 let slotMap=JSON.parse(localStorage.getItem('nv_slot_map')||'{}'); // {date:{status,start,end}}
 let curMonth=new Date().getMonth();
 let curYear=new Date().getFullYear();
-let selectedKey=null;
+let selectedKeys=new Set();
+
 function setCalendarStatus(mode){
   calMode=mode;
   document.querySelectorAll('.chip-row .chip').forEach(c=>c.classList.toggle('on',c.textContent.includes(mode==='free'?'Available':'Booked')));
@@ -550,6 +687,7 @@ function buildCalendar(){
     const slot=slotMap[key];
     const status = slot?slot.status:(bookedDates.has(key)?'booked':'free');
     el.className='day '+status;
+    if(selectedKeys.has(key)) el.classList.add('selected-day');
     el.textContent=d;
     el.title = slot ? `${slot.status==='booked'?'Booked':'Available'} ${slot.start||''}-${slot.end||''}` : 'Tap to set';
     el.onclick=()=>openDay(key,el);
@@ -557,25 +695,37 @@ function buildCalendar(){
   }
 }
 function openDay(key,el){
-  selectedKey=key;
-  const slot=slotMap[key]||{status:calMode,start:'10:00',end:'18:00'};
-  document.getElementById('slotStatus').value=slot.status;
-  document.getElementById('slotStart').value=slot.start;
-  document.getElementById('slotEnd').value=slot.end;
-  const lbl=document.getElementById('selDateLbl');
-  if(lbl) lbl.textContent=new Date(key.replace(/-/g,'/')).toDateString();
+  if(selectedKeys.has(key)){
+    selectedKeys.delete(key);
+    el.classList.remove('selected-day');
+    if(selectedKeys.size===0){
+       document.getElementById('selDateLbl').textContent='None';
+    } else {
+       document.getElementById('selDateLbl').textContent=selectedKeys.size + ' dates selected';
+    }
+  } else {
+    selectedKeys.add(key);
+    el.classList.add('selected-day');
+    const slot=slotMap[key]||{status:calMode,start:'10:00',end:'18:00'};
+    document.getElementById('slotStatus').value=slot.status;
+    document.getElementById('selDateLbl').textContent=selectedKeys.size + ' dates selected';
+  }
 }
 function saveSlot(){
-  if(!selectedKey){toast('Pick a date first.');return;}
+  if(selectedKeys.size===0){toast('Pick at least one date.');return;}
   const status=document.getElementById('slotStatus').value;
   const start=document.getElementById('slotStart').value;
   const end=document.getElementById('slotEnd').value;
-  slotMap[selectedKey]={status,start,end};
+  selectedKeys.forEach(key => {
+    slotMap[key]={status,start,end};
+    if(status==='booked') bookedDates.add(key); else bookedDates.delete(key);
+  });
   localStorage.setItem('nv_slot_map',JSON.stringify(slotMap));
-  if(status==='booked') bookedDates.add(selectedKey); else bookedDates.delete(selectedKey);
   localStorage.setItem('nv_booked_dates',JSON.stringify([...bookedDates]));
   buildCalendar();
-  toast(`Saved ${status} ${start}-${end}`);
+  toast(`Saved ${status} for ${selectedKeys.size} date(s)`);
+  selectedKeys.clear();
+  document.getElementById('selDateLbl').textContent='None';
 }
 function shiftMonth(delta){
   curMonth+=delta;

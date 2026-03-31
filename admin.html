@@ -12,33 +12,44 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#06050A;
-  --bg2:#0D0B14;
-  --card:#14121F;
-  --card2:#1C1A2A;
-  --panel:#221F30;
+  --bg:#070214;
+  --bg2:#0F0525;
+  --card:#180A36;
+  --card2:#220F49;
+  --panel:#2D1560;
   --b1:rgba(255,255,255,0.07);
   --b2:rgba(255,255,255,0.13);
   --b3:rgba(255,255,255,0.22);
-  --gold:#D4A843;
-  --gold2:#F0C96B;
-  --gd:rgba(212,168,67,0.14);
-  --gg:rgba(212,168,67,0.35);
-  --rose:#C85070;
-  --rd:rgba(200,80,112,0.14);
-  --sage:#48B87A;
-  --sd:rgba(72,184,122,0.14);
-  --sky:#5A8FE0;
-  --skd:rgba(90,143,224,0.14);
-  --amber:#E07A40;
-  --t1:#EDE9F5;
-  --t2:rgba(237,233,245,0.6);
-  --t3:rgba(237,233,245,0.3);
+  --gold:#FF2A75;
+  --gold2:#FF7B00;
+  --gd:rgba(255,42,117,0.15);
+  --gg:rgba(255,42,117,0.35);
+  --rose:#FF003C;
+  --rd:rgba(255,0,60,0.15);
+  --sage:#00FF9D;
+  --sd:rgba(0,255,157,0.15);
+  --sky:#00D4FF;
+  --skd:rgba(0,212,255,0.15);
+  --amber:#FFBB00;
+  --t1:#FFFFFF;
+  --t2:rgba(255,255,255,0.8);
+  --t3:rgba(255,255,255,0.5);
   --ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{background:var(--bg);overscroll-behavior:none;}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);overflow-x:hidden;min-height:100dvh;}
+body{
+  font-family:'Outfit',sans-serif;
+  background: 
+    radial-gradient(circle at 15% 50%, rgba(255,42,117,0.12), transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(0,212,255,0.12), transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(0,255,157,0.12), transparent 40%),
+    var(--bg);
+  background-attachment: fixed;
+  color:var(--t1);
+  overflow-x:hidden;
+  min-height:100dvh;
+}
 
 /* SCREENS */
 .scr{display:none;flex-direction:column;min-height:100dvh;animation:scrIn .45s var(--ease) both;}
