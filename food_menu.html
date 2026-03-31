@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>NoVigna · Food & Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0A0F;--card:#161421;--b1:rgba(255,255,255,0.08);--b2:rgba(255,255,255,0.15);
+  --gold:#D4A843;--gold2:#F0C96B;--t1:#EEE9F8;--t2:rgba(238,233,248,.7);--t3:rgba(238,233,248,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);}
+.wrap{padding:18px;}
+.title{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:6px;}
+.sub{color:var(--t2);font-size:13px;margin-bottom:14px;}
+.pkg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:20px;}
+.pkg{background:var(--card);border:1px solid var(--b1);border-radius:14px;padding:14px;cursor:pointer;transition:all .25s;}
+.pkg.sel{border-color:var(--gold);box-shadow:0 8px 30px rgba(0,0,0,.45);}
+.pkg-name{font-family:'Playfair Display',serif;font-size:17px;}
+.pkg-price{color:var(--gold);font-weight:700;margin:6px 0;}
+.pkg-items{font-size:12px;color:var(--t2);line-height:1.5;}
+.menu-sec{margin-bottom:16px;}
+.menu-sec h4{margin-bottom:8px;font-size:14px;}
+.items{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;}
+.it{background:var(--card);border:1px solid var(--b1);border-radius:10px;padding:10px;cursor:pointer;transition:all .2s;}
+.it.sel{border-color:var(--gold);background:linear-gradient(135deg,rgba(212,168,67,.08),var(--card));}
+.it-name{font-weight:600;font-size:13px;}
+.it-cal{font-size:11px;color:var(--t3);}
+.bar{position:sticky;bottom:0;left:0;right:0;background:rgba(11,10,15,.92);backdrop-filter:blur(10px);border-top:1px solid var(--b1);padding:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.btn{border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;}
+.btn-main{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);}
+.btn-ghost{background:none;border:1px solid var(--b2);color:var(--t2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="title">Food is how you say "I love you"</div>
+  <div class="sub">Pick a package or build your own plate. Tap to add/remove.</div>
+
+  <div class="pkg-grid" id="pkgGrid"></div>
+
+  <div class="menu-sec">
+    <h4>Mains</h4>
+    <div class="items" id="mains"></div>
+  </div>
+  <div class="menu-sec">
+    <h4>Starters</h4>
+    <div class="items" id="starters"></div>
+  </div>
+  <div class="menu-sec">
+    <h4>Desserts</h4>
+    <div class="items" id="desserts"></div>
+  </div>
+</div>
+
+<div class="bar">
+  <div style="font-size:12px;color:var(--t2);">Selected: <span id="selCount">0</span></div>
+  <div style="display:flex;gap:8px;">
+    <button class="btn btn-ghost" onclick="clearSel()">Clear</button>
+    <button class="btn btn-main" onclick="confirmSel()">Save & Close</button>
+  </div>
+</div>
+
+<script>
+const FOOD_PKGS=[
+  {name:'Silver Package',price:350,items:'Veg Biryani, 3 Veg Curries, 3 Sweets, Dal, Raita, Poori, Salad, Ice Cream'},
+  {name:'Gold Package',price:550,items:'Veg + Non-Veg Biryani, 4 Curries, 4 Sweets, Starter Platter, Soup, 3 Breads, Dessert Counter'},
+  {name:'Platinum Package',price:850,items:'Live Counters: Chaat, Dosa, Pasta, Biryani. 6 Curries, Premium Desserts, Mocktail Bar, Fruit Fountain'},
+];
+const MENU={
+  mains:[{n:'Veg Biryani',c:'320 cal'},{n:'Paneer Butter Masala',c:'280 cal'},{n:'Dal Makhani',c:'220 cal'},{n:'Garlic Naan',c:'180 cal'}],
+  starters:[{n:'Paneer Tikka',c:'210 cal'},{n:'Veg Seekh Kebab',c:'190 cal'},{n:'Mini Samosa',c:'140 cal'}],
+  desserts:[{n:'Gulab Jamun',c:'280 cal'},{n:'Ice Cream',c:'240 cal'},{n:'Gajar Halwa',c:'320 cal'}],
+};
+let selPkg=-1;
+let selItems=new Set();
+
+function buildPkgs(){
+  document.getElementById('pkgGrid').innerHTML=FOOD_PKGS.map((p,i)=>`
+    <div class="pkg ${selPkg===i?'sel':''}" onclick="pickPkg(${i})">
+      <div class="pkg-name">${p.name}</div>
+      <div class="pkg-price">₹${p.price}/plate</div>
+      <div class="pkg-items">${p.items}</div>
+    </div>`).join('');
+}
+function pickPkg(i){
+  selPkg = selPkg===i ? -1 : i;
+  if(selPkg>=0){
+    selItems = new Set(FOOD_PKGS[i].items.split(',').map(s=>s.trim()));
+  }
+  buildPkgs(); buildMenu(); updateCount();
+}
+function buildMenu(){
+  ['mains','starters','desserts'].forEach(sec=>{
+    const wrap=document.getElementById(sec);
+    wrap.innerHTML=MENU[sec].map(it=>{
+      const on=selItems.has(it.n);
+      return `<div class="it ${on?'sel':''}" onclick="toggleItem('${it.n.replace(/'/g,'\\\'')}')">
+        <div class="it-name">${it.n}</div>
+        <div class="it-cal">${it.c}</div>
+      </div>`;
+    }).join('');
+  });
+}
+function toggleItem(n){
+  if(selItems.has(n)) selItems.delete(n); else selItems.add(n);
+  selPkg=-1;
+  buildPkgs(); buildMenu(); updateCount();
+}
+function updateCount(){document.getElementById('selCount').textContent=selItems.size;}
+function clearSel(){selItems.clear(); selPkg=-1; buildPkgs(); buildMenu(); updateCount();}
+function confirmSel(){
+  const summary = selPkg>=0 ? `${FOOD_PKGS[selPkg].name}` : `${selItems.size} custom items`;
+  if(window.parent){
+    window.parent.postMessage({type:'foodSelected',summary:`Menu saved: ${summary}`,items:[...selItems],pkg:selPkg},'*');
+  }
+}
+
+function initFromQuery(){
+  const qs=new URLSearchParams(location.search);
+  const pkg=qs.get('pkg');
+  if(pkg!==null){
+    const idx=parseInt(pkg,10);
+    if(!isNaN(idx) && idx>=0 && idx<FOOD_PKGS.length){
+      selPkg=idx;
+      selItems=new Set(FOOD_PKGS[idx].items.split(',').map(s=>s.trim()));
+    }
+  }
+}
+
+initFromQuery();
+buildPkgs(); buildMenu(); updateCount();
+</script>
+</body>
+</html>
